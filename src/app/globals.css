@@ -1,0 +1,62 @@
+@import "tailwindcss";
+
+@theme inline {
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+
+  /* Background colors  */
+  --color-page: oklch(98.4% 0.003 247.858);
+  --color-paper: oklch(96.8% 0.007 247.896);
+  --color-card: oklch(26.2% 0.033 256.848);
+  --color-appbar: oklch(86.9% 0.022 252.894);
+
+  /* Primary colors */
+  --color-primary: oklch(12.9% 0.042 264.695);
+  --color-secondary: oklch(44.6% 0.043 257.281);
+  --color-tertiary: oklch(92.9% 0.013 255.508);
+  
+  --color-hover: #0000003F;
+  
+  /* Status colors */
+  --color-info: oklch(58.8% 0.158 241.966);
+  --color-success: oklch(72.3% 0.219 149.579);
+  --color-warning: oklch(66.6% 0.179 58.318);
+  --color-danger: oklch(63.7% 0.237 25.331);
+  
+  /* Text colors */
+  --color-text-primary: oklch(14.5% 0 0);
+  --color-text-secondary: oklch(55.6% 0 0);
+  --color-text-tertiary: oklch(70.8% 0 0);
+
+  /* Retro colors[green, yellow, red, sky] | 50, 100, 400, 600 */
+  --color-good-bg: oklch(98.2% 0.018 155.826);
+  --color-good: oklch(96.2% 0.044 156.743);
+  --color-good-accent: oklch(79.2% 0.209 151.711);
+  --color-good-text: oklch(62.7% 0.194 149.214);
+
+  --color-meh-bg: oklch(98.7% 0.026 102.212);
+  --color-meh: oklch(97.3% 0.071 103.193);
+  --color-meh-accent: oklch(85.2% 0.199 91.936);
+  --color-meh-text: oklch(68.1% 0.162 75.834);
+
+  --color-bad-bg: oklch(97.1% 0.013 17.38);
+  --color-bad: oklch(93.6% 0.032 17.717);
+  --color-bad-accent: oklch(70.4% 0.191 22.216);
+  --color-bad-text: oklch(57.7% 0.245 27.325);
+
+  --color-shoutout-bg: oklch(97.7% 0.013 236.62);
+  --color-shoutout: oklch(95.1% 0.026 236.824);
+  --color-shoutout-accent: oklch(74.6% 0.16 232.661);
+  --color-shoutout-text: oklch(58.8% 0.158 241.966);
+}
+
+:root {
+  --background: var(--color-page);
+  --foreground: var(--color-text-primary);
+}
+
+body {
+  color: var(--foreground);
+  background: var(--background);
+  font-family: Arial, Helvetica, sans-serif;
+}

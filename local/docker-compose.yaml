@@ -1,0 +1,28 @@
+name: gr8-retros
+
+x-db-config: &db-config
+  POSTGRES_DB: retros_db
+  POSTGRES_USER: admin
+  POSTGRES_PASSWORD: password
+
+services:
+  db:
+    image: postgres:17.6-alpine
+    restart: unless-stopped
+    ports:
+      - "5432:5432"
+    environment:
+      <<: *db-config
+      PGDATA: /var/lib/postgresql/data/pgdata
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      # $$ escapes $ so it reaches the container;
+      # CMD-SHELL lets the container's shell expand them.
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  postgres-data:

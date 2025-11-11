@@ -1,0 +1,123 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`components/app-bar should should match snapshot 1`] = `
+<DocumentFragment>
+  <nav
+    class="flex items-center justify-between max-w-screen bg-appbar p-2 py-3 md:p-6 h-16"
+  >
+    <img
+      alt="Menu"
+      class="cursor-pointer"
+      data-nimg="1"
+      data-testid="sidebar__button"
+      decoding="async"
+      height="40"
+      loading="lazy"
+      src="/_next/image?url=%2Flogo.png&w=96&q=75"
+      srcset="/_next/image?url=%2Flogo.png&w=48&q=75 1x, /_next/image?url=%2Flogo.png&w=96&q=75 2x"
+      style="color: transparent;"
+      width="40"
+    />
+    <div
+      class="overflow-y-auto max-h-[calc(100vh_-_64px)] fixed top-16 h-full bg-appbar shadow-lg transform transition-transform z-50 left-0 -translate-x-full w-full sm:w-sm shadow-r-xl z-[50]"
+      data-testid="sidebar"
+    >
+      <div
+        class="flex flex-col gap-2 pt-2 pr-2"
+      >
+        <a
+          class="relative overflow-hidden rounded-r-lg shadow-lg hover:shadow-xl transition-shadow duration-300 max-h-12"
+          href="/mechanics"
+        >
+          <img
+            alt="Mechanics"
+            class="opacity-40 overflow-hidden hover:opacity-100 transition-opacity duration-300 w-full"
+            data-nimg="1"
+            decoding="async"
+            height="48"
+            loading="lazy"
+            src="/_next/image?url=%2Fmechanics.png&w=828&q=75"
+            srcset="/_next/image?url=%2Fmechanics.png&w=384&q=75 1x, /_next/image?url=%2Fmechanics.png&w=828&q=75 2x"
+            style="color: transparent;"
+            width="380"
+          />
+          <p
+            class="absolute top-0 left-0 w-full h-full rounded-r-lg flex items-center justify-center text-primary text-lg font-bold bg-black/50 transition-all duration-300 hover:text-white hover:opacity-70"
+          >
+            Mechanics
+          </p>
+        </a>
+        <a
+          class="relative overflow-hidden rounded-r-lg shadow-lg hover:shadow-xl transition-shadow duration-300 max-h-12"
+          href="/recipes"
+        >
+          <img
+            alt="Recipes"
+            class="opacity-40 overflow-hidden hover:opacity-100 transition-opacity duration-300 w-full"
+            data-nimg="1"
+            decoding="async"
+            height="48"
+            loading="lazy"
+            src="/_next/image?url=%2Frecipes.png&w=828&q=75"
+            srcset="/_next/image?url=%2Frecipes.png&w=384&q=75 1x, /_next/image?url=%2Frecipes.png&w=828&q=75 2x"
+            style="color: transparent;"
+            width="380"
+          />
+          <p
+            class="absolute top-0 left-0 w-full h-full rounded-r-lg flex items-center justify-center text-primary text-lg font-bold bg-black/50 transition-all duration-300 hover:text-white hover:opacity-70"
+          >
+            Recipes
+          </p>
+        </a>
+        <a
+          class="relative overflow-hidden rounded-r-lg shadow-lg hover:shadow-xl transition-shadow duration-300 max-h-12"
+          href="/ingredients"
+        >
+          <img
+            alt="Ingredients"
+            class="opacity-40 overflow-hidden hover:opacity-100 transition-opacity duration-300 w-full"
+            data-nimg="1"
+            decoding="async"
+            height="48"
+            loading="lazy"
+            src="/_next/image?url=%2Fingredients.jpg&w=828&q=75"
+            srcset="/_next/image?url=%2Fingredients.jpg&w=384&q=75 1x, /_next/image?url=%2Fingredients.jpg&w=828&q=75 2x"
+            style="color: transparent;"
+            width="380"
+          />
+          <p
+            class="absolute top-0 left-0 w-full h-full rounded-r-lg flex items-center justify-center text-primary text-lg font-bold bg-black/50 transition-all duration-300 hover:text-white hover:opacity-70"
+          >
+            Ingredients
+          </p>
+        </a>
+        <a
+          class="relative overflow-hidden rounded-r-lg shadow-lg hover:shadow-xl transition-shadow duration-300 max-h-12"
+          href="/biomes"
+        >
+          <img
+            alt="Biomes"
+            class="opacity-40 overflow-hidden hover:opacity-100 transition-opacity duration-300 w-full"
+            data-nimg="1"
+            decoding="async"
+            height="48"
+            loading="lazy"
+            src="/_next/image?url=%2Fbiomes.png&w=828&q=75"
+            srcset="/_next/image?url=%2Fbiomes.png&w=384&q=75 1x, /_next/image?url=%2Fbiomes.png&w=828&q=75 2x"
+            style="color: transparent;"
+            width="380"
+          />
+          <p
+            class="absolute top-0 left-0 w-full h-full rounded-r-lg flex items-center justify-center text-primary text-lg font-bold bg-black/50 transition-all duration-300 hover:text-white hover:opacity-70"
+          >
+            Biomes
+          </p>
+        </a>
+      </div>
+    </div>
+    <div>
+      Auth Component
+    </div>
+  </nav>
+</DocumentFragment>
+`;
