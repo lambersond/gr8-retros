@@ -1,3 +1,4 @@
+import { Analytics } from '@vercel/analytics/next'
 import { Geist, Geist_Mono as GeistMono } from 'next/font/google'
 import { SessionWrapper } from '@/components/session-wrapper'
 import type { Metadata, Viewport } from 'next'
@@ -47,6 +48,7 @@ export default function RootLayout({
         className={`${geistMono.variable} ${geistSans.variable} antialiased`}
       >
         <SessionWrapper>{children}</SessionWrapper>
+        <Analytics />
       </body>
     </html>
   )
