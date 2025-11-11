@@ -14,9 +14,9 @@
     "test:coverage": "jest --coverage",
     "test:watch": "jest --watch",
     "test": "jest",
-    "vercel-build": "npm run vercel-build:seed",
+    "vercel-build": "npm run vercel-build:blank",
     "vercel-build:seed": "prisma generate --no-engine && prisma migrate deploy && prisma db push && npm run db:seed && next build",
-    "vercel-build:blank": "prisma generate --no-engine && prisma migrate deploy && next build"
+    "vercel-build:blank": "prisma generate --no-engine && prisma migrate deploy && prisma db push && next build"
   },
   "dependencies": {
     "@auth/prisma-adapter": "^2.11.1",
