@@ -1,3 +1,4 @@
+import { ACTION_TYPES } from '../constants'
 import * as utils from './utils'
 import type { RetroBoardAction, RetroBoardState } from './types'
 
@@ -6,11 +7,11 @@ export function reducer(
   action: RetroBoardAction,
 ): RetroBoardState {
   switch (action.type) {
-    case 'SET_FROM_BOARD': {
+    case ACTION_TYPES.SET_FROM_BOARD: {
       return utils.createInitialState(action.board)
     }
 
-    case 'ADD_CARD': {
+    case ACTION_TYPES.ADD_CARD: {
       const { column, card } = action
       return {
         ...state,
@@ -20,7 +21,7 @@ export function reducer(
       }
     }
 
-    case 'UPDATE_CARD': {
+    case ACTION_TYPES.UPDATE_CARD: {
       const { column, cardId, patch } = action
       return {
         ...state,
@@ -31,7 +32,7 @@ export function reducer(
       }
     }
 
-    case 'DELETE_CARD': {
+    case ACTION_TYPES.DELETE_CARD: {
       const { column, cardId } = action
       return {
         ...state,
@@ -41,7 +42,7 @@ export function reducer(
       }
     }
 
-    case 'TOGGLE_UPVOTE': {
+    case ACTION_TYPES.TOGGLE_UPVOTE: {
       const { column, cardId, userId } = action
       return {
         ...state,
@@ -56,7 +57,7 @@ export function reducer(
       }
     }
 
-    case 'MARK_DISCUSSED': {
+    case ACTION_TYPES.MARK_DISCUSSED: {
       const { column, cardId, isDiscussed } = action
       return {
         ...state,
@@ -67,7 +68,7 @@ export function reducer(
       }
     }
 
-    case 'ADD_ACTION_ITEM': {
+    case ACTION_TYPES.ADD_ACTION_ITEM: {
       const { column, cardId, actionItem } = action
       return {
         ...state,
@@ -78,7 +79,7 @@ export function reducer(
       }
     }
 
-    case 'TOGGLE_DONE_ACTION_ITEM': {
+    case ACTION_TYPES.TOGGLE_DONE_ACTION_ITEM: {
       const { column, cardId, actionItemId, isDone } = action
       return {
         ...state,
@@ -91,7 +92,7 @@ export function reducer(
       }
     }
 
-    case 'UPDATE_ACTION_ITEM': {
+    case ACTION_TYPES.UPDATE_ACTION_ITEM: {
       const { column, cardId, actionItemId, patch } = action
       return {
         ...state,

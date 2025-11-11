@@ -1,3 +1,4 @@
+import { RetroBoardActionType } from '../types'
 import type { ActionItem, Board, Card, ColumnType } from '@/types'
 
 export type ColumnState = {
@@ -15,42 +16,46 @@ export type RetroBoardState = {
 }
 
 export type RetroBoardAction =
-  | { type: 'SET_FROM_BOARD'; board: Board }
-  | { type: 'ADD_CARD'; column: ColumnType; card: Card }
+  | { type: RetroBoardActionType['SET_FROM_BOARD']; board: Board }
+  | { type: RetroBoardActionType['ADD_CARD']; column: ColumnType; card: Card }
   | {
-      type: 'UPDATE_CARD'
+      type: RetroBoardActionType['UPDATE_CARD']
       column: ColumnType
       cardId: string
       patch: Partial<Card>
     }
-  | { type: 'DELETE_CARD'; column: ColumnType; cardId: string }
   | {
-      type: 'TOGGLE_UPVOTE'
+      type: RetroBoardActionType['DELETE_CARD']
+      column: ColumnType
+      cardId: string
+    }
+  | {
+      type: RetroBoardActionType['TOGGLE_UPVOTE']
       column: ColumnType
       cardId: string
       userId: string
     }
   | {
-      type: 'MARK_DISCUSSED'
+      type: RetroBoardActionType['MARK_DISCUSSED']
       column: ColumnType
       cardId: string
       isDiscussed: boolean
     }
   | {
-      type: 'ADD_ACTION_ITEM'
+      type: RetroBoardActionType['ADD_ACTION_ITEM']
       column: ColumnType
       cardId: string
       actionItem: ActionItem
     }
   | {
-      type: 'TOGGLE_DONE_ACTION_ITEM'
+      type: RetroBoardActionType['TOGGLE_DONE_ACTION_ITEM']
       column: ColumnType
       cardId: string
       actionItemId: string
       isDone: boolean
     }
   | {
-      type: 'UPDATE_ACTION_ITEM'
+      type: RetroBoardActionType['UPDATE_ACTION_ITEM']
       column: ColumnType
       cardId: string
       actionItemId: string

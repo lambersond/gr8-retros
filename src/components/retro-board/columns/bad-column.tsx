@@ -1,4 +1,4 @@
-import { useColumn } from './use-column'
+import { useColumn } from '../hooks/use-column'
 import { Column } from '@/components/column'
 import { BAD } from '@/constants'
 

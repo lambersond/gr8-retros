@@ -1,5 +1,6 @@
 import { useParams } from 'next/navigation'
-import { useCards } from '../provider/use-cards'
+import { useBoardChannel } from './use-board-channel'
+import { useCards } from './use-cards'
 import { useAuth } from '@/hooks/use-auth'
 import { useModals } from '@/hooks/use-modals'
 import type { ColumnType } from '@/types'
@@ -9,10 +10,11 @@ export function useColumn(
   title: string,
   placeholder?: string,
 ) {
-  const { cards, addCard } = useCards(columnType)
-  const { openModal } = useModals()
   const { id } = useParams()
   const { user } = useAuth()
+  const { cards } = useCards(columnType)
+  const { openModal } = useModals()
+  const { publish } = useBoardChannel(id as string, columnType)
 
   const handleAddCard = () => {
     openModal('UpsertContentModal', {
@@ -27,7 +29,13 @@ export function useColumn(
         })
           .then(resp => resp.json())
           .then(newCard => {
-            addCard(newCard)
+            publish({
+              data: {
+                type: 'ADD_CARD',
+                column: columnType,
+                payload: newCard,
+              },
+            })
           })
       },
       title,

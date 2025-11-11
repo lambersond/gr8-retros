@@ -1,6 +1,8 @@
 'use client'
 
-import { useCards } from '../retro-board'
+import { useChannel } from 'ably/react'
+import { useParams } from 'next/navigation'
+import { ACTION_TYPES } from '../retro-board/constants'
 import { useModals } from '@/hooks/use-modals'
 import { ColumnType } from '@/types'
 
@@ -13,16 +15,9 @@ export function useCard({
   cardId: string
   currentUserId: string
 }) {
-  const {
-    addActionItem,
-    deleteCard,
-    markDiscussed,
-    toggleDoneActionItem,
-    toggleUpvote,
-    updateActionItem,
-    updateCard,
-  } = useCards(column)
   const { openModal } = useModals()
+  const { id } = useParams()
+  const { publish } = useChannel(id as string)
 
   const handleUpvote = async (event: React.MouseEvent<HTMLButtonElement>) => {
     event.preventDefault()
@@ -37,7 +32,13 @@ export function useCard({
     })
 
     if (resp.ok) {
-      toggleUpvote(cardId, currentUserId)
+      publish({
+        data: {
+          type: ACTION_TYPES.TOGGLE_UPVOTE,
+          payload: { cardId, userId: currentUserId },
+          column,
+        },
+      })
     }
   }
 
@@ -55,7 +56,13 @@ export function useCard({
       })
 
       if (resp.ok) {
-        markDiscussed(cardId, isDiscussed)
+        publish({
+          data: {
+            type: ACTION_TYPES.MARK_DISCUSSED,
+            payload: { cardId, isDiscussed },
+            column,
+          },
+        })
       }
     }
 
@@ -65,7 +72,7 @@ export function useCard({
       openModal('UpsertContentModal', {
         defaultContent: content,
         onSubmit: (data: string) =>
-          handleEditCardSubmit(data, cardId, updateCard),
+          handleEditCardSubmit(data, cardId, column, publish),
         title: 'Edit Card',
       })
     }
@@ -87,7 +94,13 @@ export function useCard({
           body: JSON.stringify({ cardId }),
         }).then(res => {
           if (res.ok) {
-            deleteCard(cardId)
+            publish({
+              data: {
+                type: ACTION_TYPES.DELETE_CARD,
+                payload: { cardId },
+                column,
+              },
+            })
           }
         })
       },
@@ -109,7 +122,13 @@ export function useCard({
 
         if (resp.ok) {
           const newActionItem = await resp.json()
-          addActionItem(cardId, newActionItem)
+          publish({
+            data: {
+              type: ACTION_TYPES.ADD_ACTION_ITEM,
+              payload: { cardId, actionItem: newActionItem },
+              column,
+            },
+          })
         }
       },
       title: 'Add Action Item',
@@ -131,7 +150,13 @@ export function useCard({
       })
 
       if (resp.ok) {
-        toggleDoneActionItem(cardId, actionItemId, isDone)
+        publish({
+          data: {
+            type: ACTION_TYPES.TOGGLE_DONE_ACTION_ITEM,
+            payload: { cardId, actionItemId, isDone },
+            column,
+          },
+        })
       }
     }
 
@@ -147,7 +172,8 @@ export function useCard({
             data,
             cardId,
             actionItemId,
-            updateActionItem,
+            column,
+            publish,
           ),
       })
     }
@@ -166,7 +192,8 @@ export function useCard({
 async function handleEditCardSubmit(
   data: string,
   cardId: string,
-  updateCard: (cardId: string, update: { content: string }) => void,
+  column: ColumnType,
+  publish: (message: any) => void,
 ) {
   const resp = await fetch('/api/card/edit', {
     method: 'PUT',
@@ -179,7 +206,13 @@ async function handleEditCardSubmit(
   if (resp.ok) {
     const editedCard = await resp.json()
     if (editedCard) {
-      updateCard(cardId, { content: editedCard.content })
+      publish({
+        data: {
+          type: ACTION_TYPES.UPDATE_CARD,
+          column,
+          payload: { cardId, patch: { content: editedCard.content } },
+        },
+      })
     }
   }
 }
@@ -188,11 +221,8 @@ async function handleEditActionItemSubmit(
   data: string,
   cardId: string,
   actionItemId: string,
-  updateActionItem: (
-    cardId: string,
-    actionItemId: string,
-    update: { content: string },
-  ) => void,
+  column: ColumnType,
+  publish: (message: any) => void,
 ) {
   const resp = await fetch('/api/action-item/edit', {
     method: 'PUT',
@@ -205,8 +235,16 @@ async function handleEditActionItemSubmit(
   if (resp.ok) {
     const editedActionItem = await resp.json()
     if (editedActionItem) {
-      updateActionItem(cardId, actionItemId, {
-        content: editedActionItem.content,
+      publish({
+        data: {
+          type: ACTION_TYPES.UPDATE_ACTION_ITEM,
+          column,
+          payload: {
+            cardId,
+            actionItemId,
+            patch: { content: editedActionItem.content },
+          },
+        },
       })
     }
   }

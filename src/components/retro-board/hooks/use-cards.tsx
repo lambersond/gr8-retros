@@ -1,4 +1,7 @@
-import { useRetroBoard, useRetroBoardDispatch } from './retro-board-provider'
+import {
+  useRetroBoard,
+  useRetroBoardDispatch,
+} from '../provider/retro-board-provider'
 import type { ActionItem, Card, ColumnType } from '@/types'
 
 export function useCards(column: ColumnType) {
