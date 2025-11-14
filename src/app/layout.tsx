@@ -1,4 +1,5 @@
 import { Analytics } from '@vercel/analytics/next'
+import { SpeedInsights } from '@vercel/speed-insights/next'
 import { Geist, Geist_Mono as GeistMono } from 'next/font/google'
 import { SessionWrapper } from '@/components/session-wrapper'
 import type { Metadata, Viewport } from 'next'
@@ -49,6 +50,7 @@ export default function RootLayout({
       >
         <SessionWrapper>{children}</SessionWrapper>
         <Analytics />
+        <SpeedInsights />
       </body>
     </html>
   )
