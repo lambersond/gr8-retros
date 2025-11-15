@@ -63,3 +63,15 @@ export async function deleteCardById(cardId: string) {
     where: { id: cardId },
   })
 }
+
+export async function deleteCompletedCardsByBoardId(boardId: string) {
+  return prisma.card.deleteMany({
+    where: {
+      retroSessionId: boardId,
+      AND: [
+        { isDiscussed: true },
+        { actionItems: { every: { isDone: true } } },
+      ],
+    },
+  })
+}

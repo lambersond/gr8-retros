@@ -15,7 +15,8 @@ export const DELETE = withUser(
   ) => {
     const { boardId } = await params
 
-    const deletedCards = await cardService.deleteCardsByBoardId(boardId)
+    const deletedCards =
+      await cardService.deleteCompletedCardsByBoardId(boardId)
 
     return NextResponse.json(deletedCards)
   },

@@ -61,3 +61,9 @@ export type RetroBoardAction =
       actionItemId: string
       patch: Partial<ActionItem>
     }
+  | {
+      type: RetroBoardActionType['DELETE_ALL_CARDS']
+    }
+  | {
+      type: RetroBoardActionType['DELETE_COMPLETED_CARDS']
+    }

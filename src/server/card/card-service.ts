@@ -43,3 +43,7 @@ export async function upvoteCard(params: { cardId: string; userId: string }) {
     upvotedBy: updatedUpvotedBy,
   })
 }
+
+export async function deleteCompletedCardsByBoardId(boardId: string) {
+  return repository.deleteCompletedCardsByBoardId(boardId)
+}

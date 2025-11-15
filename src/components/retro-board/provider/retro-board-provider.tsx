@@ -7,6 +7,7 @@ import {
   type Dispatch,
   type ReactNode,
 } from 'react'
+import { MessageManager } from './message-manager'
 import { reducer } from './reducer'
 import * as utils from './utils'
 import type { RetroBoardAction, RetroBoardState } from './types'
@@ -29,7 +30,7 @@ export function RetroBoardProvider({
   return (
     <RetroBoardCtx.Provider value={state}>
       <RetroBoardDispatchCtx.Provider value={dispatch}>
-        {children}
+        <MessageManager boardId={board.id}>{children}</MessageManager>
       </RetroBoardDispatchCtx.Provider>
     </RetroBoardCtx.Provider>
   )

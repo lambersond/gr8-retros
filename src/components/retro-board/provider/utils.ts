@@ -49,3 +49,12 @@ export function updateCardInColumn(
     cards: columnState.cards.map(c => (c.id === cardId ? updater(c) : c)),
   }
 }
+
+export function filterCompletedCards(cards: Card[]) {
+  return cards.filter(
+    card =>
+      !card.isDiscussed &&
+      (card.actionItems.length === 0 ||
+        card.actionItems.some(item => !item.isDone)),
+  )
+}

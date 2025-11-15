@@ -1,25 +1,18 @@
 'use client'
 
-import { useContext, useEffect, useRef, useState } from 'react'
-import { usePresence, usePresenceListener } from 'ably/react'
-import { Eraser } from 'lucide-react'
+import { useEffect, useRef, useState } from 'react'
+import { useChannel, usePresence, usePresenceListener } from 'ably/react'
+import { BrushCleaning, Eraser } from 'lucide-react'
 import Image from 'next/image'
+import { ACTION_TYPES } from '../../constants'
 import { IconButton, Tooltip } from '@/components/common'
 import { useAuth } from '@/hooks/use-auth'
 import { useModals } from '@/hooks/use-modals'
 
-const removeAllCards = async (id: any) => {
-  await fetch(`/api/board/${id}/cards`, {
-    method: 'DELETE',
-    credentials: 'include',
-  })
-
-  globalThis.location.reload()
-}
-
 export function RetroActions({ id }: Readonly<{ id: string }>) {
   const { user } = useAuth()
   const userData = useRef(user)
+  const { publish } = useChannel({ channelName: id })
   const [viewingMembers, setViewingMembers] = useState<{ [key: string]: any }>(
     {},
   )
@@ -68,13 +61,48 @@ export function RetroActions({ id }: Readonly<{ id: string }>) {
 
   const handleClearBoard = () => {
     openModal('ConfirmModal', {
-      title: 'Clear Board',
+      title: 'Erase Board Items',
       color: 'danger',
       message: 'Are you sure you want to remove all cards from this board?',
       onConfirm: () => {
-        removeAllCards(id)
+        fetch(`/api/board/${id}/cards`, {
+          method: 'DELETE',
+          credentials: 'include',
+        }).then(resp => {
+          if (resp.ok) {
+            publish({
+              data: {
+                type: ACTION_TYPES.DELETE_ALL_CARDS,
+              },
+            })
+          }
+        })
       },
       submitText: 'Yes, clear board',
+    })
+  }
+
+  const handleClearCompleted = () => {
+    openModal('ConfirmModal', {
+      title: 'Clear Completed Items',
+      color: 'danger',
+      message:
+        'This will remove all cards marked discussed and cards with completed action items. Are you sure?',
+      onConfirm: () => {
+        fetch(`/api/board/${id}/cards/completed`, {
+          method: 'DELETE',
+          credentials: 'include',
+        }).then(resp => {
+          if (resp.ok) {
+            publish({
+              data: {
+                type: ACTION_TYPES.DELETE_COMPLETED_CARDS,
+              },
+            })
+          }
+        })
+      },
+      submitText: 'Yes, clear completed',
     })
   }
 
@@ -82,36 +110,34 @@ export function RetroActions({ id }: Readonly<{ id: string }>) {
     <div className='mx-3 ml-auto relative flex gap-2'>
       <IconButton
         icon={Eraser}
-        tooltip='Clear All Board Items'
+        tooltip='Erase All Items'
         onClick={handleClearBoard}
         size='xl'
         intent='danger'
       />
-      {/* <IconButton
+      <IconButton
         icon={BrushCleaning}
-        tooltip='Clear Discussed items with completed Action Items'
-        onClick={() => console.warn('Not implemented yet')}
+        tooltip='Clear Discussed/Completed Items'
+        onClick={handleClearCompleted}
         size='xl'
-      /> */}
+      />
       <div className='ml-auto flex items-center'>
-        {Object.entries(viewingMembers)
-          .filter(([, member]) => member.name !== userData.current.name)
-          .map(([clientId, member]) => (
-            <div
-              key={clientId}
-              className='relative flex items-center -ml-3 first:ml-0 transition-all duration-200 hover:z-10 hover:scale-110'
-            >
-              <Tooltip title={member.name}>
-                <Image
-                  src={member.image}
-                  alt={member.name}
-                  width={32}
-                  height={32}
-                  className='w-8 h-8 rounded-full border-2 border-white shadow-sm'
-                />
-              </Tooltip>
-            </div>
-          ))}
+        {Object.entries(viewingMembers).map(([clientId, member]) => (
+          <div
+            key={clientId}
+            className='relative flex items-center -ml-3 first:ml-0 transition-all duration-200 hover:z-10 hover:scale-110'
+          >
+            <Tooltip title={member.name}>
+              <Image
+                src={member.image}
+                alt={member.name}
+                width={32}
+                height={32}
+                className='w-8 h-8 rounded-full border-2 border-white shadow-sm'
+              />
+            </Tooltip>
+          </div>
+        ))}
       </div>
     </div>
   )

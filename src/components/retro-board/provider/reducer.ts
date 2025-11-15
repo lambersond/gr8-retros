@@ -105,6 +105,36 @@ export function reducer(
       }
     }
 
+    case ACTION_TYPES.DELETE_ALL_CARDS: {
+      const newState: RetroBoardState = {
+        ...state,
+        GOOD: { cards: [] },
+        MEH: { cards: [] },
+        BAD: { cards: [] },
+        SHOUTOUT: { cards: [] },
+      }
+      return newState
+    }
+
+    case ACTION_TYPES.DELETE_COMPLETED_CARDS: {
+      const newState: RetroBoardState = {
+        ...state,
+        GOOD: {
+          cards: utils.filterCompletedCards(state.GOOD.cards),
+        },
+        MEH: {
+          cards: utils.filterCompletedCards(state.MEH.cards),
+        },
+        BAD: {
+          cards: utils.filterCompletedCards(state.BAD.cards),
+        },
+        SHOUTOUT: {
+          cards: utils.filterCompletedCards(state.SHOUTOUT.cards),
+        },
+      }
+      return newState
+    }
+
     default: {
       throw new Error(`Unhandled action type: ${(action as any).type}`)
     }

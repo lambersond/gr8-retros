@@ -1,5 +1,5 @@
+import { useChannel } from 'ably/react'
 import { useParams } from 'next/navigation'
-import { useBoardChannel } from './use-board-channel'
 import { useCards } from './use-cards'
 import { useAuth } from '@/hooks/use-auth'
 import { useModals } from '@/hooks/use-modals'
@@ -14,7 +14,7 @@ export function useColumn(
   const { user } = useAuth()
   const { cards } = useCards(columnType)
   const { openModal } = useModals()
-  const { publish } = useBoardChannel(id as string, columnType)
+  const { publish } = useChannel(id as string)
 
   const handleAddCard = () => {
     openModal('UpsertContentModal', {

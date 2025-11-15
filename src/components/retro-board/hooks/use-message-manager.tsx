@@ -1,6 +1,6 @@
 import { useChannel } from 'ably/react'
 import { ACTION_TYPES } from '../constants'
-import { useCards } from './use-cards'
+import { useRetroBoardDispatch } from '../provider/retro-board-provider'
 import { ActionItem, Card, ColumnType } from '@/types'
 
 type Message = {
@@ -68,76 +68,96 @@ type Message = {
           patch: Partial<ActionItem>
         }
       }
+    | {
+        type: typeof ACTION_TYPES.DELETE_ALL_CARDS
+        column: never
+      }
+    | {
+        type: typeof ACTION_TYPES.DELETE_COMPLETED_CARDS
+        column: never
+      }
 }
 
-export function useBoardChannel(boardId: string, columnType: ColumnType) {
-  const {
-    addActionItem,
-    addCard,
-    deleteCard,
-    markDiscussed,
-    toggleDoneActionItem,
-    toggleUpvote,
-    updateActionItem,
-    updateCard,
-  } = useCards(columnType)
-  const { publish } = useChannel({ channelName: boardId }, (message: any) => {
+export function useMessageManager(boardId: string) {
+  const dispatch = useRetroBoardDispatch()
+
+  useChannel({ channelName: boardId }, (message: any) => {
     const { data } = message as Message
+    const { column } = data
     switch (data.type) {
       case ACTION_TYPES.ADD_CARD: {
         const card = data.payload
-        isActiveColumn(data.column, columnType, () => {
-          addCard(card)
-        })
+        dispatch({ type: ACTION_TYPES.ADD_CARD, column, card })
         break
       }
       case ACTION_TYPES.UPDATE_CARD: {
         const { cardId, patch } = data.payload
-        isActiveColumn(data.column, columnType, () => {
-          updateCard(cardId, { content: patch.content })
-        })
+        dispatch({ type: ACTION_TYPES.UPDATE_CARD, column, cardId, patch })
         break
       }
       case ACTION_TYPES.DELETE_CARD: {
         const { cardId } = data.payload
-        isActiveColumn(data.column, columnType, () => {
-          deleteCard(cardId)
-        })
+        dispatch({ type: ACTION_TYPES.DELETE_CARD, column, cardId })
         break
       }
       case ACTION_TYPES.TOGGLE_UPVOTE: {
         const { cardId, userId } = data.payload
-        isActiveColumn(data.column, columnType, () => {
-          toggleUpvote(cardId, userId)
+        dispatch({
+          type: ACTION_TYPES.TOGGLE_UPVOTE,
+          column: data.column,
+          cardId,
+          userId,
         })
         break
       }
       case ACTION_TYPES.MARK_DISCUSSED: {
         const { cardId, isDiscussed } = data.payload
-        isActiveColumn(data.column, columnType, () => {
-          markDiscussed(cardId, isDiscussed)
+        dispatch({
+          type: ACTION_TYPES.MARK_DISCUSSED,
+          column,
+          cardId,
+          isDiscussed,
         })
         break
       }
       case ACTION_TYPES.ADD_ACTION_ITEM: {
         const { cardId, actionItem } = data.payload
-        isActiveColumn(data.column, columnType, () => {
-          addActionItem(cardId, actionItem)
+        dispatch({
+          type: ACTION_TYPES.ADD_ACTION_ITEM,
+          column,
+          cardId,
+          actionItem,
         })
         break
       }
       case ACTION_TYPES.TOGGLE_DONE_ACTION_ITEM: {
         const { cardId, actionItemId, isDone } = data.payload
-        isActiveColumn(data.column, columnType, () => {
-          toggleDoneActionItem(cardId, actionItemId, isDone)
+        dispatch({
+          type: ACTION_TYPES.TOGGLE_DONE_ACTION_ITEM,
+          column,
+          cardId,
+          actionItemId,
+          isDone,
         })
         break
       }
       case ACTION_TYPES.UPDATE_ACTION_ITEM: {
         const { cardId, actionItemId, patch } = data.payload
-        isActiveColumn(data.column, columnType, () => {
-          updateActionItem(cardId, actionItemId, { content: patch.content })
+        dispatch({
+          type: ACTION_TYPES.UPDATE_ACTION_ITEM,
+          column,
+          cardId,
+          actionItemId,
+          patch,
         })
+        break
+      }
+      case ACTION_TYPES.DELETE_ALL_CARDS: {
+        dispatch({ type: ACTION_TYPES.DELETE_ALL_CARDS })
+        break
+      }
+      case ACTION_TYPES.DELETE_COMPLETED_CARDS: {
+        dispatch({ type: ACTION_TYPES.DELETE_COMPLETED_CARDS })
         break
       }
       default: {
@@ -145,16 +165,4 @@ export function useBoardChannel(boardId: string, columnType: ColumnType) {
       }
     }
   })
-
-  return { publish }
-}
-
-function isActiveColumn(
-  messageColumn: ColumnType,
-  currentColumn: ColumnType,
-  callback: () => void,
-) {
-  if (messageColumn === currentColumn) {
-    callback()
-  }
 }
