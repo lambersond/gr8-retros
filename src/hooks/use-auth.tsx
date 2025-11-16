@@ -24,6 +24,10 @@ export function useAuth() {
   >()
 
   useEffect(() => {
+    if (globalThis.window === undefined) {
+      return
+    }
+
     // If logged in, sync cookies & clear anonymous user
     if (session?.user?.id) {
       Cookies.set(COOKIE_KEY_USER_ID, session.user.id)
@@ -52,7 +56,7 @@ export function useAuth() {
       id: cookieUserId,
       name: cookieUserName,
     })
-  }, [session?.user?.id, session?.user?.name])
+  }, [session?.user?.id, session?.user?.name, globalThis.window])
 
   const effectiveId = session?.user?.id ?? anonymousUser?.id ?? ''
   const effectiveName =
@@ -67,13 +71,25 @@ export function useAuth() {
     isPatreonLinked: false, // Extend when Patreon is integrated
   }
 
+  function signOutCallback() {
+    const cookieUserName = generateUsername()
+    Cookies.set(COOKIE_KEY_USER_NAME, cookieUserName)
+
+    setAnonymousUser(prev =>
+      prev
+        ? { id: prev.id, name: cookieUserName }
+        : { id: uuidv7(), name: cookieUserName },
+    )
+    signOut()
+  }
+
   return isAuthEnabled
     ? {
         isAuthenticated: status === 'authenticated',
         isEnabled: true,
         session,
         signIn,
-        signOut,
+        signOut: signOutCallback,
         status,
         user,
       }

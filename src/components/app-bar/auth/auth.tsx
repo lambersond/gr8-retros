@@ -3,12 +3,11 @@
 import { LogOutIcon, SidebarCloseIcon } from 'lucide-react'
 import Image from 'next/image'
 import { usePathname } from 'next/navigation'
-import { signOut } from 'next-auth/react'
 import { Sidebar, SidebarItem } from '@/components/common'
 import { useAuth } from '@/hooks/use-auth'
 
 export function Auth() {
-  const { user, isAuthenticated } = useAuth()
+  const { user, isAuthenticated, signIn, signOut } = useAuth()
   const redirectTo = usePathname()
 
   return (
@@ -38,11 +37,27 @@ export function Auth() {
             <SidebarCloseIcon className='size-10 p-2 transform rotate-180 text-text-secondary hover:text-text-primary hover:bg-hover rounded-full cursor-pointer' />
           </SidebarItem>
         </section>
-        <section className='hidden flex flex-col border-b border-border pb-4'>
+        <section className='flex flex-col border-b border-border pb-4'>
           <p className='font-bold text-lg'>Account Settings</p>
-          <p>
-            <b>Google:</b> {user.isGoogleLinked ? 'Linked' : 'Not Linked'}
-          </p>
+          <div>
+            <p className='font-bold'>Google:</p>
+            {user.isGoogleLinked ? (
+              <p>{user.email}</p>
+            ) : (
+              <button
+                className='flex gap-2 px-4 py-2 border border-border rounded-lg items-center hover:bg-hover/80 mt-2 cursor-pointer'
+                onClick={() => signIn('google')}
+              >
+                <Image
+                  src='/google-icon-logo.svg'
+                  alt='Sign in with Google'
+                  height={24}
+                  width={24}
+                />
+                Connect with Google
+              </button>
+            )}
+          </div>
           <p className='hidden'>
             <b>Patreon:</b> {user.isPatreonLinked ? 'Linked' : 'Not Linked'}
           </p>
