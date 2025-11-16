@@ -4,7 +4,6 @@ import {
   ArrowBigUp,
   CircleAlert,
   CircleCheckBig,
-  MessageSquare,
   MessageSquareWarning,
   Pencil,
   Square,
@@ -12,6 +11,7 @@ import {
   Trash2,
 } from 'lucide-react'
 import { IconButton, Tooltip } from '../common'
+import { DiscussedIcon } from '../common/icons'
 import { useCard } from './use-card'
 import * as cardUtils from './utils'
 import type { CardProps } from './types'
@@ -113,7 +113,7 @@ export function Card({
         <div className='flex items-center gap-1'>
           {!isDiscussed && (
             <IconButton
-              icon={MessageSquare}
+              icon={DiscussedIcon}
               tooltip='Mark Discussed'
               onClick={handleDiscussed(!isDiscussed)}
             />

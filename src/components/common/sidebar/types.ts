@@ -1,11 +1,22 @@
 import type { Dispatch, ReactNode, SetStateAction } from 'react'
 
-export type SidebarProps = {
-  children: ReactNode
-  trigger: ReactNode
-  className?: string
-  side?: 'left' | 'right'
-}
+export type SidebarProps =
+  | {
+      children: ReactNode
+      trigger: ReactNode
+      className?: string
+      side?: 'left' | 'right'
+      isOpen?: never
+      onClose?: never
+    }
+  | {
+      children: ReactNode
+      isOpen: boolean
+      onClose: () => void
+      className?: string
+      trigger?: never
+      side?: 'left' | 'right'
+    }
 
 export type SidebarTriggerProps = {
   trigger: ReactNode

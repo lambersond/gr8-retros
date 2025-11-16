@@ -1,0 +1,1 @@
+export { DiscussedIcon } from './discussed'

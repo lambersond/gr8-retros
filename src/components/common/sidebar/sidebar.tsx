@@ -14,14 +14,21 @@ import type { SidebarProps } from './types'
 export function Sidebar({
   children,
   trigger,
+  isOpen: controlledIsOpen,
+  onClose: controlledOnClose,
   className = 'w-sm',
   side = 'left',
 }: Readonly<SidebarProps>) {
+  const isControlled = controlledIsOpen !== undefined
   const [open, setOpen] = useState(false)
   const sidebarRef = useRef<HTMLDivElement>(null)
 
   const closeSidebar = () => {
-    setOpen(false)
+    if (isControlled) {
+      controlledOnClose()
+    } else {
+      setOpen(false)
+    }
   }
 
   const providerValue = useMemo(() => {
@@ -47,6 +54,12 @@ export function Sidebar({
     }
   }, [open])
 
+  useEffect(() => {
+    if (controlledIsOpen !== undefined) {
+      setOpen(controlledIsOpen)
+    }
+  }, [controlledIsOpen])
+
   const sideClasses = {
     left: {
       position: 'left-0',
@@ -62,14 +75,14 @@ export function Sidebar({
 
   return (
     <>
-      <SidebarTrigger setOpen={setOpen} trigger={trigger} />
+      {!!trigger && <SidebarTrigger setOpen={setOpen} trigger={trigger} />}
       <div
         ref={sidebarRef}
         data-testid='sidebar'
         className={`overflow-y-auto max-h-[calc(100vh_-_64px)] fixed top-16 h-full bg-appbar shadow-lg transform transition-transform z-50 ${currentSide.position} ${currentSide.transform} ${className}`}
       >
         <SidebarContext.Provider value={providerValue}>
-          {children}
+          {open && children}
         </SidebarContext.Provider>
       </div>
       {open && (
