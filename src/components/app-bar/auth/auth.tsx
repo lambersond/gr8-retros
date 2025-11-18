@@ -1,9 +1,9 @@
 'use client'
 
-import { LogOutIcon, SidebarCloseIcon } from 'lucide-react'
+import { LogOutIcon, Menu, SidebarCloseIcon } from 'lucide-react'
 import Image from 'next/image'
 import { usePathname } from 'next/navigation'
-import { Sidebar, SidebarItem } from '@/components/common'
+import { IconButton, Sidebar, SidebarItem } from '@/components/common'
 import { useAuth } from '@/hooks/use-auth'
 
 export function Auth() {
@@ -13,16 +13,7 @@ export function Auth() {
   return (
     <Sidebar
       side='right'
-      trigger={
-        <Image
-          width={48}
-          height={48}
-          src={user.image}
-          fetchPriority='high'
-          alt=''
-          className='cursor-pointer rounded-full max-h-12'
-        />
-      }
+      trigger={<IconButton icon={Menu} size='xl' />}
       className='w-full sm:w-sm shadow-xl'
     >
       <div className='flex flex-col gap-4 p-2 pt-0 h-full'>
