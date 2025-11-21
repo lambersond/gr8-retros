@@ -63,9 +63,6 @@ export function updateCardInColumn(
 
 export function filterCompletedCards(cards: Card[]) {
   return cards.filter(
-    card =>
-      !card.isDiscussed ||
-      (card.actionItems.length > 0 &&
-        card.actionItems.every(item => !item.isDone)),
+    card => !card.isDiscussed || card.actionItems.some(item => !item.isDone),
   )
 }
