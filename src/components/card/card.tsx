@@ -6,11 +6,12 @@ import {
   CircleCheckBig,
   MessageSquarePlus,
   MessageSquareWarning,
+  MoreVertical,
   Pencil,
   Trash2,
 } from 'lucide-react'
 import { ActionItems } from '../action-items'
-import { IconButton, Tooltip } from '../common'
+import { IconButton, Menu, Popover, Tooltip } from '../common'
 import { DiscussedIcon } from '../common/icons'
 import { useCard } from './use-card'
 import * as cardUtils from './utils'
@@ -53,19 +54,49 @@ export function Card({
           <span className={upvoteTextClasses}>{upvotes}</span>
         </div>
         <p className={itemClasses}>{content}</p>
-        {actionsItemsExist && (
-          <div className='relative ml-auto min-w-fit'>
-            {actionsItemsComplete ? (
-              <Tooltip title='All action items completed'>
-                <CircleCheckBig className='size-5 text-success right-0' />
-              </Tooltip>
-            ) : (
-              <Tooltip title='Some action items pending'>
-                <CircleAlert className='size-5 text-warning right-0' />
-              </Tooltip>
-            )}
-          </div>
-        )}
+        <div className='flex gap-1 items-center'>
+          {actionsItemsExist && (
+            <div className='flex items-center'>
+              {actionsItemsComplete ? (
+                <Tooltip title='All action items completed'>
+                  <CircleCheckBig className='size-5 text-success' />
+                </Tooltip>
+              ) : (
+                <Tooltip title='Some action items pending'>
+                  <CircleAlert className='size-5 text-warning' />
+                </Tooltip>
+              )}
+            </div>
+          )}
+          {canEdit && (
+            <Popover
+              content={
+                <Menu
+                  options={[
+                    {
+                      label: 'Edit Title',
+                      onClick: handleEdit(content),
+                      icon: <Pencil size={18} />,
+                    },
+                    {
+                      label: 'Delete Card',
+                      onClick: handleDelete,
+                      icon: <Trash2 size={18} />,
+                      color: 'danger',
+                    },
+                  ]}
+                />
+              }
+              placement='top-start'
+            >
+              <IconButton
+                icon={MoreVertical}
+                tooltip='Owner actions'
+                size='md'
+              />
+            </Popover>
+          )}
+        </div>
       </div>
       <ActionItems actionItems={actionItems} cardId={id} column={column} />
       <div id='footer' className='flex items-center gap-2 justify-between'>
@@ -91,21 +122,6 @@ export function Card({
               onClick={openCommentsSidebar}
             />
           </div>
-          {canEdit && (
-            <>
-              <IconButton
-                icon={Pencil}
-                tooltip='Edit'
-                onClick={handleEdit(content)}
-              />
-              <IconButton
-                icon={Trash2}
-                tooltip='Delete'
-                intent='danger'
-                onClick={handleDelete}
-              />
-            </>
-          )}
         </div>
         <span className='text-xs text-text-tertiary italic'>{createdBy}</span>
       </div>

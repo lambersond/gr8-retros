@@ -27,6 +27,6 @@ export function itemClasses(isDiscussed: boolean) {
       'text-text-secondary line-through group-hover:no-underline': isDiscussed,
       'text-text-primary': !isDiscussed,
     },
-    'lg:text-lg xl:text-xl',
+    'lg:text-lg xl:text-xl flex-1',
   )
 }

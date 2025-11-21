@@ -1,6 +1,8 @@
 export { Form } from './form'
 export { IconButton } from './button'
+export { Menu, type Option, type GroupOption } from './menu'
 export { Modal } from './modal'
+export { Popover } from './popover'
 export { Sidebar, SidebarItem, useSidebar } from './sidebar'
 export { TextArea } from './textarea'
 export { Tooltip } from './tooltip'
