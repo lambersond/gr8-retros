@@ -14,7 +14,7 @@ export function useCard({
 }: {
   column: ColumnType
   cardId: string
-  currentUserId: string
+  currentUserId?: string
 }) {
   const { openModal } = useModals()
   const { id } = useParams()
@@ -33,7 +33,7 @@ export function useCard({
       body: JSON.stringify({ cardId }),
     })
 
-    if (resp.ok) {
+    if (resp.ok && currentUserId) {
       publish({
         data: {
           type: ACTION_TYPES.TOGGLE_UPVOTE,

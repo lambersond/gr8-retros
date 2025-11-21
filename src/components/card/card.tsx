@@ -7,10 +7,9 @@ import {
   MessageSquarePlus,
   MessageSquareWarning,
   Pencil,
-  Square,
-  SquareCheckBig,
   Trash2,
 } from 'lucide-react'
+import { ActionItems } from '../action-items'
 import { IconButton, Tooltip } from '../common'
 import { DiscussedIcon } from '../common/icons'
 import { useCard } from './use-card'
@@ -34,15 +33,9 @@ export function Card({
     handleDelete,
     handleDiscussed,
     handleEdit,
-    handleToggleDoneActionItem,
-    handleUpdateActionItemContent,
     handleUpvote,
     openCommentsSidebar,
-  } = useCard({
-    column,
-    cardId: id,
-    currentUserId,
-  })
+  } = useCard({ column, cardId: id, currentUserId })
 
   const upvoteTextClasses = cardUtils.upvoteTextClasses(isUpvoted, upvotes)
   const upvoteArrowButtonClasses = cardUtils.upvoteArrowButtonClasses(isUpvoted)
@@ -74,43 +67,7 @@ export function Card({
           </div>
         )}
       </div>
-      <div>
-        {actionsItemsExist && (
-          <div className='mt-2 flex flex-col gap-1 bg-orange-100 p-2'>
-            <p className='font-semibold underline px-1'>Action Items:</p>
-            {actionItems.map(actionItem => (
-              <div
-                key={actionItem.id}
-                className='flex items-center gap-2 pl-2 py-1'
-              >
-                <IconButton
-                  icon={actionItem.isDone ? SquareCheckBig : Square}
-                  tooltip={actionItem.isDone ? 'Mark Undone' : 'Mark Done'}
-                  intent={actionItem.isDone ? 'success' : 'primary'}
-                  size='md'
-                  onClick={handleToggleDoneActionItem(
-                    actionItem.id,
-                    !actionItem.isDone,
-                  )}
-                />
-                <button
-                  onClick={handleUpdateActionItemContent(
-                    actionItem.id,
-                    actionItem.content,
-                  )}
-                  className={
-                    actionItem.isDone
-                      ? 'line-through text-text-tertiary group-hover:no-underline'
-                      : ''
-                  }
-                >
-                  {actionItem.content}
-                </button>
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
+      <ActionItems actionItems={actionItems} cardId={id} column={column} />
       <div id='footer' className='flex items-center gap-2 justify-between'>
         <div className='flex items-center gap-1'>
           {!isDiscussed && (
