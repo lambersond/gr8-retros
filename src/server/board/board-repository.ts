@@ -14,6 +14,7 @@ async function getBoardById(id: string) {
         orderBy: { createdAt: 'asc' },
         include: {
           actionItems: true,
+          comments: true,
         },
       },
     },
@@ -36,11 +37,13 @@ async function createBoardByIdAndUserId(id: string, userId: string) {
         orderBy: { createdAt: 'asc' },
         include: {
           actionItems: true,
+          comments: true,
         },
       },
     },
   })
 }
+
 export async function getOrCreateBoardByIdAndUserId(
   id: string,
   userId: string,

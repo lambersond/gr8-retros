@@ -10,6 +10,17 @@ export function toColumnType(column: string): ColumnType | undefined {
 
 export function sortCards(cards: Card[]): Card[] {
   return cards.toSorted((a, b) => {
+    // First sort by !isDiscussed (not discussed cards come first)
+    if (a.isDiscussed !== b.isDiscussed) {
+      return a.isDiscussed ? 1 : -1
+    }
+
+    // Then sort by upvotes (descending)
+    if (a.upvotedBy.length !== b.upvotedBy.length) {
+      return b.upvotedBy.length - a.upvotedBy.length
+    }
+
+    // Finally sort by createdAt (ascending)
     const aDate = new Date(a.createdAt)
     const bDate = new Date(b.createdAt)
     return aDate.getTime() - bDate.getTime()
@@ -53,8 +64,8 @@ export function updateCardInColumn(
 export function filterCompletedCards(cards: Card[]) {
   return cards.filter(
     card =>
-      !card.isDiscussed &&
-      (card.actionItems.length === 0 ||
-        card.actionItems.some(item => !item.isDone)),
+      !card.isDiscussed ||
+      (card.actionItems.length > 0 &&
+        card.actionItems.every(item => !item.isDone)),
   )
 }
