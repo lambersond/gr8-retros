@@ -2,6 +2,7 @@
 
 import { useChannel } from 'ably/react'
 import { useParams } from 'next/navigation'
+import { useCommentsDispatch } from '../comments/comments-provider'
 import { ACTION_TYPES } from '../retro-board/constants'
 import { useModals } from '@/hooks/use-modals'
 import { ColumnType } from '@/types'
@@ -18,6 +19,7 @@ export function useCard({
   const { openModal } = useModals()
   const { id } = useParams()
   const { publish } = useChannel(id as string)
+  const dispatch = useCommentsDispatch()
 
   const handleUpvote = async (event: React.MouseEvent<HTMLButtonElement>) => {
     event.preventDefault()
@@ -178,6 +180,20 @@ export function useCard({
       })
     }
 
+  const openCommentsSidebar = async () => {
+    const resp = await fetch(`/api/comments?cardId=${cardId}`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      credentials: 'include',
+    })
+
+    const comments = await resp.json()
+
+    dispatch({ type: 'OPEN_SIDEBAR', payload: { cardId, comments } })
+  }
+
   return {
     handleUpvote,
     handleDiscussed,
@@ -186,6 +202,7 @@ export function useCard({
     handleAddActionItem,
     handleToggleDoneActionItem,
     handleUpdateActionItemContent,
+    openCommentsSidebar,
   }
 }
 

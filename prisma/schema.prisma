@@ -108,9 +108,21 @@ model Card {
   updatedAt      DateTime       @updatedAt
 
   actionItems    ActionItem[]
+  comments       Comment[]
 
   @@index([retroSessionId])
   @@index([createdAt])
+}
+
+model Comment {
+  id        String   @id @default(cuid())
+  content   String
+  cardId    String
+  card      Card     @relation(fields: [cardId], references: [id], onDelete: Cascade)
+  creatorId String
+  createdBy String   @default("Anonymous")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 // -------------------------

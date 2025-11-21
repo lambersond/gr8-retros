@@ -22,7 +22,7 @@ export function ContentForm({
       <TextArea
         onClick={noop}
         name='content'
-        data-testid='add-character-form__content'
+        data-testid='content-form__content'
         placeholder={placeholder}
         register={register}
         rows={5}
@@ -40,7 +40,7 @@ export function ContentForm({
       />
       <button
         type='submit'
-        className='w-full p-4 rounded-lg bg-appbar/85 hover:bg-appbar text-text-primary font-bold cursor-pointer uppercase text-xl'
+        className='w-full p-4 rounded-lg bg-primary/85 hover:bg-primary text-white font-bold cursor-pointer uppercase text-xl'
       >
         Submit
       </button>

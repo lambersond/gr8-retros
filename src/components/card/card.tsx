@@ -4,6 +4,7 @@ import {
   ArrowBigUp,
   CircleAlert,
   CircleCheckBig,
+  MessageSquarePlus,
   MessageSquareWarning,
   Pencil,
   Square,
@@ -36,6 +37,7 @@ export function Card({
     handleToggleDoneActionItem,
     handleUpdateActionItemContent,
     handleUpvote,
+    openCommentsSidebar,
   } = useCard({
     column,
     cardId: id,
@@ -124,6 +126,14 @@ export function Card({
             intent='warning'
             onClick={handleAddActionItem}
           />
+          <div className='hidden'>
+            <IconButton
+              icon={MessageSquarePlus}
+              tooltip='Add Comment'
+              intent='primary'
+              onClick={openCommentsSidebar}
+            />
+          </div>
           {canEdit && (
             <>
               <IconButton

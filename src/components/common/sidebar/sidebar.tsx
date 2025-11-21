@@ -37,8 +37,10 @@ export function Sidebar({
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
+      const elementId = (event.target as HTMLElement).id
       if (
         sidebarRef.current &&
+        elementId === 'sidebar__overlay' &&
         !sidebarRef.current.contains(event.target as Node)
       ) {
         closeSidebar()
@@ -88,6 +90,7 @@ export function Sidebar({
       {open && (
         <input
           type='image'
+          id='sidbar__overlay'
           style={{ scale: 1.25 }}
           data-testid='sidebar__overlay'
           className='fixed inset-0 bg-black/01 z-40'

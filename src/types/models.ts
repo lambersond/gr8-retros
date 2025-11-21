@@ -21,6 +21,14 @@ export type Board = {
     upvotedBy: string[]
     position: number
     createdBy: string
+    comments: {
+      id: string
+      cardId: string
+      content: string
+      createdAt: Date
+      createdBy: string
+      creatorId: string
+    }[]
     actionItems: {
       cardId: string
       content: string
@@ -38,3 +46,4 @@ export type Board = {
 
 export type Card = Board['cards'][number]
 export type ActionItem = Card['actionItems'][number]
+export type Comment = Card['comments'][number]
