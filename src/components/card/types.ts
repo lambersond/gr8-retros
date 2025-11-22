@@ -1,4 +1,4 @@
-import type { ActionItem, ColumnType } from '@/types'
+import type { ActionItem, ColumnType, Comment } from '@/types'
 
 export interface CardProps {
   canEdit?: boolean
@@ -11,4 +11,5 @@ export interface CardProps {
   isUpvoted?: boolean
   upvotes?: number
   actionItems?: ActionItem[]
+  comments?: Comment[]
 }

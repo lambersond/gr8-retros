@@ -2,35 +2,28 @@ import { SidebarCloseIcon } from 'lucide-react'
 import { Comment } from '../comment'
 import { Sidebar, SidebarItem } from '../common'
 import { AddCommentForm } from '../forms/add-comment-form'
-import { useComments, useCommentsDispatch } from './comments-provider'
+import { useCardComments } from '../retro-board'
+import {
+  useCommentsActions,
+  useCommentsSidebar,
+  useCommentsSidebarActions,
+} from '@/providers/comments-sidebar'
 
-export function Comments() {
-  const dispatch = useCommentsDispatch()
-  const { comments, cardId, sidebarOpen } = useComments()
+export function CommentsSidebar() {
+  const { closeSidebar } = useCommentsSidebarActions()
+  const { sidebarOpen, column, cardId } = useCommentsSidebar()
+  const comments = useCardComments(column, cardId)
+  const { addComment } = useCommentsActions()
 
-  const handleClose = () => {
-    dispatch({ type: 'CLOSE_SIDEBAR' })
-  }
-
-  const handleAddComment = (content: string | undefined) => {
-    fetch('/api/comments', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ content, cardId }),
-    })
-      .then(response => response.json())
-      .then(data => {
-        console.warn('Success:', data)
-      })
+  const handleAddComment = (content: string) => {
+    addComment(content, cardId)
   }
 
   return (
     <Sidebar
       side='right'
       isOpen={sidebarOpen}
-      onClose={handleClose}
+      onClose={closeSidebar}
       className='w-full sm:w-sm shadow-xl'
     >
       <div className='flex flex-col p-2 pt-0 h-full'>

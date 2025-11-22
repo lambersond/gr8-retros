@@ -41,6 +41,7 @@ export function Column({
             createdBy={card.createdBy}
             content={card.content}
             actionItems={card.actionItems}
+            comments={card.comments}
           />
         ))}
       </div>

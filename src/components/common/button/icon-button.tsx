@@ -8,7 +8,7 @@ export function IconButton({
   icon: Icon,
   onClick,
   tooltip,
-  size = 'sm',
+  size = 'md',
   intent = 'normal',
 }: Readonly<IconButtonProps>) {
   const sizeClasses = clsx({

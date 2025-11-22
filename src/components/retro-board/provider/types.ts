@@ -1,5 +1,5 @@
-import { RetroBoardActionType } from '../types'
-import type { ActionItem, Board, Card, ColumnType } from '@/types'
+import type { RetroBoardActionType } from '../types'
+import type { ActionItem, Board, Card, ColumnType, Comment } from '@/types'
 
 export type ColumnState = {
   cards: Card[]
@@ -66,4 +66,20 @@ export type RetroBoardAction =
     }
   | {
       type: RetroBoardActionType['DELETE_COMPLETED_CARDS']
+    }
+  | {
+      type: RetroBoardActionType['ADD_CARD_COMMENT']
+      column: ColumnType
+      newComment: Comment
+    }
+  | {
+      type: RetroBoardActionType['UPDATE_CARD_COMMENT']
+      column: ColumnType
+      updatedComment: Comment
+    }
+  | {
+      type: RetroBoardActionType['DELETE_CARD_COMMENT']
+      column: ColumnType
+      cardId: string
+      commentId: string
     }

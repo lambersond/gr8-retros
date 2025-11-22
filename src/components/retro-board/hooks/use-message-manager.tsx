@@ -1,7 +1,7 @@
 import { useChannel } from 'ably/react'
 import { ACTION_TYPES } from '../constants'
 import { useRetroBoardDispatch } from '../provider/retro-board-provider'
-import { ActionItem, Card, ColumnType } from '@/types'
+import { ActionItem, Card, Comment, ColumnType } from '@/types'
 
 type Message = {
   data:
@@ -75,6 +75,32 @@ type Message = {
     | {
         type: typeof ACTION_TYPES.DELETE_COMPLETED_CARDS
         column: never
+      }
+    | {
+        type: typeof ACTION_TYPES.ADD_CARD_COMMENT
+        column: ColumnType
+        payload: {
+          column: ColumnType
+          newComment: Comment
+        }
+      }
+    | {
+        type: typeof ACTION_TYPES.UPDATE_CARD_COMMENT
+        column: ColumnType
+        payload: {
+          column: ColumnType
+          cardId: string
+          updatedComment: Comment
+        }
+      }
+    | {
+        type: typeof ACTION_TYPES.DELETE_CARD_COMMENT
+        column: ColumnType
+        payload: {
+          column: ColumnType
+          cardId: string
+          commentId: string
+        }
       }
 }
 
@@ -158,6 +184,34 @@ export function useMessageManager(boardId: string) {
       }
       case ACTION_TYPES.DELETE_COMPLETED_CARDS: {
         dispatch({ type: ACTION_TYPES.DELETE_COMPLETED_CARDS })
+        break
+      }
+      case ACTION_TYPES.ADD_CARD_COMMENT: {
+        const { column, newComment } = data.payload
+        dispatch({
+          type: ACTION_TYPES.ADD_CARD_COMMENT,
+          column,
+          newComment,
+        })
+        break
+      }
+      case ACTION_TYPES.UPDATE_CARD_COMMENT: {
+        const { column, updatedComment } = data.payload
+        dispatch({
+          type: ACTION_TYPES.UPDATE_CARD_COMMENT,
+          column,
+          updatedComment,
+        })
+        break
+      }
+      case ACTION_TYPES.DELETE_CARD_COMMENT: {
+        const { column, cardId, commentId } = data.payload
+        dispatch({
+          type: ACTION_TYPES.DELETE_CARD_COMMENT,
+          column,
+          cardId,
+          commentId,
+        })
         break
       }
       default: {

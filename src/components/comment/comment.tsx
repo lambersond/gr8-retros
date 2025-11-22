@@ -1,30 +1,19 @@
 import { Pencil, Trash2 } from 'lucide-react'
 import { IconButton } from '../common'
 import { useModals } from '@/hooks/use-modals'
+import { useCommentsActions } from '@/providers/comments-sidebar'
 import type { CommentProps } from './types'
 
 export function Comment({ comment, hasEdit = true }: Readonly<CommentProps>) {
   const { openModal } = useModals()
+  const { updateComment, deleteComment } = useCommentsActions()
 
   const handleEdit = () => {
     openModal('UpsertContentModal', {
       title: 'Edit Comment',
       defaultContent: comment.content,
       onSubmit: (content: string) => {
-        fetch('/api/comments', {
-          method: 'PUT',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            id: comment.id,
-            content,
-          }),
-        })
-          .then(response => response.json())
-          .then(data => {
-            console.warn('Success:', data)
-          })
+        updateComment(comment.id, content)
       },
     })
   }
@@ -43,19 +32,7 @@ export function Comment({ comment, hasEdit = true }: Readonly<CommentProps>) {
       color: 'danger',
       confirmButtonText: 'Delete',
       onConfirm: () => {
-        fetch('/api/comments', {
-          method: 'DELETE',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            id: comment.id,
-          }),
-        })
-          .then(response => response.json())
-          .then(data => {
-            console.warn('Success:', data)
-          })
+        deleteComment(comment.id, comment.cardId)
       },
     })
   }

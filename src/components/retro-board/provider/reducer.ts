@@ -135,6 +135,47 @@ export function reducer(
       return newState
     }
 
+    case ACTION_TYPES.ADD_CARD_COMMENT: {
+      const { column, newComment } = action
+      return {
+        ...state,
+        [column]: utils.updateCardInColumn(
+          state[column],
+          newComment.cardId,
+          card => ({
+            ...card,
+            comments: [...card.comments, newComment],
+          }),
+        ),
+      }
+    }
+    case ACTION_TYPES.UPDATE_CARD_COMMENT: {
+      const { column, updatedComment } = action
+      return {
+        ...state,
+        [column]: utils.updateCardInColumn(
+          state[column],
+          updatedComment.cardId,
+          card => ({
+            ...card,
+            comments: card.comments.map(comment =>
+              comment.id === updatedComment.id ? updatedComment : comment,
+            ),
+          }),
+        ),
+      }
+    }
+    case ACTION_TYPES.DELETE_CARD_COMMENT: {
+      const { column, cardId, commentId } = action
+      return {
+        ...state,
+        [column]: utils.updateCardInColumn(state[column], cardId, card => ({
+          ...card,
+          comments: card.comments.filter(comment => comment.id !== commentId),
+        })),
+      }
+    }
+
     default: {
       throw new Error(`Unhandled action type: ${(action as any).type}`)
     }

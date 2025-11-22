@@ -1,17 +1,18 @@
 'use client'
 
 import { AblyChannelProvider } from '../ably'
-import { CommentsProvider } from '../comments/comments-provider'
+import { CommentsSidebar } from '../comments-sidebar'
 import { BadColumn, GoodColumn, ShoutoutColumn, MehColumn } from './columns'
 import { RetroBoardProvider } from './provider/retro-board-provider'
 import { RetroBoardHeader } from './retro-board-header'
+import { CommentsSidebarProvider } from '@/providers/comments-sidebar'
 import type { Board } from '@/types'
 
 export function RetroBoard({ board }: Readonly<{ board: Board }>) {
   return (
     <AblyChannelProvider channel={board.id}>
       <RetroBoardProvider board={board}>
-        <CommentsProvider>
+        <CommentsSidebarProvider boardId={board.id}>
           <RetroBoardHeader id={board.id} />
           <div className='lg:hidden flex-1 min-h-0 flex flex-col items-center justify-center align-middle'>
             Mobile and tablet view coming soon!
@@ -22,7 +23,8 @@ export function RetroBoard({ board }: Readonly<{ board: Board }>) {
             <BadColumn />
             <ShoutoutColumn />
           </div>
-        </CommentsProvider>
+          <CommentsSidebar />
+        </CommentsSidebarProvider>
       </RetroBoardProvider>
     </AblyChannelProvider>
   )

@@ -28,6 +28,7 @@ export function Card({
   createdBy = 'Anonymous',
   actionItems = [],
   currentUserId = 'temp-user-id',
+  comments = [],
 }: Readonly<CardProps>) {
   const {
     handleAddActionItem,
@@ -114,11 +115,23 @@ export function Card({
             intent='warning'
             onClick={handleAddActionItem}
           />
-          <div className='hidden'>
+          <div className='relative'>
+            {comments.length > 0 && (
+              <div id='comments-badge' className='absolute -top-1 -right-1'>
+                {comments.length > 99 ? (
+                  <div className='size-4 bg-info text-white text-xs rounded-full flex items-center justify-center px-0.75'>
+                    99+
+                  </div>
+                ) : (
+                  <div className='size-4 bg-info text-white text-xs rounded-full flex items-center justify-center px-0.5'>
+                    {comments.length}
+                  </div>
+                )}
+              </div>
+            )}
             <IconButton
               icon={MessageSquarePlus}
               tooltip='Add Comment'
-              intent='primary'
               onClick={openCommentsSidebar}
             />
           </div>
