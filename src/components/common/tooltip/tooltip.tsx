@@ -55,7 +55,7 @@ function useTooltip({ placement = 'top' }: TooltipOptions = {}) {
     move: false,
     enabled: true,
     delay: {
-      open: 150,
+      open: 200,
       close: 50,
     },
   })

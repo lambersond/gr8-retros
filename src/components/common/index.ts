@@ -1,5 +1,6 @@
 export { Form } from './form'
 export { IconButton } from './button'
+export { TimeInput } from './input'
 export { Menu, type Option, type GroupOption } from './menu'
 export { Modal } from './modal'
 export { Popover } from './popover'

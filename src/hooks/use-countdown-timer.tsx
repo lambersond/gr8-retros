@@ -17,9 +17,8 @@ export function useCountdownTimer({
   const [isRunning, setIsRunning] = useState(autoStart)
 
   useEffect(() => {
-    setSecondsLeft(initialSeconds)
     setIsRunning(autoStart)
-  }, [initialSeconds, autoStart])
+  }, [autoStart])
 
   useEffect(() => {
     if (!isRunning) return
@@ -54,11 +53,6 @@ export function useCountdownTimer({
     setSecondsLeft(newSeconds ?? initialSeconds)
   }
 
-  const setSeconds = (newSeconds: number) => {
-    setIsRunning(false)
-    setSecondsLeft(newSeconds)
-  }
-
   const minutes = Math.floor(secondsLeft / 60)
   const seconds = secondsLeft % 60
   const formatted = `${String(minutes).padStart(2, '0')}:${String(
@@ -72,6 +66,6 @@ export function useCountdownTimer({
     start,
     pause,
     reset,
-    setSeconds,
+    setSeconds: setSecondsLeft,
   }
 }

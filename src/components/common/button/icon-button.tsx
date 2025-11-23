@@ -24,6 +24,7 @@ export function IconButton({
     'text-success hover:bg-success/10': intent === 'success',
     'text-warning hover:bg-warning/10': intent === 'warning',
     'text-danger hover:bg-danger/10': intent === 'danger',
+    'text-info hover:bg-info/10': intent === 'info',
   })
 
   const buttonClasses = clsx(
