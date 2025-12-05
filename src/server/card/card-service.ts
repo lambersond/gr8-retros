@@ -47,3 +47,7 @@ export async function upvoteCard(params: { cardId: string; userId: string }) {
 export async function deleteCompletedCardsByBoardId(boardId: string) {
   return repository.deleteCompletedCardsByBoardId(boardId)
 }
+
+export async function deleteCompletedCardsOrderThan7Days() {
+  return repository.deleteCompletedCardsOrderThan7Days()
+}
