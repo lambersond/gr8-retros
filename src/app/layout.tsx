@@ -18,7 +18,7 @@ const geistMono = GeistMono({
 export const metadata: Metadata = {
   title: 'Gr8 Retros',
   description: 'A simple and effective retrospective tool for teams.',
-  // metadataBase: new URL('https://cookbook.illagria.com'),
+  metadataBase: new URL('https://gr8-retros.app'),
   openGraph: {
     title: 'Gr8 Retros',
     images: {
@@ -30,7 +30,10 @@ export const metadata: Metadata = {
       height: 64,
     },
   },
+  robots: 'index,follow',
+  creator: 'David Lamberson',
 }
+
 export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
