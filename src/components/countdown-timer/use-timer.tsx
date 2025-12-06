@@ -1,7 +1,7 @@
 import { useChannel } from 'ably/react'
 import { useCountdownTimer } from '@/hooks/use-countdown-timer'
 
-export function useCountdown(channelId: string) {
+export function useTimer(channelId: string) {
   const { formatted, isRunning, reset, start, pause, setSeconds, secondsLeft } =
     useCountdownTimer({
       initialSeconds: 300,
@@ -57,11 +57,18 @@ export function useCountdown(channelId: string) {
     publish({ data: { action: 'reset' } })
   }
 
+  const togglePlay = () => {
+    if (isRunning) {
+      handlePause()
+    } else {
+      handleStart()
+    }
+  }
+
   return {
     formatted,
     isRunning,
-    start: handleStart,
-    pause: handlePause,
+    togglePlay,
     reset: handleReset,
     setSeconds: applyNewDuration,
     secondsLeft,

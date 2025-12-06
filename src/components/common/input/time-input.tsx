@@ -58,7 +58,7 @@ export function TimeInput({
       onChange={e => handleInputChange(e.target.value)}
       onBlur={handleBlur}
       maxLength={5}
-      className='w-40 px-2 py-1 text-center font-mono text-5xl rounded-md bg-tertiary/50 focus:outline-none focus:ring-2 focus:ring-info tracking-thin'
+      className='w-54 px-2 py-1 text-center font-mono text-6xl rounded-md bg-tertiary/50 focus:outline-none focus:ring-2 focus:ring-info tracking-thin'
       placeholder='MM:SS'
     />
   )

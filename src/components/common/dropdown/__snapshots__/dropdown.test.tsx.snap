@@ -1,0 +1,79 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`components/common/dropdown should render correctly 1`] = `
+<DocumentFragment>
+  <div
+    class="relative inline-flex flex-col text-left rounded-md w-full"
+  >
+    <label
+      class="text-sm text-text-secondary font-bold uppercase"
+      for="dropdown"
+    >
+      test
+    </label>
+    <button
+      class="
+          inline-flex justify-between w-72 rounded-md border border-border
+          pl-4 pr-2 py-2 bg-paper text-md text-text-primary focus:outline-none
+          cursor-pointer hover:bg-paper/75
+        "
+      data-testid="Dropdown__button"
+      name="dropdown"
+      type="button"
+    >
+      Option 1
+      <svg
+        class="ml-auto"
+        data-testid="ArrowDownIcon"
+        height="24"
+        viewBox="0 0 24 24"
+        width="24"
+      >
+        <path
+          d="M5.23 7.21a.75.75 0 011.06.02L10 10.94l3.71-3.71a.75.75 0 111.06 1.06l-4.24 4.24a.75.75 0 01-1.06 0L5.23 8.27a.75.75 0 01.02-1.06z"
+          fill="currentColor"
+        />
+      </svg>
+    </button>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`components/common/dropdown should render correctly with defaultEmpty 1`] = `
+<DocumentFragment>
+  <div
+    class="relative inline-flex flex-col text-left rounded-md w-full"
+  >
+    <label
+      class="text-sm text-text-secondary font-bold uppercase"
+      for="dropdown"
+    >
+      test
+    </label>
+    <button
+      class="
+          inline-flex justify-between w-72 rounded-md border border-border
+          pl-4 pr-2 py-2 bg-paper text-md text-text-primary focus:outline-none
+          cursor-pointer hover:bg-paper/75
+        "
+      data-testid="Dropdown__button"
+      name="dropdown"
+      type="button"
+    >
+      No options available
+      <svg
+        class="ml-auto"
+        data-testid="ArrowDownIcon"
+        height="24"
+        viewBox="0 0 24 24"
+        width="24"
+      >
+        <path
+          d="M5.23 7.21a.75.75 0 011.06.02L10 10.94l3.71-3.71a.75.75 0 111.06 1.06l-4.24 4.24a.75.75 0 01-1.06 0L5.23 8.27a.75.75 0 01.02-1.06z"
+          fill="currentColor"
+        />
+      </svg>
+    </button>
+  </div>
+</DocumentFragment>
+`;
