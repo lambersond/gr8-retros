@@ -76,7 +76,7 @@ export async function deleteCompletedCardsByBoardId(boardId: string) {
   })
 }
 
-export async function deleteCompletedCardsOrderThan7Days() {
+export async function deleteCompletedCardsOlderThan7Days() {
   const sevenDaysAgo = new Date()
   sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7)
   sevenDaysAgo.setHours(0, 0, 0, 0) // Set to midnight

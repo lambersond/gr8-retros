@@ -9,7 +9,7 @@ export async function GET(request: NextRequest) {
   }
 
   try {
-    const result = await cardService.deleteCompletedCardsOrderThan7Days()
+    const result = await cardService.deleteCompletedCardsOlderThan7Days()
 
     return NextResponse.json({
       success: true,
