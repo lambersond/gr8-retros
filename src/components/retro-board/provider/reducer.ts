@@ -142,10 +142,13 @@ export function reducer(
         [column]: utils.updateCardInColumn(
           state[column],
           newComment.cardId,
-          card => ({
-            ...card,
-            comments: [...card.comments, newComment],
-          }),
+          card => {
+            const comments = card?.comments || []
+            return {
+              ...card,
+              comments: [...comments, newComment],
+            }
+          },
         ),
       }
     }

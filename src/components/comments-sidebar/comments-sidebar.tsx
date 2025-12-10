@@ -39,7 +39,7 @@ export function CommentsSidebar() {
           </SidebarItem>
         </section>
         <section className='flex flex-col gap-2 overflow-y-auto'>
-          {comments.map(comment => (
+          {comments?.map(comment => (
             <Comment key={comment.id} comment={comment} />
           ))}
         </section>
