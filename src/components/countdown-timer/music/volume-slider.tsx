@@ -57,12 +57,7 @@ export function VolumeSlider({
         step={0.01}
         value={volume}
         onChange={handleChange}
-        className='
-          h-0.5 w-99/100 cursor-pointer appearance-none rounded-full bg-tertiary/60
-
-          hover:bg-info/70
-          focus:outline-none
-        '
+        className='h-0.5 w-99/100 cursor-pointer appearance-none rounded-full bg-tertiary/60 hover:bg-info/40 focus:outline-none'
       />
     </div>
   )

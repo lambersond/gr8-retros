@@ -76,6 +76,23 @@ export function useMusic(): UseMusicReturn {
       })
     }
   }, [])
+  useEffect(() => {
+    const el = audioRef.current
+    const src = selectedTrackOption.value
+
+    if (!el || !src) return
+
+    // If src is empty (first load) or mismatched, set it once.
+    // NOTE: el.src becomes an absolute URL, so compare using endsWith / URL normalization.
+    const hasSrc = !!el.getAttribute('src') || !!el.src
+    const sameSrc = el.getAttribute('src') === src || el.src?.endsWith(src)
+
+    if (!hasSrc || !sameSrc) {
+      el.src = src
+      el.preload = 'auto' // or 'metadata'
+      el.load()
+    }
+  }, [selectedTrackOption])
 
   // Global “any interaction unlocks autoplay”
   useEffect(() => {
