@@ -3,7 +3,7 @@ import { useMusic } from './use-music'
 import { useBoardControlsLiveMap } from '@/hooks/use-channel-state'
 import { useCountdownTimer } from '@/hooks/use-countdown-timer'
 
-const DEFAULT_TIMER_SECONDS = 30
+const DEFAULT_TIMER_SECONDS = 300
 
 function elapsedSeconds(startedAt?: number) {
   if (!startedAt) return 0
