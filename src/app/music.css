@@ -1,12 +1,12 @@
 .visualizer {
     display: flex;
     align-items: center;
-    gap: 4px;
+    gap: 1px;
 }
 
 .bar {
-    width: 4px;
-    border-radius: 2px;
+    width: 2px;
+    border-radius: 1px;
     animation-duration: 0.8s;
     animation-iteration-count: infinite;
     animation-timing-function: ease-in-out;

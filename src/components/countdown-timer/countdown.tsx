@@ -1,27 +1,31 @@
 'use client'
 
-import { Square } from 'lucide-react'
+import { Square, Volume } from 'lucide-react'
 import { Dropdown, IconButton, Popover, TimeInput } from '../common'
 import { MusicIcon } from '../common/icons'
+import { CountdownItem } from './countdown-item'
+import { useBoardControls } from './hooks/use-board-controls'
 import { MusicPlayButton } from './music'
+import { VolumeSlider } from './music/volume-slider'
 import { TimerAddMinuteButton, TimerPlayButton } from './timer'
-import { useMusic } from './use-music'
-import { useTimer } from './use-timer'
 import { MUSIC_OPTIONS } from '@/constants'
 import type { CountdownProps } from './type'
 
 export function Countdown({ id }: Readonly<CountdownProps>) {
   const {
     addOneMinute,
+    audioRef,
+    changeTrack,
     formatted,
     isRunning,
+    play,
     reset,
     secondsLeft,
+    selectedTrackOption,
     setSeconds,
+    toggleMusic,
     togglePlay,
-  } = useTimer(id)
-  const { audioRef, play, toggleMusic, changeTrack, selectedTrackOption } =
-    useMusic()
+  } = useBoardControls(id)
 
   return (
     <div className='w-full flex justify-center absolute top-2 left-0'>
@@ -32,12 +36,18 @@ export function Countdown({ id }: Readonly<CountdownProps>) {
         <Popover
           asChild
           content={
-            <div className='min-w-44 p-4 bg-page rounded-xl flex flex-col gap-4 border border-tertiary mt-2 shadow'>
-              <p className='text-xl text-primary'>Timer and Music</p>
-              <span className='border-b-0.5 border-tertiary border' />
-              <TimeInput value={secondsLeft} onChange={setSeconds} />
-              <div className='flex flex-col'>
-                <div className='flex justify-between'>
+            <div className='min-w-44 bg-page rounded-xl flex flex-col border border-tertiary mt-2 shadow'>
+              <CountdownItem>
+                <p className='font-bold tracking-tight text-primary'>
+                  Timer and Music
+                </p>
+              </CountdownItem>
+              <CountdownItem>
+                <VolumeSlider audioRef={audioRef} />
+              </CountdownItem>
+              <CountdownItem className='flex flex-col gap-2'>
+                <TimeInput value={secondsLeft} onChange={setSeconds} />
+                <div className='flex justify-between items-center'>
                   <TimerAddMinuteButton onClick={addOneMinute} />
                   <div className='flex gap-2'>
                     {isRunning && (
@@ -55,23 +65,30 @@ export function Countdown({ id }: Readonly<CountdownProps>) {
                     />
                   </div>
                 </div>
-                <span className='border-b-0.5 my-4 border-tertiary border' />
-                <div className='flex gap-2 items-center'>
-                  <Dropdown
-                    width='w-44'
-                    options={MUSIC_OPTIONS}
-                    selected={selectedTrackOption}
-                    onSelect={changeTrack}
-                  />
-                  <MusicPlayButton play={play} toggleMusic={toggleMusic} />
-                </div>
-              </div>
+              </CountdownItem>
+              <CountdownItem className='flex gap-2 items-center border-b-0'>
+                <Dropdown
+                  width='w-44'
+                  options={MUSIC_OPTIONS}
+                  selected={selectedTrackOption}
+                  onSelect={changeTrack}
+                />
+                <MusicPlayButton play={play} toggleMusic={toggleMusic} />
+              </CountdownItem>
             </div>
           }
         >
           <div className='text-xl font-mono text-center select-none z-10 flex items-center gap-2'>
             {formatted}
-            {play && <MusicIcon height='sm' intent='primary' bars={5} />}
+            <div className='flex items-center'>
+              <Volume className='flex-1 min-w-5 min-h-5 -mr-1.5' />
+              <MusicIcon
+                height='sm'
+                intent='primary'
+                bars={5}
+                isPlaying={play}
+              />
+            </div>
           </div>
         </Popover>
       </div>

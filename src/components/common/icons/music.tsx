@@ -11,18 +11,28 @@ type MusicIconProps = {
     | 'success'
     | 'warning'
     | 'danger'
+  isPlaying?: boolean
 }
 
 export function MusicIcon({
   bars = 9,
   height = 'md',
   intent = 'primary',
+  isPlaying = false,
 }: Readonly<MusicIconProps>) {
   const heightClass = clsx({
     'h-4': height === 'sm',
     'h-8': height === 'md',
     'h-10': height === 'lg',
   })
+
+  const widthClass = clsx(
+    {
+      'w-0': !isPlaying,
+      'w-full': isPlaying,
+    },
+    'transition-width duration-300 ease-in-out',
+  )
 
   const intentClass = clsx({
     'bg-primary': intent === 'primary',
@@ -34,7 +44,7 @@ export function MusicIcon({
     'bg-danger': intent === 'danger',
   })
 
-  const visualizerClass = clsx('visualizer', heightClass)
+  const visualizerClass = clsx('visualizer', heightClass, widthClass)
   const barClass = clsx('bar', intentClass)
 
   return (
