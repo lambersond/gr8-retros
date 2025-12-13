@@ -13,7 +13,6 @@ const COLUMN_CONTAINER_CLASSES = clsx(
   'flex-1 min-h-0 overflow-hidden',
   'flex gap-3 sm:gap-0 overflow-x-auto overflow-y-hidden snap-x snap-mandatory scroll-smooth py-3 [-webkit-overflow-scrolling:touch]',
   'lg:grid lg:grid-cols-4 lg:gap-3 lg:p-3 lg:overflow-hidden lg:px-3',
-  'overflow-x-hidden sm:overflow-x-scroll lg:no-scrollbar',
 )
 
 const COLUMN_CLASSES = clsx(
