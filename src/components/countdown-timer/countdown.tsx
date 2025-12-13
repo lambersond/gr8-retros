@@ -30,7 +30,7 @@ export function Countdown({ id }: Readonly<CountdownProps>) {
   return (
     <div className='w-full flex justify-center absolute top-2 left-0'>
       <div className='relative py-1 px-2 bg-info/20 w-fit rounded-md flex items-center'>
-        <audio className='hidden' loop ref={audioRef}>
+        <audio className='hidden' loop ref={audioRef} preload='auto'>
           <track kind='captions' srcLang='en' label='Track Name' />
         </audio>
         <Popover
