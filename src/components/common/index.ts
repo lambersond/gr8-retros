@@ -1,3 +1,4 @@
+export { CircularLoader } from './loaders'
 export { Dropdown, type DropdownOption } from './dropdown'
 export { Form } from './form'
 export { IconButton } from './button'

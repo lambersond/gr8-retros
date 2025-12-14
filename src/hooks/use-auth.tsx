@@ -1,105 +1,140 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import Cookies from 'js-cookie'
 import { noop } from 'lodash'
-import { useSession, signIn, signOut } from 'next-auth/react'
+import {
+  signIn as nextAuthSignIn,
+  signOut as nextAuthSignOut,
+  useSession,
+} from 'next-auth/react'
 import { v7 as uuidv7 } from 'uuid'
 import { useFeatureFlags } from './use-feature-flags'
 import { COOKIE_KEY_USER_ID, COOKIE_KEY_USER_NAME } from '@/constants'
 import { generateUsername } from '@/utils/username-generator'
 
-type AnonymousUser = {
-  id: string
-  name: string
+type AnonymousUser = { id: string; name: string }
+
+function getOrCreateAnonymousUser(): AnonymousUser {
+  let id = Cookies.get(COOKIE_KEY_USER_ID)
+  let name = Cookies.get(COOKIE_KEY_USER_NAME)
+
+  if (!id) {
+    id = uuidv7()
+    Cookies.set(COOKIE_KEY_USER_ID, id)
+  }
+
+  if (!name) {
+    name = generateUsername()
+    Cookies.set(COOKIE_KEY_USER_NAME, name)
+  }
+
+  return { id, name }
 }
 
 export function useAuth() {
   const { data: session, status } = useSession()
-  const featureFlags = useFeatureFlags()
-  const { isAuthEnabled } = featureFlags
+  const {
+    flags: { isAuthEnabled },
+  } = useFeatureFlags()
 
-  const [anonymousUser, setAnonymousUser] = useState<
-    AnonymousUser | undefined
-  >()
+  const [anonymousUser, setAnonymousUser] = useState<AnonymousUser | undefined>(
+    () => {
+      if (globalThis.window === undefined) return
+      return getOrCreateAnonymousUser()
+    },
+  )
 
   useEffect(() => {
-    if (globalThis.window === undefined) {
-      return
-    }
+    if (globalThis.window === undefined) return
 
-    // If logged in, sync cookies & clear anonymous user
-    if (session?.user?.id) {
-      Cookies.set(COOKIE_KEY_USER_ID, session.user.id)
-      if (session.user.name) {
-        Cookies.set(COOKIE_KEY_USER_NAME, session.user.name)
+    const authedId = session?.user?.id
+    const authedName = session?.user?.name
+
+    if (authedId) {
+      if (Cookies.get(COOKIE_KEY_USER_ID) !== authedId) {
+        Cookies.set(COOKIE_KEY_USER_ID, authedId)
+      }
+      if (authedName && Cookies.get(COOKIE_KEY_USER_NAME) !== authedName) {
+        Cookies.set(COOKIE_KEY_USER_NAME, authedName)
       }
       setAnonymousUser(undefined)
       return
     }
 
-    // Anonymous flow: read or create cookies (client-only)
-    let cookieUserId = Cookies.get(COOKIE_KEY_USER_ID)
-    let cookieUserName = Cookies.get(COOKIE_KEY_USER_NAME)
+    setAnonymousUser(prev => prev ?? getOrCreateAnonymousUser())
+  }, [session?.user?.id, session?.user?.name])
 
-    if (!cookieUserId) {
-      cookieUserId = uuidv7()
-      Cookies.set(COOKIE_KEY_USER_ID, cookieUserId)
+  const signOut = useCallback(async () => {
+    if (globalThis.window !== undefined) {
+      const newName = generateUsername()
+      Cookies.set(COOKIE_KEY_USER_NAME, newName)
+
+      setAnonymousUser(prev => {
+        const id = prev?.id ?? Cookies.get(COOKIE_KEY_USER_ID) ?? uuidv7()
+        Cookies.set(COOKIE_KEY_USER_ID, id)
+        return { id, name: newName }
+      })
     }
 
-    if (!cookieUserName) {
-      cookieUserName = generateUsername()
-      Cookies.set(COOKIE_KEY_USER_NAME, cookieUserName)
+    await nextAuthSignOut()
+  }, [])
+
+  const effective = useMemo(() => {
+    const isAuthenticated = status === 'authenticated' && !!session?.user?.id
+
+    const id = isAuthenticated ? session.user!.id : (anonymousUser?.id ?? '')
+    const name =
+      (isAuthenticated ? session.user!.name : anonymousUser?.name) ??
+      'Anonymous User'
+
+    return { isAuthenticated, id, name }
+  }, [anonymousUser?.id, anonymousUser?.name, session, status])
+
+  const user = useMemo(() => {
+    const authed = !!session?.user?.id
+
+    return {
+      id: effective.id,
+      name: effective.name,
+      email: session?.user?.email ?? '',
+      image: session?.user?.image ?? '',
+      isGoogleLinked: authed,
+      isPatreonLinked: false,
     }
+  }, [
+    effective.id,
+    effective.name,
+    session?.user?.email,
+    session?.user?.id,
+    session?.user?.image,
+  ])
 
-    setAnonymousUser({
-      id: cookieUserId,
-      name: cookieUserName,
-    })
-  }, [session?.user?.id, session?.user?.name, globalThis.window])
+  const apiEnabled = useMemo(() => {
+    return {
+      isLoading: status === 'loading',
+      isAuthenticated: effective.isAuthenticated,
+      isEnabled: true,
+      session,
+      signIn: nextAuthSignIn,
+      signOut,
+      status,
+      user,
+    }
+  }, [effective.isAuthenticated, session, signOut, status, user])
 
-  const effectiveId = session?.user?.id ?? anonymousUser?.id ?? ''
-  const effectiveName =
-    session?.user?.name ?? anonymousUser?.name ?? 'Anonymous User'
+  const apiDisabled = useMemo(() => {
+    return {
+      isAuthenticated: false,
+      isLoading: false,
+      isEnabled: false,
+      session: {},
+      signIn: noop,
+      signOut: noop,
+      user,
+      status,
+    }
+  }, [status, user])
 
-  const user = {
-    id: effectiveId,
-    name: effectiveName,
-    email: session?.user?.email || 'unknown@email.com',
-    image: session?.user?.image || '/no-image.jpg',
-    isGoogleLinked: !!session?.user?.id,
-    isPatreonLinked: false, // Extend when Patreon is integrated
-  }
-
-  function signOutCallback() {
-    const cookieUserName = generateUsername()
-    Cookies.set(COOKIE_KEY_USER_NAME, cookieUserName)
-
-    setAnonymousUser(prev =>
-      prev
-        ? { id: prev.id, name: cookieUserName }
-        : { id: uuidv7(), name: cookieUserName },
-    )
-    signOut()
-  }
-
-  return isAuthEnabled
-    ? {
-        isAuthenticated: status === 'authenticated',
-        isEnabled: true,
-        session,
-        signIn,
-        signOut: signOutCallback,
-        status,
-        user,
-      }
-    : {
-        isAuthenticated: false,
-        isEnabled: false,
-        session: {},
-        signIn: noop,
-        signOut: noop,
-        user,
-        status,
-      }
+  return isAuthEnabled ? apiEnabled : apiDisabled
 }

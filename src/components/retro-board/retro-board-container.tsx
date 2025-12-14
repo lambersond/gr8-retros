@@ -1,4 +1,5 @@
 import { RetroBoard } from './retro-board'
+import { auth } from '@/auth'
 import { boardService } from '@/server/board'
 
 export async function RetroBoardContainer({
@@ -7,6 +8,8 @@ export async function RetroBoardContainer({
   id: string
 }>) {
   const { board } = await boardService.getBoardById(id)
+
+  await auth()
 
   if (!board) {
     return (
