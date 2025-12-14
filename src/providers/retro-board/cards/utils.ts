@@ -69,7 +69,7 @@ export function sortCardsBy(cards: Card[], sort: any) {
   switch (sort) {
     case 'byUpvotes': {
       sortedCards = cards.toSorted(
-        (a, b) => b.upvotedBy.length - a.upvotedBy.length,
+        (a, b) => getLengthOrZero(b.upvotedBy) - getLengthOrZero(a.upvotedBy),
       )
       break
     }
@@ -82,13 +82,14 @@ export function sortCardsBy(cards: Card[], sort: any) {
     }
     case 'byActionItems': {
       sortedCards = cards.toSorted(
-        (a, b) => b.actionItems.length - a.actionItems.length,
+        (a, b) =>
+          getLengthOrZero(b.actionItems) - getLengthOrZero(a.actionItems),
       )
       break
     }
     case 'byComments': {
       sortedCards = cards.toSorted(
-        (a, b) => b.comments.length - a.comments.length,
+        (a, b) => getLengthOrZero(b.comments) - getLengthOrZero(a.comments),
       )
       break
     }
@@ -98,3 +99,5 @@ export function sortCardsBy(cards: Card[], sort: any) {
   }
   return sortedCards
 }
+
+const getLengthOrZero = (arr: any[] | undefined) => arr?.length ?? 0
