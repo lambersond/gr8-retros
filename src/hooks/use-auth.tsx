@@ -98,7 +98,7 @@ export function useAuth() {
       id: effective.id,
       name: effective.name,
       email: session?.user?.email ?? '',
-      image: session?.user?.image ?? '',
+      image: session?.user?.image ?? '/no-image.jpg',
       isGoogleLinked: authed,
       isPatreonLinked: false,
     }
