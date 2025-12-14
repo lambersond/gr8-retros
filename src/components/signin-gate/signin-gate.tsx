@@ -7,7 +7,7 @@ export function SignInGate({
   onContinueAsGuest,
 }: Readonly<SignInGateProps>) {
   return (
-    <div className='flex min-h-full w-full items-center justify-center px-4'>
+    <div className='flex align-center flex h-full w-screen items-center justify-center px-4 py-8'>
       <div className='w-full max-w-lg rounded-xl bg-appbar p-6 shadow-xl flex flex-col gap-6'>
         <header className='space-y-2'>
           <h1 className='text-3xl font-bold'>Welcome to Gr8 Retros!</h1>
@@ -27,7 +27,7 @@ export function SignInGate({
         <div className='flex flex-col gap-3'>
           <button
             type='button'
-            className='inline-flex items-center justify-center gap-3 rounded-md bg-white/80 px-4 py-2.5 text-base font-medium text-text-primary hover:bg-white focus:outline-none focus:ring-2 focus:ring-white/60'
+            className='inline-flex items-center cursor-pointer justify-center gap-3 rounded-md bg-white/80 px-4 py-2.5 text-base font-medium text-text-primary hover:bg-white focus:outline-none focus:ring-2 focus:ring-white/60'
             onClick={() =>
               signIn('google', { callbackUrl: globalThis.location.href })
             }
@@ -44,7 +44,7 @@ export function SignInGate({
 
           <button
             type='button'
-            className='inline-flex items-center justify-center rounded-md border border-zinc-700 bg-zinc-600 px-4 py-2.5 text-base font-medium text-zinc-100 hover:bg-zinc-700 focus:outline-none focus:ring-2 focus:ring-zinc-400/50'
+            className='inline-flex items-center cursor-pointer justify-center rounded-md border border-zinc-700 bg-zinc-600 px-4 py-2.5 text-base font-medium text-zinc-100 hover:bg-zinc-700 focus:outline-none focus:ring-2 focus:ring-zinc-400/50'
             onClick={onContinueAsGuest}
           >
             Continue as guest
