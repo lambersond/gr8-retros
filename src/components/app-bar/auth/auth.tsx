@@ -36,7 +36,7 @@ export function Auth() {
               <p>{user.email}</p>
             ) : (
               <button
-                className='flex gap-2 px-4 py-2 border border-border rounded-lg items-center hover:bg-hover/80 mt-2 cursor-pointer'
+                className='flex gap-2 px-4 py-2 border border-tertiary rounded-lg items-center hover:bg-white bg-white/80 mt-2 cursor-pointer'
                 onClick={() => signIn('google')}
               >
                 <Image
@@ -45,7 +45,7 @@ export function Auth() {
                   height={24}
                   width={24}
                 />
-                Connect with Google
+                Continue with Google
               </button>
             )}
           </div>
