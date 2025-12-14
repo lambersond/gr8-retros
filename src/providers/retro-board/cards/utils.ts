@@ -63,3 +63,38 @@ export function filterCompletedCards(cards: Card[]) {
     card => !card.isDiscussed || card.actionItems.some(item => !item.isDone),
   )
 }
+
+export function sortCardsBy(cards: Card[], sort: any) {
+  let sortedCards: Card[] = []
+  switch (sort) {
+    case 'byUpvotes': {
+      sortedCards = cards.toSorted(
+        (a, b) => b.upvotedBy.length - a.upvotedBy.length,
+      )
+      break
+    }
+    case 'byDiscussed': {
+      sortedCards = cards.toSorted((a, b) => {
+        if (a.isDiscussed === b.isDiscussed) return 0
+        return a.isDiscussed ? 1 : -1
+      })
+      break
+    }
+    case 'byActionItems': {
+      sortedCards = cards.toSorted(
+        (a, b) => b.actionItems.length - a.actionItems.length,
+      )
+      break
+    }
+    case 'byComments': {
+      sortedCards = cards.toSorted(
+        (a, b) => b.comments.length - a.comments.length,
+      )
+      break
+    }
+    default: {
+      sortedCards = cards
+    }
+  }
+  return sortedCards
+}

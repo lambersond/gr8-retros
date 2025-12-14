@@ -1,6 +1,5 @@
 'use client'
 
-import { noop } from 'lodash'
 import {
   ArrowDownWideNarrow,
   BrushCleaning,
@@ -12,8 +11,12 @@ import { useRetroActions } from './use-retro-actions'
 import { IconButton, Menu, Popover, Tooltip } from '@/components/common'
 
 export function RetroActions({ id }: Readonly<{ id: string }>) {
-  const { handleClearBoard, handleClearCompleted, viewingMembers } =
-    useRetroActions(id)
+  const {
+    handleClearBoard,
+    handleClearCompleted,
+    handleSortCardsBy,
+    viewingMembers,
+  } = useRetroActions(id)
 
   return (
     <div className='mx-3 ml-auto relative flex gap-2'>
@@ -40,36 +43,34 @@ export function RetroActions({ id }: Readonly<{ id: string }>) {
       >
         <IconButton icon={Hammer} intent='primary' size='lg' />
       </Popover>
-      <div className='hidden'>
-        <Popover
-          modal
-          placement='bottom-start'
-          content={
-            <Menu
-              options={[
-                {
-                  label: 'Sort by Discussed Status',
-                  onClick: noop,
-                },
-                {
-                  label: 'Sort by Most Votes',
-                  onClick: noop,
-                },
-                {
-                  label: 'Sort by Most Comments',
-                  onClick: noop,
-                },
-                {
-                  label: 'Sort by Most Action Items',
-                  onClick: noop,
-                },
-              ]}
-            />
-          }
-        >
-          <IconButton icon={ArrowDownWideNarrow} intent='primary' size='lg' />
-        </Popover>
-      </div>
+      <Popover
+        modal
+        placement='bottom-start'
+        content={
+          <Menu
+            options={[
+              {
+                label: 'Sort by Discussed Status',
+                onClick: () => handleSortCardsBy('byDiscussed'),
+              },
+              {
+                label: 'Sort by Most Votes',
+                onClick: () => handleSortCardsBy('byUpvotes'),
+              },
+              {
+                label: 'Sort by Most Comments',
+                onClick: () => handleSortCardsBy('byComments'),
+              },
+              {
+                label: 'Sort by Most Action Items',
+                onClick: () => handleSortCardsBy('byActionItems'),
+              },
+            ]}
+          />
+        }
+      >
+        <IconButton icon={ArrowDownWideNarrow} intent='primary' size='lg' />
+      </Popover>
       <div className='ml-auto flex items-center'>
         {Object.entries(viewingMembers).map(([clientId, member]) => (
           <div

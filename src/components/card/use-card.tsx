@@ -2,7 +2,7 @@
 
 import { useChannel } from 'ably/react'
 import { useParams } from 'next/navigation'
-import { ACTION_TYPES } from '../retro-board/constants'
+import { CARD_ACTION } from '@/constants/retro-board'
 import { useModals } from '@/hooks/use-modals'
 import { useCommentsSidebarActions } from '@/providers/comments-sidebar'
 import { ColumnType } from '@/types'
@@ -36,7 +36,7 @@ export function useCard({
     if (resp.ok && currentUserId) {
       publish({
         data: {
-          type: ACTION_TYPES.TOGGLE_UPVOTE,
+          type: CARD_ACTION.TOGGLE_UPVOTE,
           payload: { cardId, userId: currentUserId },
           column,
         },
@@ -60,7 +60,7 @@ export function useCard({
       if (resp.ok) {
         publish({
           data: {
-            type: ACTION_TYPES.MARK_DISCUSSED,
+            type: CARD_ACTION.MARK_DISCUSSED,
             payload: { cardId, isDiscussed },
             column,
           },
@@ -98,7 +98,7 @@ export function useCard({
           if (res.ok) {
             publish({
               data: {
-                type: ACTION_TYPES.DELETE_CARD,
+                type: CARD_ACTION.DELETE_CARD,
                 payload: { cardId },
                 column,
               },
@@ -126,7 +126,7 @@ export function useCard({
           const newActionItem = await resp.json()
           publish({
             data: {
-              type: ACTION_TYPES.ADD_ACTION_ITEM,
+              type: CARD_ACTION.ADD_ACTION_ITEM,
               payload: { cardId, actionItem: newActionItem },
               column,
             },
@@ -154,7 +154,7 @@ export function useCard({
       if (resp.ok) {
         publish({
           data: {
-            type: ACTION_TYPES.TOGGLE_DONE_ACTION_ITEM,
+            type: CARD_ACTION.TOGGLE_DONE_ACTION_ITEM,
             payload: { cardId, actionItemId, isDone },
             column,
           },
@@ -215,7 +215,7 @@ async function handleEditCardSubmit(
     if (editedCard) {
       publish({
         data: {
-          type: ACTION_TYPES.UPDATE_CARD,
+          type: CARD_ACTION.UPDATE_CARD,
           column,
           payload: { cardId, patch: { content: editedCard.content } },
         },
@@ -244,7 +244,7 @@ async function handleEditActionItemSubmit(
     if (editedActionItem) {
       publish({
         data: {
-          type: ACTION_TYPES.UPDATE_ACTION_ITEM,
+          type: CARD_ACTION.UPDATE_ACTION_ITEM,
           column,
           payload: {
             cardId,

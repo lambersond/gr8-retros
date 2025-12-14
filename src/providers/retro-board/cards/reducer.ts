@@ -179,6 +179,26 @@ export function reducer(state: CardsState, action: CardAction) {
       }
     }
 
+    case CARD_ACTION.SORT_CARDS: {
+      const { sort } = action
+      const newState: CardsState = {
+        ...state,
+        GOOD: {
+          cards: utils.sortCardsBy(state.GOOD.cards, sort),
+        },
+        MEH: {
+          cards: utils.sortCardsBy(state.MEH.cards, sort),
+        },
+        BAD: {
+          cards: utils.sortCardsBy(state.BAD.cards, sort),
+        },
+        SHOUTOUT: {
+          cards: utils.sortCardsBy(state.SHOUTOUT.cards, sort),
+        },
+      }
+      return newState
+    }
+
     default: {
       throw new Error(`Unhandled action type: ${(action as any).type}`)
     }

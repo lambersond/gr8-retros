@@ -1,8 +1,9 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useChannel, usePresence, usePresenceListener } from 'ably/react'
-import { ACTION_TYPES } from '../../constants'
+import { CARD_ACTION } from '@/constants/retro-board'
 import { useAuth } from '@/hooks/use-auth'
 import { useModals } from '@/hooks/use-modals'
+import { useBoardCardsDispatch } from '@/providers/retro-board/cards/board-cards-provider' // temp until we have a decidated board settings provider
 
 type PresenceUser = {
   name: string
@@ -20,6 +21,17 @@ type PresenceEvent = {
 export function useRetroActions(channelName: string) {
   const { user } = useAuth()
   const { openModal } = useModals()
+  const dispatch = useBoardCardsDispatch()
+
+  const handleSortCardsBy = useCallback(
+    (sort: any) => {
+      dispatch({
+        type: CARD_ACTION.SORT_CARDS,
+        sort,
+      })
+    },
+    [dispatch],
+  )
 
   const { publish } = useChannel({ channelName })
 
@@ -59,7 +71,7 @@ export function useRetroActions(channelName: string) {
   const deleteThenBroadcast = useCallback(
     async (
       url: string,
-      type: (typeof ACTION_TYPES)[keyof typeof ACTION_TYPES],
+      type: (typeof CARD_ACTION)[keyof typeof CARD_ACTION],
     ) => {
       try {
         const resp = await fetch(url, {
@@ -102,7 +114,7 @@ export function useRetroActions(channelName: string) {
       onConfirm: () => {
         deleteThenBroadcast(
           `/api/board/${channelName}/cards`,
-          ACTION_TYPES.DELETE_ALL_CARDS,
+          CARD_ACTION.DELETE_ALL_CARDS,
         )
       },
     })
@@ -117,7 +129,7 @@ export function useRetroActions(channelName: string) {
       onConfirm: () => {
         deleteThenBroadcast(
           `/api/board/${channelName}/cards/completed`,
-          ACTION_TYPES.DELETE_COMPLETED_CARDS,
+          CARD_ACTION.DELETE_COMPLETED_CARDS,
         )
       },
     })
@@ -127,5 +139,6 @@ export function useRetroActions(channelName: string) {
     viewingMembers,
     handleClearBoard,
     handleClearCompleted,
+    handleSortCardsBy,
   }
 }

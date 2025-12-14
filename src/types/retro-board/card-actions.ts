@@ -15,6 +15,8 @@ export type CardActionType = {
   ADD_CARD_COMMENT: 'ADD_CARD_COMMENT'
   UPDATE_CARD_COMMENT: 'UPDATE_CARD_COMMENT'
   DELETE_CARD_COMMENT: 'DELETE_CARD_COMMENT'
+
+  SORT_CARDS: 'SORT_CARDS'
 }
 
 export type CardAction =
@@ -84,4 +86,8 @@ export type CardAction =
       column: ColumnType
       cardId: string
       commentId: string
+    }
+  | {
+      type: CardActionType['SORT_CARDS']
+      sort: 'byUpvotes' | 'byDiscussed' | 'byActionItems' | 'byComments'
     }
