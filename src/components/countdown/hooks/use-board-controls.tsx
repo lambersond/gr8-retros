@@ -191,6 +191,17 @@ export function useBoardControls(id: string) {
     [setMusicState],
   )
 
+  const handleManualSecondsChange = useCallback(
+    (newSeconds: number) => {
+      setSeconds(newSeconds)
+      setTimerState({
+        remaining: newSeconds,
+        startedAt: isRunning ? Date.now() : undefined,
+      })
+    },
+    [isRunning, setSeconds, setTimerState],
+  )
+
   return {
     addOneMinute,
     audioRef,
@@ -202,7 +213,7 @@ export function useBoardControls(id: string) {
     reset,
     secondsLeft,
     selectedTrackOption,
-    setSeconds,
+    setSeconds: handleManualSecondsChange,
     toggleMusic,
     togglePlay,
     updateBoardControls,

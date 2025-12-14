@@ -1,5 +1,5 @@
 import { RetroActions } from './retro-actions'
-import { Countdown } from '@/components/countdown-timer'
+import { Countdown } from '@/components/countdown'
 
 export function RetroBoardHeader({ id }: Readonly<{ id: string }>) {
   return (
