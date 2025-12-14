@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { useRetroBoard } from '../provider/retro-board-provider'
+import { useBoardCards } from '@/providers/retro-board/cards'
 import type { ColumnType, Comment } from '@/types'
 
 export function useCardComments(
@@ -9,7 +9,7 @@ export function useCardComments(
   cardId: string | undefined,
 ) {
   const [comments, setComments] = useState<Comment[]>([])
-  const state = useRetroBoard()
+  const state = useBoardCards()
 
   useEffect(() => {
     if (!column || !cardId) {

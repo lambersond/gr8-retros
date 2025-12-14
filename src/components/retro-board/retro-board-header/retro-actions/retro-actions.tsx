@@ -2,10 +2,16 @@
 
 import { useEffect, useRef, useState } from 'react'
 import { useChannel, usePresence, usePresenceListener } from 'ably/react'
-import { BrushCleaning, Eraser } from 'lucide-react'
+// import { noop } from 'lodash'
+import {
+  // ArrowDownWideNarrow,
+  BrushCleaning,
+  Eraser,
+  Hammer,
+} from 'lucide-react'
 import Image from 'next/image'
 import { ACTION_TYPES } from '../../constants'
-import { IconButton, Tooltip } from '@/components/common'
+import { IconButton, Menu, Popover, Tooltip } from '@/components/common'
 import { useAuth } from '@/hooks/use-auth'
 import { useModals } from '@/hooks/use-modals'
 
@@ -108,19 +114,57 @@ export function RetroActions({ id }: Readonly<{ id: string }>) {
 
   return (
     <div className='mx-3 ml-auto relative flex gap-2'>
-      <IconButton
-        icon={Eraser}
-        tooltip='Erase All Items'
-        onClick={handleClearBoard}
-        size='xl'
-        intent='danger'
-      />
-      <IconButton
-        icon={BrushCleaning}
-        tooltip='Clear Discussed/Completed Items'
-        onClick={handleClearCompleted}
-        size='xl'
-      />
+      <Popover
+        modal
+        placement='bottom-start'
+        content={
+          <Menu
+            options={[
+              {
+                label: 'Clear Only Completed Items',
+                onClick: handleClearCompleted,
+                icon: <BrushCleaning size={16} />,
+              },
+              {
+                label: 'Clear All Cards',
+                onClick: handleClearBoard,
+                color: 'danger',
+                icon: <Eraser size={16} />,
+              },
+            ]}
+          />
+        }
+      >
+        <IconButton icon={Hammer} intent='primary' size='lg' />
+      </Popover>
+      {/* <Popover
+        modal
+        placement='bottom-start'
+        content={
+          <Menu
+            options={[
+              {
+                label: 'Sort by Discussed Status',
+                onClick: noop,
+              },
+              {
+                label: 'Sort by Most Votes',
+                onClick: noop,
+              },
+              {
+                label: 'Sort by Most Comments',
+                onClick: noop,
+              },
+              {
+                label: 'Sort by Most Action Items',
+                onClick: noop,
+              },
+            ]}
+          />
+        }
+      >
+        <IconButton icon={ArrowDownWideNarrow} intent='primary' size='lg' />
+      </Popover> */}
       <div className='ml-auto flex items-center'>
         {Object.entries(viewingMembers).map(([clientId, member]) => (
           <div

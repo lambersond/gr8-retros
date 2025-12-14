@@ -1,9 +1,9 @@
 'use client'
 
 import { SessionProvider } from 'next-auth/react'
-import { AblyProvider } from '../ably'
 import { AppBar } from '../app-bar'
 import { ModalProvider } from '../modals/modal-provider'
+import { AblyProvider } from '@/providers/ably'
 
 export function SessionWrapper({
   children,

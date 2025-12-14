@@ -1,17 +1,15 @@
-import { ACTION_TYPES } from '../constants'
 import * as utils from './utils'
-import type { RetroBoardAction, RetroBoardState } from './types'
+import { CARD_ACTION } from '@/constants/retro-board'
+import type { CardsState } from './types'
+import type { CardAction } from '@/types/retro-board'
 
-export function reducer(
-  state: RetroBoardState,
-  action: RetroBoardAction,
-): RetroBoardState {
+export function reducer(state: CardsState, action: CardAction) {
   switch (action.type) {
-    case ACTION_TYPES.SET_FROM_BOARD: {
+    case CARD_ACTION.SET_FROM_BOARD: {
       return utils.createInitialState(action.board)
     }
 
-    case ACTION_TYPES.ADD_CARD: {
+    case CARD_ACTION.ADD_CARD: {
       const { column, card } = action
       return {
         ...state,
@@ -21,7 +19,7 @@ export function reducer(
       }
     }
 
-    case ACTION_TYPES.UPDATE_CARD: {
+    case CARD_ACTION.UPDATE_CARD: {
       const { column, cardId, patch } = action
       return {
         ...state,
@@ -32,7 +30,7 @@ export function reducer(
       }
     }
 
-    case ACTION_TYPES.DELETE_CARD: {
+    case CARD_ACTION.DELETE_CARD: {
       const { column, cardId } = action
       return {
         ...state,
@@ -42,7 +40,7 @@ export function reducer(
       }
     }
 
-    case ACTION_TYPES.TOGGLE_UPVOTE: {
+    case CARD_ACTION.TOGGLE_UPVOTE: {
       const { column, cardId, userId } = action
       return {
         ...state,
@@ -57,7 +55,7 @@ export function reducer(
       }
     }
 
-    case ACTION_TYPES.MARK_DISCUSSED: {
+    case CARD_ACTION.MARK_DISCUSSED: {
       const { column, cardId, isDiscussed } = action
       return {
         ...state,
@@ -68,7 +66,7 @@ export function reducer(
       }
     }
 
-    case ACTION_TYPES.ADD_ACTION_ITEM: {
+    case CARD_ACTION.ADD_ACTION_ITEM: {
       const { column, cardId, actionItem } = action
       return {
         ...state,
@@ -79,7 +77,7 @@ export function reducer(
       }
     }
 
-    case ACTION_TYPES.TOGGLE_DONE_ACTION_ITEM: {
+    case CARD_ACTION.TOGGLE_DONE_ACTION_ITEM: {
       const { column, cardId, actionItemId, isDone } = action
       return {
         ...state,
@@ -92,7 +90,7 @@ export function reducer(
       }
     }
 
-    case ACTION_TYPES.UPDATE_ACTION_ITEM: {
+    case CARD_ACTION.UPDATE_ACTION_ITEM: {
       const { column, cardId, actionItemId, patch } = action
       return {
         ...state,
@@ -105,8 +103,8 @@ export function reducer(
       }
     }
 
-    case ACTION_TYPES.DELETE_ALL_CARDS: {
-      const newState: RetroBoardState = {
+    case CARD_ACTION.DELETE_ALL_CARDS: {
+      const newState: CardsState = {
         ...state,
         GOOD: { cards: [] },
         MEH: { cards: [] },
@@ -116,8 +114,8 @@ export function reducer(
       return newState
     }
 
-    case ACTION_TYPES.DELETE_COMPLETED_CARDS: {
-      const newState: RetroBoardState = {
+    case CARD_ACTION.DELETE_COMPLETED_CARDS: {
+      const newState: CardsState = {
         ...state,
         GOOD: {
           cards: utils.filterCompletedCards(state.GOOD.cards),
@@ -135,7 +133,7 @@ export function reducer(
       return newState
     }
 
-    case ACTION_TYPES.ADD_CARD_COMMENT: {
+    case CARD_ACTION.ADD_CARD_COMMENT: {
       const { column, newComment } = action
       return {
         ...state,
@@ -152,7 +150,8 @@ export function reducer(
         ),
       }
     }
-    case ACTION_TYPES.UPDATE_CARD_COMMENT: {
+
+    case CARD_ACTION.UPDATE_CARD_COMMENT: {
       const { column, updatedComment } = action
       return {
         ...state,
@@ -168,7 +167,8 @@ export function reducer(
         ),
       }
     }
-    case ACTION_TYPES.DELETE_CARD_COMMENT: {
+
+    case CARD_ACTION.DELETE_CARD_COMMENT: {
       const { column, cardId, commentId } = action
       return {
         ...state,

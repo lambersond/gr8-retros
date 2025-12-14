@@ -1,6 +1,6 @@
-import { ColumnState, RetroBoardState } from './types'
 import { COLUMN_TYPES } from '@/constants'
-import { Board, Card, ColumnType } from '@/types'
+import type { ColumnState, CardsState } from './types'
+import type { Board, Card, ColumnType } from '@/types'
 
 export function toColumnType(column: string): ColumnType | undefined {
   return COLUMN_TYPES.includes(column as ColumnType)
@@ -27,11 +27,8 @@ export function sortCards(cards: Card[]): Card[] {
   })
 }
 
-export function createInitialState(board: Board): RetroBoardState {
-  const base: RetroBoardState = {
-    id: board.id,
-    name: board.name,
-    isPrivate: board.isPrivate,
+export function createInitialState(board: Board) {
+  const base: CardsState = {
     GOOD: { cards: [] },
     MEH: { cards: [] },
     BAD: { cards: [] },

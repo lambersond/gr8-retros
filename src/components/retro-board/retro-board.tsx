@@ -1,15 +1,15 @@
 'use client'
 
 import { useState } from 'react'
-import { AblyChannelProvider } from '../ably'
 import { CommentsSidebar } from '../comments-sidebar'
 import { SignInGate } from '../signin-gate'
 import { BadColumn, GoodColumn, ShoutoutColumn, MehColumn } from './columns'
 import { COLUMN_CLASSES, COLUMN_CONTAINER_CLASSES } from './constants'
-import { RetroBoardProvider } from './provider/retro-board-provider'
 import { RetroBoardHeader } from './retro-board-header'
 import { useAuth } from '@/hooks/use-auth'
+import { AblyChannelProvider } from '@/providers/ably'
 import { CommentsSidebarProvider } from '@/providers/comments-sidebar'
+import { BoardCardsProvider } from '@/providers/retro-board/cards'
 import type { Board } from '@/types'
 
 export function RetroBoard({ board }: Readonly<{ board: Board }>) {
@@ -34,7 +34,7 @@ export function RetroBoard({ board }: Readonly<{ board: Board }>) {
 
   return (
     <AblyChannelProvider channel={board.id}>
-      <RetroBoardProvider board={board}>
+      <BoardCardsProvider board={board}>
         <CommentsSidebarProvider boardId={board.id}>
           <RetroBoardHeader id={board.id} />
           {/* Mobile/Tablet: swipe between columns */}
@@ -54,7 +54,7 @@ export function RetroBoard({ board }: Readonly<{ board: Board }>) {
           </div>
           <CommentsSidebar />
         </CommentsSidebarProvider>
-      </RetroBoardProvider>
+      </BoardCardsProvider>
     </AblyChannelProvider>
   )
 }
