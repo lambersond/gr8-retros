@@ -1,6 +1,7 @@
 import { Analytics } from '@vercel/analytics/next'
 import { SpeedInsights } from '@vercel/speed-insights/next'
 import { Geist, Geist_Mono as GeistMono } from 'next/font/google'
+import Script from 'next/script'
 import { SessionWrapper } from '@/components/session-wrapper'
 import type { Metadata, Viewport } from 'next'
 import './globals.css'
@@ -48,6 +49,21 @@ export default function RootLayout({
 }>) {
   return (
     <html lang='en'>
+      <head>
+        <Script id='sleekplan-widget' strategy='afterInteractive'>
+          {`
+            window.$sleek=[];
+            window.SLEEK_PRODUCT_ID=910381374;
+            (function(){
+            d=document;
+            s=d.createElement("script");
+            s.src="https://client.sleekplan.com/sdk/e.js";
+            s.async=1;
+            d.getElementsByTagName("head")[0].appendChild(s);
+            })();
+          `}
+        </Script>
+      </head>
       <body
         className={`${geistMono.variable} ${geistSans.variable} antialiased`}
       >
