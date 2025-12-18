@@ -1,14 +1,26 @@
-import { useCallback, useEffect } from 'react'
-import { useMusic } from './use-music'
+import {
+  type ReactNode,
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+} from 'react'
+import { DEFAULT_TIMER_SECONDS } from './constants'
+import {
+  RetroBoardControlsActionsStoreContext,
+  RetroBoardControlsStateStoreContext,
+} from './context'
+import { createStore } from './store'
+import { elapsedSeconds } from './utils'
 import { useBoardControlsLiveMap } from '@/hooks/use-channel-state'
 import { useCountdownTimer } from '@/hooks/use-countdown-timer'
-
-const DEFAULT_TIMER_SECONDS = 300
-
-function elapsedSeconds(startedAt?: number) {
-  if (!startedAt) return 0
-  return Math.max(0, Math.floor((Date.now() - startedAt) / 1000))
-}
+import { useMusic } from '@/hooks/use-music'
+import type {
+  RetroBoardControls,
+  RetroBoardControlsActions,
+  RetroBoardControlsState,
+} from './types'
+import type { DropdownOption } from '@/components/common'
 
 type MusicState = {
   isPlaying: boolean
@@ -16,10 +28,18 @@ type MusicState = {
   trackId?: string
 }
 
-export function useBoardControls(id: string) {
+export function RetroBoardControlsProvider({
+  boardId,
+  children,
+  defaultTimerSeconds = DEFAULT_TIMER_SECONDS,
+}: Readonly<{
+  boardId: string
+  children: ReactNode
+  defaultTimerSeconds?: number
+}>) {
   const { formatted, isRunning, start, pause, setSeconds, secondsLeft } =
     useCountdownTimer({
-      initialSeconds: DEFAULT_TIMER_SECONDS,
+      initialSeconds: defaultTimerSeconds,
       autoStart: false,
     })
 
@@ -33,20 +53,20 @@ export function useBoardControls(id: string) {
   } = useMusic()
 
   const { boardControls, updateBoardControls } = useBoardControlsLiveMap(
-    id,
-    DEFAULT_TIMER_SECONDS,
+    boardId,
+    defaultTimerSeconds,
   )
 
   const syncTimerFromBoard = useCallback(() => {
     const { timer } = boardControls
-    const remaining = timer.remaining ?? DEFAULT_TIMER_SECONDS
+    const remaining = timer.remaining ?? defaultTimerSeconds
     const diff = elapsedSeconds(timer.startedAt)
 
     if (timer.isPlaying) start()
     else pause()
 
     setSeconds(Math.max(0, remaining - diff))
-  }, [boardControls, pause, setSeconds, start])
+  }, [boardControls, defaultTimerSeconds, pause, setSeconds, start])
 
   const syncMusicFromBoard = useCallback(() => {
     const music = boardControls.music
@@ -59,14 +79,12 @@ export function useBoardControls(id: string) {
 
     const needsTrackChange = desiredTrackId !== localTrackId
 
-    // If the board wants music, ensure correct track and play.
     if (boardWantsMusic) {
       if (needsTrackChange) changeTrackById(desiredTrackId, { autoplay: true })
       if (!localIsPlaying) startMusic({ force: true })
       return
     }
 
-    // Otherwise ensure paused locally.
     if (localIsPlaying) pauseMusic()
   }, [
     boardControls.music,
@@ -83,29 +101,20 @@ export function useBoardControls(id: string) {
   }, [syncTimerFromBoard, syncMusicFromBoard])
 
   const setTimerState = useCallback(
-    (patch: Partial<typeof boardControls.timer>) => {
-      updateBoardControls({
-        timer: {
-          ...boardControls.timer,
-          ...patch,
-        },
-      })
+    (patch: Partial<RetroBoardControls['timer']>) => {
+      updateBoardControls({ timer: { ...boardControls.timer, ...patch } })
     },
     [boardControls.timer, updateBoardControls],
   )
 
   const setMusicState = useCallback(
     (patch: Partial<MusicState>) => {
-      updateBoardControls({
-        music: {
-          ...boardControls.music,
-          ...patch,
-        },
-      })
+      updateBoardControls({ music: { ...boardControls.music, ...patch } })
     },
     [boardControls.music, updateBoardControls],
   )
 
+  // ------- Actions -------
   const togglePlay = useCallback(() => {
     if (isRunning) {
       pause()
@@ -116,10 +125,7 @@ export function useBoardControls(id: string) {
           remaining: secondsLeft,
           startedAt: undefined,
         },
-        music: {
-          ...boardControls.music,
-          shouldPlay: false,
-        },
+        music: { ...boardControls.music, shouldPlay: false },
       })
       return
     }
@@ -132,10 +138,7 @@ export function useBoardControls(id: string) {
         remaining: secondsLeft,
         startedAt: Date.now(),
       },
-      music: {
-        ...boardControls.music,
-        shouldPlay: true,
-      },
+      music: { ...boardControls.music, shouldPlay: true },
     })
   }, [
     boardControls.music,
@@ -151,7 +154,7 @@ export function useBoardControls(id: string) {
       timer: {
         isCompleted: false,
         isPlaying: false,
-        remaining: DEFAULT_TIMER_SECONDS,
+        remaining: defaultTimerSeconds,
         startedAt: undefined,
       },
       music: {
@@ -160,7 +163,7 @@ export function useBoardControls(id: string) {
         isPlaying: false,
       },
     })
-  }, [boardControls.music, updateBoardControls])
+  }, [boardControls.music, defaultTimerSeconds, updateBoardControls])
 
   const addOneMinute = useCallback(() => {
     setTimerState({ remaining: secondsLeft + 60 })
@@ -168,11 +171,7 @@ export function useBoardControls(id: string) {
 
   const toggleMusic = useCallback(() => {
     if (isPlaying) {
-      setMusicState({
-        isPlaying: false,
-        shouldPlay: false,
-        trackId: undefined,
-      })
+      setMusicState({ isPlaying: false, shouldPlay: false, trackId: undefined })
     } else {
       setMusicState({
         isPlaying: true,
@@ -183,10 +182,8 @@ export function useBoardControls(id: string) {
   }, [isPlaying, selectedTrackOption.id, setMusicState])
 
   const changeTrack = useCallback(
-    (option: typeof selectedTrackOption) => {
-      setMusicState({
-        trackId: option.id,
-      })
+    (option: DropdownOption) => {
+      setMusicState({ trackId: option.id })
     },
     [setMusicState],
   )
@@ -202,20 +199,78 @@ export function useBoardControls(id: string) {
     [isRunning, setSeconds, setTimerState],
   )
 
-  return {
-    addOneMinute,
-    audioRef,
+  // ------- Stores -------
+  const stateStoreRef = useRef(
+    createStore<RetroBoardControlsState>({
+      boardControls,
+      formatted,
+      isRunning,
+      secondsLeft,
+      play: isPlaying,
+      audioRef,
+      selectedTrackOption,
+    }),
+  )
+
+  const actionsStoreRef = useRef(
+    createStore<RetroBoardControlsActions>({
+      togglePlay,
+      reset,
+      addOneMinute,
+      setSeconds: handleManualSecondsChange,
+      toggleMusic,
+      changeTrack,
+      updateBoardControls,
+    }),
+  )
+
+  useLayoutEffect(() => {
+    stateStoreRef.current.setState({
+      boardControls,
+      formatted,
+      isRunning,
+      secondsLeft,
+      play: isPlaying,
+      audioRef,
+      selectedTrackOption,
+    })
+  }, [
     boardControls,
-    changeTrack,
     formatted,
     isRunning,
-    play: isPlaying,
-    reset,
     secondsLeft,
+    isPlaying,
+    audioRef,
     selectedTrackOption,
-    setSeconds: handleManualSecondsChange,
-    toggleMusic,
+  ])
+
+  useLayoutEffect(() => {
+    actionsStoreRef.current.setState({
+      togglePlay,
+      reset,
+      addOneMinute,
+      setSeconds: handleManualSecondsChange,
+      toggleMusic,
+      changeTrack,
+      updateBoardControls,
+    })
+  }, [
     togglePlay,
+    reset,
+    addOneMinute,
+    handleManualSecondsChange,
+    toggleMusic,
+    changeTrack,
     updateBoardControls,
-  }
+  ])
+
+  return (
+    <RetroBoardControlsStateStoreContext.Provider value={stateStoreRef.current}>
+      <RetroBoardControlsActionsStoreContext.Provider
+        value={actionsStoreRef.current}
+      >
+        {children}
+      </RetroBoardControlsActionsStoreContext.Provider>
+    </RetroBoardControlsStateStoreContext.Provider>
+  )
 }

@@ -31,7 +31,7 @@ export function MusicIcon({
       'w-0': !isPlaying,
       'w-full': isPlaying,
     },
-    'transition-width duration-300 ease-in-out',
+    'transition-width duration-1000 ease-in-out',
   )
 
   const intentClass = clsx({

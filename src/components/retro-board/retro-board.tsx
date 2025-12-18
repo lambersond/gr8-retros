@@ -10,6 +10,7 @@ import { useAuth } from '@/hooks/use-auth'
 import { AblyChannelProvider } from '@/providers/ably'
 import { CommentsSidebarProvider } from '@/providers/comments-sidebar'
 import { BoardCardsProvider } from '@/providers/retro-board/cards'
+import { RetroBoardControlsProvider } from '@/providers/retro-board/controls'
 import type { Board } from '@/types'
 
 export function RetroBoard({ board }: Readonly<{ board: Board }>) {
@@ -34,27 +35,29 @@ export function RetroBoard({ board }: Readonly<{ board: Board }>) {
 
   return (
     <AblyChannelProvider channel={board.id}>
-      <BoardCardsProvider board={board}>
-        <CommentsSidebarProvider boardId={board.id}>
-          <RetroBoardHeader id={board.id} />
-          {/* Mobile/Tablet: swipe between columns */}
-          <div className={COLUMN_CONTAINER_CLASSES}>
-            <div className={COLUMN_CLASSES}>
-              <GoodColumn />
+      <RetroBoardControlsProvider boardId={board.id}>
+        <BoardCardsProvider board={board}>
+          <CommentsSidebarProvider boardId={board.id}>
+            <RetroBoardHeader id={board.id} />
+            {/* Mobile/Tablet: swipe between columns */}
+            <div className={COLUMN_CONTAINER_CLASSES}>
+              <div className={COLUMN_CLASSES}>
+                <GoodColumn />
+              </div>
+              <div className={COLUMN_CLASSES}>
+                <MehColumn />
+              </div>
+              <div className={COLUMN_CLASSES}>
+                <BadColumn />
+              </div>
+              <div className={COLUMN_CLASSES}>
+                <ShoutoutColumn />
+              </div>
             </div>
-            <div className={COLUMN_CLASSES}>
-              <MehColumn />
-            </div>
-            <div className={COLUMN_CLASSES}>
-              <BadColumn />
-            </div>
-            <div className={COLUMN_CLASSES}>
-              <ShoutoutColumn />
-            </div>
-          </div>
-          <CommentsSidebar />
-        </CommentsSidebarProvider>
-      </BoardCardsProvider>
+            <CommentsSidebar />
+          </CommentsSidebarProvider>
+        </BoardCardsProvider>
+      </RetroBoardControlsProvider>
     </AblyChannelProvider>
   )
 }

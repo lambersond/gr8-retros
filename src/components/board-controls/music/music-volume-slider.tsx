@@ -1,7 +1,7 @@
 import * as React from 'react'
 import { Volume1, Volume2, VolumeX } from 'lucide-react'
 
-type VolumeSliderProps = {
+type MusicVolumeSliderProps = {
   audioRef: React.RefObject<HTMLAudioElement | null>
   defaultVolume?: number // 0..1
   storageKey?: string
@@ -16,11 +16,11 @@ const VolumeIcon = ({ volume }: { volume: number }) => {
   return Volume2
 }
 
-export function VolumeSlider({
+export function MusicVolumeSlider({
   audioRef,
   defaultVolume = 0.6,
   storageKey = 'music:volume',
-}: Readonly<VolumeSliderProps>) {
+}: Readonly<MusicVolumeSliderProps>) {
   const [volume, setVolume] = React.useState(() => {
     if (globalThis.window === undefined) return clamp01(defaultVolume)
     const stored = globalThis.localStorage.getItem(storageKey)

@@ -1,4 +1,4 @@
-export function CountdownItem({
+export function BoardControlItem({
   children,
   className = '',
 }: Readonly<{

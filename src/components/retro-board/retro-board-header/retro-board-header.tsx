@@ -1,10 +1,10 @@
 import { RetroActions } from './retro-actions'
-import { Countdown } from '@/components/countdown'
+import { BoardControls } from '@/components/board-controls'
 
 export function RetroBoardHeader({ id }: Readonly<{ id: string }>) {
   return (
     <div className='bg-appbar/50 py-2 px-3 h-13 relative'>
-      <Countdown id={id} />
+      <BoardControls />
       <RetroActions id={id} />
     </div>
   )
