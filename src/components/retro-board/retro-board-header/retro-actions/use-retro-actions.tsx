@@ -1,25 +1,10 @@
-import { useCallback, useEffect, useMemo, useState } from 'react'
-import { useChannel, usePresence, usePresenceListener } from 'ably/react'
+import { useCallback } from 'react'
+import { useChannel } from 'ably/react'
 import { CARD_ACTION } from '@/constants/retro-board'
-import { useAuth } from '@/hooks/use-auth'
 import { useModals } from '@/hooks/use-modals'
 import { useBoardCardsDispatch } from '@/providers/retro-board/cards/board-cards-provider' // temp until we have a decidated board settings provider
 
-type PresenceUser = {
-  name: string
-  image: string
-}
-
-type ViewingMembers = Record<string, PresenceUser>
-
-type PresenceEvent = {
-  action: string
-  clientId: string
-  data: PresenceUser
-}
-
 export function useRetroActions(channelName: string) {
-  const { user } = useAuth()
   const { openModal } = useModals()
   const dispatch = useBoardCardsDispatch()
 
@@ -34,39 +19,6 @@ export function useRetroActions(channelName: string) {
   )
 
   const { publish } = useChannel({ channelName })
-
-  const [viewingMembers, setViewingMembers] = useState<ViewingMembers>({})
-
-  const presencePayload = useMemo(
-    () => ({ name: user.name, image: user.image }),
-    [user.name, user.image],
-  )
-
-  const { updateStatus } = usePresence(channelName, presencePayload)
-
-  usePresenceListener(channelName, (evt: PresenceEvent) => {
-    setViewingMembers(prev => {
-      if (evt.action === 'leave') {
-        if (!prev[evt.clientId]) return prev
-        const next = { ...prev }
-        delete next[evt.clientId]
-        return next
-      }
-
-      // enter/update
-      const current = prev[evt.clientId]
-      if (
-        current?.name === evt.data?.name &&
-        current?.image === evt.data?.image
-      )
-        return prev
-      return { ...prev, [evt.clientId]: evt.data }
-    })
-  })
-
-  useEffect(() => {
-    updateStatus(presencePayload)
-  }, [presencePayload, updateStatus])
 
   const deleteThenBroadcast = useCallback(
     async (
@@ -136,7 +88,6 @@ export function useRetroActions(channelName: string) {
   }, [channelName, confirmAndRun, deleteThenBroadcast])
 
   return {
-    viewingMembers,
     handleClearBoard,
     handleClearCompleted,
     handleSortCardsBy,

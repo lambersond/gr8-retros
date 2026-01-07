@@ -32,7 +32,7 @@ export function Auth() {
           <p className='font-bold text-lg'>Account Settings</p>
           <div>
             <p className='font-bold'>Google:</p>
-            {user.isGoogleLinked ? (
+            {user.email ? (
               <p>{user.email}</p>
             ) : (
               <button
@@ -49,9 +49,21 @@ export function Auth() {
               </button>
             )}
           </div>
-          <p className='hidden'>
-            <b>Patreon:</b> {user.isPatreonLinked ? 'Linked' : 'Not Linked'}
-          </p>
+        </section>
+        <section>
+          <p className='font-bold text-lg mb-2'>Boards</p>
+          {Object.entries(user.boards || {}).map(([boardId, board]) => (
+            <a
+              key={boardId}
+              className='p-2 mb-2 bg-tertiary rounded-lg block hover:bg-white transition-colors'
+              href={`/retro/${boardId}`}
+            >
+              <p className='font-semibold'>{boardId}</p>
+              <p className='text-sm text-text-secondary capitalize'>
+                Role: {board.role}
+              </p>
+            </a>
+          ))}
         </section>
         <div className='flex-1' id='spacer' />
         {isAuthenticated && (

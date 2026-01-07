@@ -13,7 +13,7 @@ export function CreateRetroButton() {
     setIsLoading(true)
 
     // Generate a short, shareable id
-    const id = crypto.randomUUID().slice(0, 8)
+    const id = crypto.randomUUID().slice(0, 12)
 
     // Let /retro/[id]/page.tsx call getOrCreateBoardByIdAndUserId(id, userId)
     router.push(`/retro/${id}`)

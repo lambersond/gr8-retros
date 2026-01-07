@@ -1,48 +1,23 @@
-'use client'
-
 import {
   ArrowDownWideNarrow,
   BrushCleaning,
   Eraser,
   Hammer,
+  Settings,
 } from 'lucide-react'
-import Image from 'next/image'
 import { useRetroActions } from './use-retro-actions'
-import { IconButton, Menu, Popover, Tooltip } from '@/components/common'
+import { IconButton, Menu, Popover } from '@/components/common'
+import { useAuth } from '@/hooks/use-auth'
+import { useBoardSettingsActions } from '@/providers/retro-board/board-settings'
 
 export function RetroActions({ id }: Readonly<{ id: string }>) {
-  const {
-    handleClearBoard,
-    handleClearCompleted,
-    handleSortCardsBy,
-    viewingMembers,
-  } = useRetroActions(id)
+  const { handleClearBoard, handleClearCompleted, handleSortCardsBy } =
+    useRetroActions(id)
+  const { openSidebar } = useBoardSettingsActions()
+  const { isAuthenticated } = useAuth()
 
   return (
-    <div className='mx-3 ml-auto relative flex gap-2'>
-      <Popover
-        modal
-        placement='bottom-start'
-        content={
-          <Menu
-            options={[
-              {
-                label: 'Clear Only Completed Items',
-                onClick: handleClearCompleted,
-                icon: <BrushCleaning size={16} />,
-              },
-              {
-                label: 'Clear All Cards',
-                onClick: handleClearBoard,
-                color: 'danger',
-                icon: <Eraser size={16} />,
-              },
-            ]}
-          />
-        }
-      >
-        <IconButton icon={Hammer} intent='primary' size='lg' />
-      </Popover>
+    <div className='flex gap-2 z-10'>
       <Popover
         modal
         placement='bottom-start'
@@ -71,23 +46,38 @@ export function RetroActions({ id }: Readonly<{ id: string }>) {
       >
         <IconButton icon={ArrowDownWideNarrow} intent='primary' size='lg' />
       </Popover>
-      <div className='ml-auto flex items-center'>
-        {Object.entries(viewingMembers).map(([clientId, member]) => (
-          <div
-            key={clientId}
-            className='relative flex items-center -ml-3 first:ml-0 transition-all duration-200 hover:z-10 hover:scale-110'
-          >
-            <Tooltip title={member.name}>
-              <Image
-                src={member.image}
-                alt={member.name}
-                width={32}
-                height={32}
-                className='w-8 h-8 rounded-full border-2 border-white shadow-sm'
-              />
-            </Tooltip>
-          </div>
-        ))}
+      <Popover
+        modal
+        placement='bottom-start'
+        content={
+          <Menu
+            options={[
+              {
+                label: 'Clear Only Completed Items',
+                onClick: handleClearCompleted,
+                icon: <BrushCleaning size={16} />,
+              },
+              {
+                label: 'Clear All Cards',
+                onClick: handleClearBoard,
+                color: 'danger',
+                icon: <Eraser size={16} />,
+              },
+            ]}
+          />
+        }
+      >
+        <IconButton icon={Hammer} intent='primary' size='lg' />
+      </Popover>
+      <div className='hidden'>
+        {isAuthenticated && (
+          <IconButton
+            icon={Settings}
+            intent='primary'
+            size='lg'
+            onClick={openSidebar}
+          />
+        )}
       </div>
     </div>
   )

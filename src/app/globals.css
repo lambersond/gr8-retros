@@ -12,6 +12,8 @@
   --color-appbar: oklch(86.9% 0.022 252.894);
 
   /* Primary colors */
+  --color-primary-new: oklch(48.8% 0.243 264.376);
+  --color-secondary-new: oklch(64.5% 0.246 16.439);
   --color-primary: oklch(12.9% 0.042 264.695);
   --color-secondary: oklch(44.6% 0.043 257.281);
   --color-tertiary: oklch(92.9% 0.013 255.508);

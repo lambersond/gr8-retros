@@ -1,5 +1,7 @@
 import type { ColumnType } from './models'
 
+export { BoardRole, PaymentTier } from '@prisma/client'
+
 interface CardId {
   cardId: string
 }

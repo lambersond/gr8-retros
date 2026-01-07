@@ -2,14 +2,21 @@ import { cookies } from 'next/headers'
 import { NextRequest, NextResponse } from 'next/server'
 import { auth } from '@/auth'
 import { COOKIE_KEY_USER_ID } from '@/constants'
+import { BoardRole } from '@/types'
 
-type AuthenticatedHandler<T = any> = (
+type User = {
+  id: string
+  name: string
+  boards: Record<string, { settingsId: string; role: BoardRole }> | undefined
+}
+
+type AuthenticatedHandlerWithContext<T = any> = (
   req: NextRequest,
   context: T,
-  user: { id: string; name: string },
+  user: User,
 ) => Promise<NextResponse>
 
-export function withUser<T = any>(handler: AuthenticatedHandler<T>) {
+export function withUser<T = any>(handler: AuthenticatedHandlerWithContext<T>) {
   return async (req: NextRequest, context: T) => {
     const session = await auth()
 
@@ -24,6 +31,7 @@ export function withUser<T = any>(handler: AuthenticatedHandler<T>) {
     return handler(req, context, {
       id: session?.user?.id || cookieUserId!,
       name: session?.user?.name || cookieUserName || 'Anonymous User',
+      boards: session?.user?.boards,
     })
   }
 }

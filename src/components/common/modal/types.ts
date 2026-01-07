@@ -8,4 +8,5 @@ export type ModalProps = {
   isOpen: boolean
   onClose: VoidFunction
   width?: string
+  fullHeight?: boolean
 }

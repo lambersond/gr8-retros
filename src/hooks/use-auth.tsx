@@ -82,29 +82,28 @@ export function useAuth() {
 
   const effective = useMemo(() => {
     const isAuthenticated = status === 'authenticated' && !!session?.user?.id
+    const boards = session?.user.boards ?? {}
 
-    const id = isAuthenticated ? session.user!.id : (anonymousUser?.id ?? '')
+    const id = isAuthenticated ? session.user.id : (anonymousUser?.id ?? '')
     const name =
-      (isAuthenticated ? session.user!.name : anonymousUser?.name) ??
+      (isAuthenticated ? session.user.name : anonymousUser?.name) ??
       'Anonymous User'
 
-    return { isAuthenticated, id, name }
+    return { isAuthenticated, id, name, boards }
   }, [anonymousUser?.id, anonymousUser?.name, session, status])
 
   const user = useMemo(() => {
-    const authed = !!session?.user?.id
-
     return {
       id: effective.id,
       name: effective.name,
       email: session?.user?.email ?? '',
       image: session?.user?.image ?? '/no-image.jpg',
-      isGoogleLinked: authed,
-      isPatreonLinked: false,
+      boards: effective.boards,
     }
   }, [
     effective.id,
     effective.name,
+    effective.boards,
     session?.user?.email,
     session?.user?.id,
     session?.user?.image,

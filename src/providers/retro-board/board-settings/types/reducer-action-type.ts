@@ -1,0 +1,8 @@
+import type { SidebarActionType } from '@/types'
+
+export type BoardSettingsReducerActionType = SidebarActionType & {
+  UPDATE_BOARD_SETTINGS: 'UPDATE_BOARD_SETTINGS'
+  UPDATE_PERMISSIONS: 'UPDATE_PERMISSIONS'
+  CREATE_INVITATION_LINK: 'CREATE_INVITATION_LINK'
+  REVOKE_INVITATION_LINK: 'REVOKE_INVITATION_LINK'
+}

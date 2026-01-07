@@ -28,7 +28,7 @@ export function IconButton({
   })
 
   const buttonClasses = clsx(
-    'flex items-center text-sm p-1 rounded cursor-pointer',
+    'flex items-center text-sm p-1 rounded cursor-pointer h-fit',
     intentClasses,
   )
 

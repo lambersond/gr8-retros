@@ -7,20 +7,46 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+// -----------------------
+// Enums
+// -----------------------
+
+enum BoardRole {
+  OWNER
+  ADMIN
+  FACILITATOR
+  MEMBER
+  VIEWER
+}
+
+enum PaymentTier {
+  FREE
+  BELIEVER
+  SUPPORTER
+  CHAMPION
+}
+
+// -----------------------
+// User model
+// -----------------------
+
 model User {
-  id              String             @id @default(cuid())
+  id              String    @id @default(cuid())
   name            String?
-  email           String             @unique
+  email           String    @unique
   emailVerified   DateTime?
   image           String?
-  isGoogleLinked  Boolean            @default(false)
-  isPatreonLinked Boolean            @default(false)
+  isPatreonLinked Boolean   @default(false)
+  paymentTier     PaymentTier @default(FREE)
+
   accounts        Account[]
   sessions        Session[]
   retroSessions   UserRetroSession[]
+  actionItems     ActionItem[]
+  boards          BoardMember[]
 
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
 }
 
 // -----------------------
@@ -38,77 +64,144 @@ model Account {
   scope             String?
   id_token          String?
   session_state     String?
- 
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
- 
+
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
- 
+
   @@id([provider, providerAccountId])
 }
- 
+
 model Session {
   sessionToken String   @unique
   userId       String
   expires      DateTime
-  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
- 
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
- 
+
 model VerificationToken {
   identifier String
   token      String
   expires    DateTime
- 
+
   @@id([identifier, token])
 }
 
-// ---------------------------------------
-// Add your application models below here
-// ---------------------------------------
+// -------------------------
+// Application models
+// -------------------------
 
 model RetroSession {
-  id        String   @id @default(cuid())
-  name      String?
-  org       String?  @default("Temporary")
-  isTemp    Boolean  @default(true)
-  isPrivate Boolean  @default(false)
-  creatorId String?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  cards     Card[]
-  users     UserRetroSession[]
+  id           String  @id @default(cuid())
+  name         String?
+  org          String? @default("Temporary")
+
+  cards        Card[]
+  users        UserRetroSession[]
+  settings     BoardSettings?
+
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+}
+
+/**
+  * Settings for a retro board
+  All free settings are on by default for public boards.
+  Free tier requires an authenticated owner.
+  Paid tiers unlock additional settings.
+*/
+model BoardSettings {
+  isPrivate             Boolean @default(false) // TIER = FREE
+  privateOpenAccess     Boolean @default(false)
+  privateCardRetention  Int     @default(7) // days
+  ownerId               String?
+
+  isCommentsEnabled     Boolean @default(true) // TIER = FREE
+  commentsAnytime       Boolean @default(true)
+
+  isMusicEnabled        Boolean @default(true) // TIER = FREE
+  musicAnytime          Boolean @default(true)
+
+  isTimerEnabled        Boolean @default(true) // TIER = FREE
+  timerDefault          Int     @default(300)
+  timerAnytime          Boolean @default(true)
+
+  isUpvotingEnabled     Boolean @default(true) // TIER = FREE
+  upvoteLimit           Int     @default(-1)
+  upvoteAnytime         Boolean @default(true)
+
+  // Not implemented yet
+  isCardGroupingEnabled Boolean @default(false) // TIER = BELIEVER
+  cardGroupingAnytime   Boolean @default(false)
+
+  isFocusModeEnabled    Boolean @default(false) // TIER = BELIEVER
+
+  isAiNamingEnabled     Boolean @default(false) // TIER = SUPPORTER
+  isAiSummaryEnabled    Boolean @default(false) // TIER = SUPPORTER
+
+  // Default columns and relations
+  id                    String  @id @default(cuid())
+
+  retroSessionId        String       @unique
+  retroSession          RetroSession @relation(fields: [retroSessionId], references: [id], onDelete: Cascade)
+  members               BoardMember[]
+
+  invite                BoardInvite?
+
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+}
+
+model BoardInvite {
+  id              String    @id @default(cuid())
+
+  boardSettingsId String    @unique
+  boardSettings   BoardSettings @relation(fields: [boardSettingsId], references: [id], onDelete: Cascade)
+
+  token           String    @unique
+  expiresAt       DateTime?
+  revokedAt       DateTime?
+
+  @@index([expiresAt])
 }
 
 model ActionItem {
-  id        String   @id @default(cuid())
-  content   String
-  cardId    String
-  card      Card     @relation(fields: [cardId], references: [id], onDelete: Cascade)
-  isDone    Boolean  @default(false)
-  createdBy String   @default("Anonymous")
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id           String  @id @default(cuid())
+  content      String
+  isDone       Boolean @default(false)
+  cardId       String
+  assignedToId String?
+
+  card         Card  @relation(fields: [cardId], references: [id], onDelete: Cascade)
+  assignedTo   User? @relation(fields: [assignedToId], references: [id])
+
+  createdBy    String   @default("Anonymous")
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
 }
 
 model Card {
-  id             String         @id @default(cuid())
-  content        String
-  column         String
-  creatorId      String         
-  retroSessionId String
-  retroSession   RetroSession   @relation(fields: [retroSessionId], references: [id], onDelete: Cascade)
-  isDiscussed    Boolean        @default(false)
-  upvotedBy      String[]       @default([])
-  position       Int            @default(0)
-  createdBy      String         @default("Anonymous")
-  createdAt      DateTime       @default(now())
-  updatedAt      DateTime       @updatedAt
+  id          String   @id @default(cuid())
+  content     String
+  column      String
+  creatorId   String
+  isDiscussed Boolean  @default(false)
+  upvotedBy   String[] @default([])
+  position    Int      @default(0)
+  createdBy   String   @default("Anonymous")
 
+  retroSessionId String
+  retroSession   RetroSession @relation(fields: [retroSessionId], references: [id], onDelete: Cascade)
   actionItems    ActionItem[]
   comments       Comment[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([retroSessionId])
   @@index([createdAt])
@@ -125,15 +218,32 @@ model Comment {
   updatedAt DateTime @updatedAt
 }
 
-// -------------------------
+// --------------------------
 // Many-to-many relationships
 // --------------------------
 
 model UserRetroSession {
-  user       User      @relation(fields: [userId], references: [id])
-  userId     String
-  retroSession RetroSession @relation(fields: [retroSessionId], references: [id])
+  user           User         @relation(fields: [userId], references: [id])
+  userId         String
+  retroSession   RetroSession @relation(fields: [retroSessionId], references: [id])
   retroSessionId String
 
   @@id([userId, retroSessionId])
+}
+
+model BoardMember {
+  userId         String
+  settingsId     String
+
+  user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  settings     BoardSettings @relation(fields: [settingsId], references: [id], onDelete: Cascade)
+
+  role           BoardRole @default(MEMBER)
+  permissionMask BigInt    @default(0)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@id([userId, settingsId])
+  @@index([settingsId])
 }

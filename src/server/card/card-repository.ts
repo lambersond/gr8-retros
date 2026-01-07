@@ -76,15 +76,15 @@ export async function deleteCompletedCardsByBoardId(boardId: string) {
   })
 }
 
-export async function deleteCompletedCardsOlderThan7Days() {
-  const sevenDaysAgo = new Date()
-  sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7)
-  sevenDaysAgo.setHours(0, 0, 0, 0) // Set to midnight
+export async function deleteCompletedCardsOlderThanNDays(days = 7) {
+  const nDaysAgo = new Date()
+  nDaysAgo.setDate(nDaysAgo.getDate() - days)
+  nDaysAgo.setHours(0, 0, 0, 0) // Set to midnight
 
   return prisma.card.deleteMany({
     where: {
       createdAt: {
-        lt: sevenDaysAgo,
+        lt: nDaysAgo,
       },
       isDiscussed: true,
       actionItems: {

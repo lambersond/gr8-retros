@@ -48,6 +48,6 @@ export async function deleteCompletedCardsByBoardId(boardId: string) {
   return repository.deleteCompletedCardsByBoardId(boardId)
 }
 
-export async function deleteCompletedCardsOlderThan7Days() {
-  return repository.deleteCompletedCardsOlderThan7Days()
+export async function deleteCompletedCardsOlderThanNDays(days = 7) {
+  return repository.deleteCompletedCardsOlderThanNDays(days)
 }

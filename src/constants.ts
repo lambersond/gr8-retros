@@ -1,4 +1,4 @@
-import type { ColumnType } from './types'
+import type { ColumnType, SidebarActionType } from './types'
 
 export const COOKIE_KEY_USER_ID = 'gr8retros.userId'
 export const COOKIE_KEY_USER_NAME = 'gr8retros.userName'
@@ -48,3 +48,8 @@ export const MUSIC_OPTIONS = Object.entries(MUSIC).map(([key, music]) => ({
   label: music.name,
   value: music.url,
 }))
+
+export const SIDEBAR_ACTION_TYPES: SidebarActionType = {
+  OPEN_SIDEBAR: 'OPEN_SIDEBAR',
+  CLOSE_SIDEBAR: 'CLOSE_SIDEBAR',
+}

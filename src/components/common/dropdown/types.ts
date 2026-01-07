@@ -17,4 +17,5 @@ export type DropdownProps<S = string, T = string | number> = {
   width?: string
   searchable?: boolean
   searchPlaceholder?: string
+  size?: 'sm' | 'md' | 'lg'
 }

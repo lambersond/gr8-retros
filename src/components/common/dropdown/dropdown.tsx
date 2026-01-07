@@ -1,9 +1,35 @@
 'use client'
 
 import { useState, useRef, useEffect } from 'react'
+import clsx from 'classnames'
 import { ChevronDown } from 'lucide-react'
 import { createPortal } from 'react-dom'
 import type { DropdownOption, DropdownProps } from './types'
+
+// Size variant configurations
+const SIZE_VARIANTS = {
+  sm: {
+    button: 'pl-3 pr-1.5 py-1.5 text-sm',
+    icon: 'size-4',
+    option: 'px-3 py-1.5 text-sm',
+    searchInput: 'px-2 py-1.5 text-xs',
+    label: 'text-xs',
+  },
+  md: {
+    button: 'pl-4 pr-2 py-2 text-md',
+    icon: 'size-5',
+    option: 'px-4 py-2 text-md',
+    searchInput: 'px-3 py-2 text-sm',
+    label: 'text-sm',
+  },
+  lg: {
+    button: 'pl-5 pr-2.5 py-2.5 text-lg',
+    icon: 'size-6',
+    option: 'px-5 py-3 text-lg',
+    searchInput: 'px-4 py-2.5 text-base',
+    label: 'text-base',
+  },
+} as const
 
 export function Dropdown<S, T>({
   options,
@@ -16,6 +42,7 @@ export function Dropdown<S, T>({
   placeholder = 'No options available',
   searchable = false,
   searchPlaceholder = 'Search...',
+  size = 'md',
   ...props
 }: Readonly<DropdownProps<S, T>>) {
   const [open, setOpen] = useState(false)
@@ -33,6 +60,9 @@ export function Dropdown<S, T>({
   const dropdownRef = useRef<HTMLDivElement>(null)
   const buttonRef = useRef<HTMLButtonElement>(null)
   const searchInputRef = useRef<HTMLInputElement>(null)
+
+  // Get size variant classes
+  const sizeClasses = SIZE_VARIANTS[size]
 
   // Filter options based on search term
   const filteredOptions =
@@ -133,7 +163,10 @@ export function Dropdown<S, T>({
             onChange={handleSearchChange}
             onKeyDown={handleSearchKeyDown}
             placeholder={searchPlaceholder}
-            className='w-full px-3 py-2 text-sm bg-page border border-border rounded focus:outline-none focus:ring-1 focus:ring-primary text-text-primary placeholder-text-secondary'
+            className={clsx(
+              'w-full bg-page border border-border rounded focus:outline-none focus:ring-1 focus:ring-primary text-text-primary placeholder-text-secondary',
+              sizeClasses.searchInput,
+            )}
           />
         </div>
       )}
@@ -144,13 +177,18 @@ export function Dropdown<S, T>({
               key={String(option.id)}
               data-testid={`Dropdown__option-${option.id}`}
               onClick={handleSelect(option)}
-              className='w-full text-left px-4 py-2 text-md text-text-secondary hover:text-text-primary hover:bg-tertiary/50 cursor-pointer'
+              className={clsx(
+                'w-full text-left text-text-secondary hover:text-text-primary hover:bg-tertiary/50 cursor-pointer',
+                sizeClasses.option,
+              )}
             >
               {option.label}
             </button>
           ))
         ) : (
-          <div className='px-4 py-2 text-md text-text-secondary italic'>
+          <div
+            className={clsx('text-text-secondary italic', sizeClasses.option)}
+          >
             No options found
           </div>
         )}
@@ -162,7 +200,10 @@ export function Dropdown<S, T>({
     <div className='relative inline-flex flex-col text-left rounded-md w-full'>
       {!!label && (
         <label
-          className='text-sm text-text-secondary font-bold uppercase'
+          className={clsx(
+            'text-text-secondary font-bold uppercase',
+            sizeClasses.label,
+          )}
           htmlFor={name}
         >
           {label}
@@ -175,14 +216,16 @@ export function Dropdown<S, T>({
         type='button'
         data-testid='Dropdown__button'
         onClick={handleToggle}
-        className={`
-          inline-flex justify-between ${width} rounded-md border border-tertiary
-          pl-4 pr-2 py-2 bg-page text-md text-text-primary focus:outline-none
-          cursor-pointer hover:bg-page/75
-        `}
+        className={clsx(
+          'inline-flex justify-between rounded-md border border-tertiary bg-page text-text-primary focus:outline-none cursor-pointer hover:bg-page/75',
+          width,
+          sizeClasses.button,
+        )}
       >
         {choice.label}
-        <ChevronDown className='ml-auto text-secondary/80 size-5' />
+        <ChevronDown
+          className={clsx('ml-auto text-secondary/80', sizeClasses.icon)}
+        />
       </button>
       {globalThis.window !== undefined &&
         createPortal(dropdownList, document.body)}

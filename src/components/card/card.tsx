@@ -4,7 +4,7 @@ import {
   ArrowBigUp,
   CircleAlert,
   CircleCheckBig,
-  MessageSquarePlus,
+  MessageSquareIcon,
   MessageSquareWarning,
   MoreVertical,
   Pencil,
@@ -130,8 +130,8 @@ export function Card({
               </div>
             )}
             <IconButton
-              icon={MessageSquarePlus}
-              tooltip='Add Comment'
+              icon={MessageSquareIcon}
+              tooltip='Comments'
               onClick={openCommentsSidebar}
             />
           </div>

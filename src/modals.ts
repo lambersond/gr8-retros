@@ -6,6 +6,11 @@ export const MODALS = {
       default: module.ConfirmModal,
     })),
   ),
+  ManageUsersModal: lazy(() =>
+    import('./components/modals').then(module => ({
+      default: module.ManageUsersModal,
+    })),
+  ),
   UpsertContentModal: lazy(() =>
     import('./components/modals').then(module => ({
       default: module.UpsertContentModal,

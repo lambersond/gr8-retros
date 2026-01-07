@@ -1,4 +1,4 @@
-import type { ColumnType } from '@/types'
+import type { ColumnType, SidebarActionType } from '@/types'
 
 export type CommentsSidebarState = {
   sidebarOpen: boolean
@@ -7,10 +7,7 @@ export type CommentsSidebarState = {
   boardId: string
 }
 
-export type CommentsSidebarActionType = {
-  OPEN_SIDEBAR: 'OPEN_SIDEBAR'
-  CLOSE_SIDEBAR: 'CLOSE_SIDEBAR'
-}
+export type CommentsSidebarActionType = SidebarActionType
 
 export type CommentsSidebarAction =
   | {

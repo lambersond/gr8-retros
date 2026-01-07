@@ -1,15 +1,16 @@
 'use client'
 
-import {
-  createContext,
-  useContext,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react'
+import { createContext, useContext, useEffect, useMemo, useState } from 'react'
 import { SidebarTrigger } from './sidebar-trigger'
 import type { SidebarProps } from './types'
+
+const SidebarContext = createContext<{
+  onClose?: VoidFunction
+  side?: 'left' | 'right'
+  isOpen?: boolean
+}>({ isOpen: false })
+
+export const useSidebar = () => useContext(SidebarContext)
 
 export function Sidebar({
   children,
@@ -21,45 +22,19 @@ export function Sidebar({
 }: Readonly<SidebarProps>) {
   const isControlled = controlledIsOpen !== undefined
   const [open, setOpen] = useState(false)
-  const sidebarRef = useRef<HTMLDivElement>(null)
 
   const closeSidebar = () => {
-    if (isControlled) {
-      controlledOnClose()
-    } else {
-      setOpen(false)
-    }
+    if (isControlled) controlledOnClose()
+    else setOpen(false)
   }
 
-  const providerValue = useMemo(() => {
-    return { onClose: closeSidebar, side, isOpen: open }
-  }, [side, open])
+  const providerValue = useMemo(
+    () => ({ onClose: closeSidebar, side, isOpen: open }),
+    [side, open],
+  )
 
   useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      const elementId = (event.target as HTMLElement).id
-      if (
-        sidebarRef.current &&
-        elementId === 'sidebar__overlay' &&
-        !sidebarRef.current.contains(event.target as Node)
-      ) {
-        closeSidebar()
-      }
-    }
-
-    if (open) {
-      document.addEventListener('mousedown', handleClickOutside)
-    }
-
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside)
-    }
-  }, [open])
-
-  useEffect(() => {
-    if (controlledIsOpen !== undefined) {
-      setOpen(controlledIsOpen)
-    }
+    if (controlledIsOpen !== undefined) setOpen(controlledIsOpen)
   }, [controlledIsOpen])
 
   const sideClasses = {
@@ -71,48 +46,35 @@ export function Sidebar({
       position: 'right-0',
       transform: open ? 'translate-x-0' : 'translate-x-full',
     },
-  }
+  } as const
 
   const currentSide = sideClasses[side]
 
   return (
     <>
       {!!trigger && <SidebarTrigger setOpen={setOpen} trigger={trigger} />}
+
+      {open && (
+        <button
+          type='button'
+          data-testid='sidebar__overlay'
+          aria-label='Close sidebar'
+          className='fixed inset-0 z-10'
+          onClick={closeSidebar}
+          onKeyDown={e => {
+            if (e.key === 'Escape') closeSidebar()
+          }}
+        />
+      )}
+
       <div
-        ref={sidebarRef}
         data-testid='sidebar'
-        className={`overflow-y-auto max-h-[calc(100vh_-_64px)] fixed top-16 h-full bg-appbar shadow-lg transform transition-transform z-50 ${currentSide.position} ${currentSide.transform} ${className}`}
+        className={`fixed top-16 z-50 h-full max-h-[calc(100vh_-_64px)] overflow-y-auto bg-appbar shadow-lg transform transition-transform ${currentSide.position} ${currentSide.transform} ${className}`}
       >
         <SidebarContext.Provider value={providerValue}>
           {open && children}
         </SidebarContext.Provider>
       </div>
-      {open && (
-        <input
-          type='image'
-          id='sidbar__overlay'
-          style={{ scale: 1.25 }}
-          data-testid='sidebar__overlay'
-          className='fixed inset-0 bg-black/01 z-40'
-          tabIndex={0}
-          aria-label='Close sidebar'
-          onClick={closeSidebar}
-          onKeyDown={e => {
-            if (e.key === 'Enter' || e.key === ' ') {
-              e.preventDefault()
-              closeSidebar()
-            }
-          }}
-        />
-      )}
     </>
   )
 }
-
-const SidebarContext = createContext<{
-  onClose?: VoidFunction
-  side?: 'left' | 'right'
-  isOpen?: boolean
-}>({ isOpen: false })
-
-export const useSidebar = () => useContext(SidebarContext)

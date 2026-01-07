@@ -1,66 +1,62 @@
 'use server'
 
-/* eslint-disable unicorn/no-null */
 import prisma from '@/clients/prisma'
 
-async function getBoardById(id: string) {
-  return prisma.retroSession.findUnique({
+export async function getOrCreateBoardById(id: string) {
+  return prisma.retroSession.upsert({
     where: { id },
-    include: {
-      users: {
-        select: { userId: true },
-      },
-      cards: {
-        orderBy: { createdAt: 'asc' },
-        include: {
-          actionItems: true,
-          comments: true,
-        },
-      },
-    },
-  })
-}
-
-async function createBoardByIdAndUserId(id: string, userId: string) {
-  return prisma.retroSession.create({
-    data: {
+    create: {
       id,
       name: id,
-      creatorId: userId,
-      users: { create: [] },
+      settings: { create: {} },
+    },
+    update: {
+      settings: {
+        upsert: {
+          create: {},
+          update: {},
+        },
+      },
+      updatedAt: new Date(),
     },
     include: {
-      users: {
-        select: { userId: true },
+      settings: {
+        include: {
+          members: {
+            select: {
+              permissionMask: true,
+              role: true,
+              user: {
+                select: {
+                  id: true,
+                  name: true,
+                  paymentTier: true,
+                },
+              },
+            },
+          },
+          invite: {
+            select: {
+              token: true,
+              expiresAt: true,
+            },
+          },
+        },
       },
       cards: {
         orderBy: { createdAt: 'asc' },
-        include: {
-          actionItems: true,
-          comments: true,
-        },
+        include: { actionItems: true, comments: true },
       },
     },
   })
 }
 
-export async function getOrCreateBoardByIdAndUserId(
-  id: string,
-  userId: string,
-) {
-  let board = await getBoardById(id)
-  board ??= await createBoardByIdAndUserId(id, userId)
-
-  // If board is not private, return it to anyone
-  if (!board.isPrivate) return board
-
-  // If private only return to authorized users
-  if (!userId) return null
-
-  const isMember = board.users.some(u => u.userId === userId)
-
-  if (isMember) return board
-
-  // Board is private and user not authorized
-  return null
+export async function deleteBoardsOlderThanDate(cutoffDate: Date) {
+  return prisma.retroSession.deleteMany({
+    where: {
+      updatedAt: {
+        lt: cutoffDate,
+      },
+    },
+  })
 }

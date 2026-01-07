@@ -14,6 +14,7 @@ export function Modal({
   title,
   subtitle,
   width = 'w-sm md:w-md',
+  fullHeight = false,
 }: Readonly<ModalProps>) {
   const headerRef = useRef<HTMLDivElement>(null)
   const [headerHeight, setHeaderHeight] = useState(52)
@@ -53,7 +54,7 @@ export function Modal({
       />
       <div
         data-testid='modal'
-        className={`relative bg-paper max-w-2xl ${width} z-1000 overflow-hidden shadow-lg h-full min-w-full sm:min-w-sm  sm:rounded-xl sm:h-fit`}
+        className={`relative bg-paper max-w-2xl ${width} z-1000 overflow-hidden shadow-lg h-full min-w-full sm:min-w-sm  sm:rounded-xl ${fullHeight ? '' : 'sm:h-fit'}`}
       >
         <div className={headerClassNames} ref={headerRef}>
           <div>

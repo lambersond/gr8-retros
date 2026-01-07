@@ -19,5 +19,5 @@ export async function RetroBoardContainer({
     )
   }
 
-  return <RetroBoard board={board} />
+  return <RetroBoard board={board as any} />
 }
