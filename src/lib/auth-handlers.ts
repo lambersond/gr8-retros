@@ -2,12 +2,10 @@ import { cookies } from 'next/headers'
 import { NextRequest, NextResponse } from 'next/server'
 import { auth } from '@/auth'
 import { COOKIE_KEY_USER_ID } from '@/constants'
-import { BoardRole } from '@/types'
 
 type User = {
   id: string
   name: string
-  boards: Record<string, { settingsId: string; role: BoardRole }> | undefined
 }
 
 type AuthenticatedHandlerWithContext<T = any> = (
@@ -31,7 +29,6 @@ export function withUser<T = any>(handler: AuthenticatedHandlerWithContext<T>) {
     return handler(req, context, {
       id: session?.user?.id || cookieUserId!,
       name: session?.user?.name || cookieUserName || 'Anonymous User',
-      boards: session?.user?.boards,
     })
   }
 }

@@ -33,19 +33,24 @@ const actionHandlers: {
     )
     return {
       ...state,
-      boardSettingsWithPermissions, // TODO: remove permissions from here
+      boardSettingsWithPermissions,
       userPermissions: getUserBoardPermissions(userRole),
       user: getUserLevels(userRole),
     }
   },
 
-  [BOARD_SETTINGS_ACTION_TYPES.UPDATE_BOARD_SETTINGS]: (state, action) => ({
-    ...state,
-    settings: {
-      ...state.settings,
-      ...action.payload,
-    },
-  }),
+  [BOARD_SETTINGS_ACTION_TYPES.UPDATE_BOARD_SETTINGS]: (state, action) => {
+    const { members, ...updatedSettings } = action.payload
+
+    return {
+      ...state,
+      settings: {
+        ...state.settings,
+        ...updatedSettings,
+        members: members ?? state.settings.members,
+      },
+    }
+  },
 
   [BOARD_SETTINGS_ACTION_TYPES.CREATE_INVITATION_LINK]: (state, action) => {
     const invite = action.payload
@@ -65,6 +70,54 @@ const actionHandlers: {
       invite: undefined,
     },
   }),
+  [BOARD_SETTINGS_ACTION_TYPES.NEW_MEMBER_ADDED]: (state, action) => {
+    const newMember = action.payload
+    const existingMember = state.settings.members.find(
+      member => member.user.id === newMember.user.id,
+    )
+    if (existingMember) {
+      return state
+    }
+
+    return {
+      ...state,
+      settings: {
+        ...state.settings,
+        members: [...state.settings.members, newMember],
+      },
+    }
+  },
+
+  [BOARD_SETTINGS_ACTION_TYPES.MEMBER_REMOVED]: (state, action) => {
+    const { userId } = action.payload
+    return {
+      ...state,
+      settings: {
+        ...state.settings,
+        members: state.settings.members.filter(
+          member => member.user.id !== userId,
+        ),
+      },
+    }
+  },
+
+  [BOARD_SETTINGS_ACTION_TYPES.UPDATE_MEMBER_ROLE]: (state, action) => {
+    const { userId, newRole } = action.payload
+    return {
+      ...state,
+      settings: {
+        ...state.settings,
+        members: state.settings.members.map(member =>
+          member.user.id === userId
+            ? {
+                ...member,
+                role: newRole,
+              }
+            : member,
+        ),
+      },
+    }
+  },
 }
 
 export function reducer(

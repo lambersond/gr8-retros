@@ -29,7 +29,7 @@ export async function joinBoardByInviteCode(
     throw new Error('Invite code has expired')
   }
 
-  await prisma.$transaction([
+  const [member] = await prisma.$transaction([
     prisma.boardMember.upsert({
       where: {
         userId_settingsId: {
@@ -43,10 +43,23 @@ export async function joinBoardByInviteCode(
         role: 'MEMBER',
       },
       update: {},
+      select: {
+        role: true,
+        permissionMask: true,
+        user: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+      },
     }),
   ])
 
-  return invite.boardSettings.retroSessionId
+  return {
+    member,
+    boardId: invite.boardSettings.retroSessionId,
+  }
 }
 
 export async function getBoardInviteByToken(token: string) {

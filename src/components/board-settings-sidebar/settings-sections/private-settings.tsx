@@ -1,5 +1,5 @@
 import { format } from 'date-fns'
-import { Copy, Link, Unlink } from 'lucide-react'
+import { Check, Copy, Link, Unlink } from 'lucide-react'
 import { Checkbox, IconButton, LoadingButton } from '@/components/common'
 import {
   SettingsToggle,
@@ -45,7 +45,7 @@ export function PrivateSettings() {
           defaultChecked={subsettings.openAccess.enabled}
           label={subsettings.openAccess.title}
           size='sm'
-          disabled={!setting.enabled}
+          disabled={userPermissions['private.openAccess'] === false}
           onChange={updateBoardSetting(
             subsettings.openAccess.key!,
             !subsettings.openAccess.enabled,
@@ -62,6 +62,7 @@ export function PrivateSettings() {
                   size='sm'
                   intent='info'
                   onClick={copyInvitationLink}
+                  actionIcon={Check}
                 />
               </div>
               <div className='flex text-sm items-center tracking-tight gap-1 text-text-secondary'>
@@ -93,7 +94,7 @@ export function PrivateSettings() {
             onClick={createInvitationLink}
             hasEdit={userPermissions['private.createLink']}
           >
-            {subsettings.createLink.title}
+            Create An Invitation Link
           </LoadingButton>
         )}
       </SubsettingsContainer>

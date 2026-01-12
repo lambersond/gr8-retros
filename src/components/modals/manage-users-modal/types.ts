@@ -1,5 +1,6 @@
 import type { ModalProps } from '../types'
-import type { BoardMember, BoardRole } from '@/types'
+import type { BoardRole } from '@/enums'
+import type { BoardMember } from '@/types'
 
 export interface ManageUsersModalProps extends ModalProps {
   members: BoardMember[]

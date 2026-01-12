@@ -14,7 +14,7 @@ export async function RetroBoardContainer({
   if (!board) {
     return (
       <p className='flex flex-col w-screen justify-center items-center h-full p-3 text-4xl'>
-        Board not found.
+        This board is private.
       </p>
     )
   }

@@ -17,11 +17,6 @@ type ValueSubsetting = BaseSubsetting & {
   value: number
 }
 
-type ButtonSubsetting = BaseSubsetting & {
-  kind: 'button'
-  enabled: boolean
-}
-
 interface Setting {
   canEdit?: boolean
   enabled: boolean
@@ -36,10 +31,6 @@ interface Setting {
 interface PrivateSetting extends Setting {
   subsettings: {
     openAccess: ToggleSubsetting
-    createLink: ButtonSubsetting
-    copyLink: ButtonSubsetting
-    revokeLink: ButtonSubsetting
-    manageUsers: ButtonSubsetting
   }
 }
 

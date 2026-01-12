@@ -1,5 +1,6 @@
 import type { BoardSettingsReducerActionType } from './reducer-action-type'
-import type { BoardInvite, BoardRole, BoardSettings } from '@/types'
+import type { BoardRole } from '@/enums'
+import type { BoardInvite, BoardSettings } from '@/types'
 
 export type BoardSettingsReducerAction =
   | {
@@ -22,4 +23,28 @@ export type BoardSettingsReducerAction =
     }
   | {
       type: BoardSettingsReducerActionType['REVOKE_INVITATION_LINK']
+    }
+  | {
+      type: BoardSettingsReducerActionType['NEW_MEMBER_ADDED']
+      payload: {
+        role: BoardRole
+        permissionMask: number
+        user: {
+          id: string
+          name: string
+        }
+      }
+    }
+  | {
+      type: BoardSettingsReducerActionType['MEMBER_REMOVED']
+      payload: {
+        userId: string
+      }
+    }
+  | {
+      type: BoardSettingsReducerActionType['UPDATE_MEMBER_ROLE']
+      payload: {
+        userId: string
+        newRole: BoardRole
+      }
     }

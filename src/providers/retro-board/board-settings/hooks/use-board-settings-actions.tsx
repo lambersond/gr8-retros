@@ -2,12 +2,14 @@ import { useChannel } from 'ably/react'
 import { BOARD_SETTINGS_ACTION_TYPES } from '../constants'
 import { useBoardSettings } from './use-board-settings'
 import { useBoardSettingsDispatcher } from './use-board-settings-dispatcher'
+import { useBoardMembership } from '@/providers/board-memberships'
 import { copyTextToClipboard } from '@/utils/copy-text-to-clipboard'
 import type { BoardSettings } from '@/types'
 
 export function useBoardSettingsActions() {
   const { boardId, id } = useBoardSettings()
   const { openSidebar, closeSidebar } = useBoardSettingsDispatcher()
+  const { ensureBoardInCache } = useBoardMembership()
   const { publish } = useChannel({ channelName: boardId })
 
   function openSidebarWithSettings() {
@@ -51,12 +53,12 @@ export function useBoardSettingsActions() {
     }
 
     const updatedSetting: BoardSettings = await resp.json()
-    publish({
-      data: {
-        type: BOARD_SETTINGS_ACTION_TYPES.UPDATE_BOARD_SETTINGS,
-        payload: updatedSetting,
-      },
+
+    publish('claim-board', {
+      type: BOARD_SETTINGS_ACTION_TYPES.UPDATE_BOARD_SETTINGS,
+      payload: updatedSetting,
     })
+    void ensureBoardInCache(boardId)
   }
 
   async function createInvitationLink() {

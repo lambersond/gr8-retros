@@ -4,6 +4,7 @@ import { SessionProvider } from 'next-auth/react'
 import { AppBar } from '../app-bar'
 import { ModalProvider } from '../modals/modal-provider'
 import { AblyProvider } from '@/providers/ably'
+import { BoardMembershipProvider } from '@/providers/board-memberships'
 
 export function SessionWrapper({
   children,
@@ -32,7 +33,9 @@ function Providers({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <AblyProvider>
       <ModalProvider>
-        <SessionProvider>{children}</SessionProvider>
+        <SessionProvider>
+          <BoardMembershipProvider>{children}</BoardMembershipProvider>
+        </SessionProvider>
       </ModalProvider>
     </AblyProvider>
   )

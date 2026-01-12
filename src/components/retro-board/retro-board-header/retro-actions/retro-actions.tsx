@@ -69,7 +69,7 @@ export function RetroActions({ id }: Readonly<{ id: string }>) {
       >
         <IconButton icon={Hammer} intent='primary' size='lg' />
       </Popover>
-      <div className='hidden'>
+      <div className=''>
         {isAuthenticated && (
           <IconButton
             icon={Settings}

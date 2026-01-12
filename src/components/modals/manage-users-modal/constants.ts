@@ -1,5 +1,5 @@
 import type { DropdownOption } from '@/components/common'
-import type { BoardRole } from '@/types'
+import type { BoardRole } from '@/enums'
 
 export const ROLES = {
   ADMIN: { id: 2, label: 'Admin', value: 'ADMIN' },

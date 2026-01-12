@@ -17,10 +17,7 @@ export const DELETE = withUser(
   ) => {
     const { settingsId } = await params
 
-    await boardInviteService.deleteInviteByBoardSettingsId(
-      settingsId,
-      user.boards,
-    )
+    await boardInviteService.deleteInviteByBoardSettingsId(settingsId, user.id)
 
     return NextResponse.json({ success: true })
   },

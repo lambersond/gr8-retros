@@ -18,3 +18,24 @@ export async function getBoardPermissions(
     },
   })
 }
+
+export async function getUserById(userId: string) {
+  return prisma.user.findUnique({
+    where: { id: userId },
+    select: {
+      id: true,
+      name: true,
+      email: true,
+      paymentTier: true,
+      boards: {
+        select: {
+          settings: {
+            select: { id: true, retroSessionId: true },
+          },
+          role: true,
+          settingsId: true,
+        },
+      },
+    },
+  })
+}

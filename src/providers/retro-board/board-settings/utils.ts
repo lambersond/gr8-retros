@@ -2,7 +2,8 @@ import { Clock, MessageSquare, Music, ThumbsUp, UserLock } from 'lucide-react'
 import { BASE_SETTINGS } from './constants'
 import { hasMinimumRole, PermissionKey, userHasPermission } from '@/lib/roles'
 import type { BoardSettingsWithPermissions } from './types'
-import type { BoardSettings, BoardRole } from '@/types'
+import type { BoardRole } from '@/enums'
+import type { BoardSettings } from '@/types'
 
 const getBaseSettings = (): BoardSettingsWithPermissions => {
   const baseSettings = structuredClone(BASE_SETTINGS) as any
@@ -28,27 +29,6 @@ export function getSettingsWithPermissions(
     settings.privateOpenAccess
   baseSettings.private.subsettings.openAccess.canEdit = userHasPermission(
     'private.openAccess',
-    userRole,
-  )
-  baseSettings.private.subsettings.createLink.enabled =
-    settings.isPrivate && !settings.invite
-  baseSettings.private.subsettings.createLink.canEdit = userHasPermission(
-    'private.createLink',
-    userRole,
-  )
-  baseSettings.private.subsettings.copyLink.enabled = !!settings.invite
-  baseSettings.private.subsettings.copyLink.canEdit = userHasPermission(
-    'private.copyLink',
-    userRole,
-  )
-  baseSettings.private.subsettings.copyLink.enabled = !!settings.invite
-  baseSettings.private.subsettings.revokeLink.canEdit = userHasPermission(
-    'private.revokeLink',
-    userRole,
-  )
-  baseSettings.private.subsettings.copyLink.enabled = settings.isPrivate
-  baseSettings.private.subsettings.manageUsers.canEdit = userHasPermission(
-    'private.manageUsers',
     userRole,
   )
 

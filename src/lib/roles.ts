@@ -1,4 +1,4 @@
-import { BoardRole } from '@/types'
+import { BoardRole } from '@/enums'
 
 export type PermissionKey =
   | 'private'
@@ -17,7 +17,7 @@ export type PermissionKey =
   | 'upvoting.anytime'
   | 'upvoting.limit'
 
-const ROLE_HIERARCHY: Record<BoardRole, number> = {
+export const ROLE_HIERARCHY: Record<BoardRole, number> = {
   [BoardRole.VIEWER]: 0,
   [BoardRole.MEMBER]: 1,
   [BoardRole.FACILITATOR]: 2,

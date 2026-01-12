@@ -2,7 +2,6 @@ import { PrismaAdapter } from '@auth/prisma-adapter'
 import NextAuth from 'next-auth'
 import { providers } from './auth-providers'
 import prisma from './clients/prisma'
-import { BoardRole } from './types'
 
 export const { auth, handlers, signIn, signOut } = NextAuth({
   providers: providers(),
@@ -11,7 +10,7 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
   trustHost: true,
   session: {
     strategy: 'jwt',
-    maxAge: +(process.env.AUTH_MAX_AGE as unknown as number) || 30 * 86_400,
+    maxAge: +(process.env.AUTH_MAX_AGE as unknown as number) || 7 * 86_400, // 7 days
     updateAge: 86_400,
   },
   callbacks: {
@@ -29,28 +28,11 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
         where: { id: token.id as string },
         select: {
           id: true,
-          boards: {
-            select: {
-              settings: {
-                select: { id: true, retroSessionId: true },
-              },
-              role: true,
-            },
-          },
+          paymentTier: true,
         },
       })
 
-      const boards: Record<string, { settingsId: string; role: BoardRole }> = {}
-
-      if (userData?.boards) {
-        for (const b of userData.boards) {
-          boards[b.settings.retroSessionId] = {
-            settingsId: b.settings.id,
-            role: b.role,
-          }
-        }
-      }
-      session.user.boards = boards
+      session.user.paymentTier = userData?.paymentTier
       return session
     },
   },

@@ -1,4 +1,4 @@
-import { useCallback } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { Trash } from 'lucide-react'
 import { ROLES } from './constants'
 import { Dropdown, IconButton, Modal } from '@/components/common'
@@ -15,6 +15,12 @@ export function ManageUsersModal({
   onRemoveUser,
 }: Readonly<ManageUsersModalProps>) {
   const { closeModal } = useModals()
+  const [membersList, setMembersList] = useState(members)
+
+  useEffect(() => {
+    if (!open) return
+    setMembersList(members)
+  }, [open, members])
 
   const onClose = () => {
     closeModal('ManageUsersModal')
@@ -34,6 +40,7 @@ export function ManageUsersModal({
     }
 
   const handleRemoveUser = (userId: string) => () => {
+    setMembersList(prev => prev.filter(member => member.user.id !== userId))
     onRemoveUser(userId)
   }
 
@@ -80,7 +87,7 @@ export function ManageUsersModal({
 
   return (
     <Modal title='Registered Users' isOpen={open} onClose={onClose}>
-      {members.map(member => (
+      {membersList.map(member => (
         <div
           key={member.user.id}
           className='p-2 border-b first:border-t flex justify-between items-center border-neutral-300'

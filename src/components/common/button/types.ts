@@ -1,5 +1,6 @@
 export type IconButtonProps = {
   icon: React.ElementType
+  actionIcon?: React.ElementType
   onClick?: (event: React.MouseEvent<HTMLButtonElement>) => void
   tooltip?: string
   size?: 'sm' | 'md' | 'lg' | 'xl'

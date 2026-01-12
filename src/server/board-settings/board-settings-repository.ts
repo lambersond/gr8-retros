@@ -1,6 +1,7 @@
 /* eslint-disable camelcase */
 'use server'
 
+import { BoardRole } from '@prisma/client'
 import prisma from '@/clients/prisma'
 
 export async function updateSettingById(
@@ -62,6 +63,52 @@ export async function claimBoardSettings(settingsId: string, userId: string) {
               email: true,
             },
           },
+        },
+      },
+    },
+  })
+}
+
+export async function updateBoardMemberRole(
+  settingsId: string,
+  userId: string,
+  newRole: BoardRole,
+) {
+  return prisma.boardMember.update({
+    where: {
+      userId_settingsId: {
+        userId,
+        settingsId,
+      },
+    },
+    data: {
+      role: newRole,
+    },
+    select: {
+      userId: true,
+      role: true,
+      settings: {
+        select: {
+          retroSessionId: true,
+        },
+      },
+    },
+  })
+}
+
+export async function removeBoardMember(settingsId: string, userId: string) {
+  return prisma.boardMember.delete({
+    where: {
+      userId_settingsId: {
+        userId,
+        settingsId,
+      },
+    },
+    select: {
+      userId: true,
+      settings: {
+        select: {
+          retroSessionId: true,
         },
       },
     },

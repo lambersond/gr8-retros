@@ -17,6 +17,8 @@
   --color-primary: oklch(12.9% 0.042 264.695);
   --color-secondary: oklch(44.6% 0.043 257.281);
   --color-tertiary: oklch(92.9% 0.013 255.508);
+  --color-border-light: oklch(80.5% 0.015 286.067); /* custom from zinc-400 */
+  --color-border-dark: oklch(34.3% 0.03 256.848); /* custom from zinc-700 */
   
   --color-hover: #0000003F;
   
@@ -28,7 +30,7 @@
   
   /* Text colors */
   --color-text-primary: oklch(14.5% 0 0);
-  --color-text-secondary: oklch(55.6% 0 0);
+  --color-text-secondary: oklch(45.6% 0 0);
   --color-text-tertiary: oklch(70.8% 0 0);
 
   /* Retro colors[green, yellow, red, sky] | 50, 100, 400, 600 */

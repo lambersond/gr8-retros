@@ -1,4 +1,12 @@
+import { PaymentTier } from '@/enums'
 import type { ColumnType, SidebarActionType } from './types'
+
+export const MAX_BOARDS_PER_SUBSCRIPTION = {
+  [PaymentTier.FREE]: 3,
+  [PaymentTier.SUPPORTER]: 10,
+  [PaymentTier.BELIEVER]: 50,
+  [PaymentTier.CHAMPION]: 50, // Unlimited boards within their organization
+}
 
 export const COOKIE_KEY_USER_ID = 'gr8retros.userId'
 export const COOKIE_KEY_USER_NAME = 'gr8retros.userName'

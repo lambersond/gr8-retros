@@ -2,11 +2,29 @@
 
 import { userService } from '../user'
 import * as repository from './board-invite-repository'
+import { publishMessageToChannel } from '@/lib/ably'
 import { userHasPermission } from '@/lib/roles'
-import { BoardRole } from '@/types'
 
 export async function acceptBoardInvite(inviteCode: string, userId: string) {
-  return repository.joinBoardByInviteCode(inviteCode, userId)
+  const { boardId, member } = await repository.joinBoardByInviteCode(
+    inviteCode,
+    userId,
+  )
+
+  const memberData = {
+    ...member,
+    permissionMask: Number(member.permissionMask),
+  }
+
+  await publishMessageToChannel(boardId, {
+    name: 'user-joined',
+    data: {
+      type: 'NEW_MEMBER_ADDED',
+      payload: memberData,
+    },
+  })
+
+  return boardId
 }
 
 export async function getBoardInviteByToken(token: string) {
@@ -30,12 +48,15 @@ export async function createBoardInvite(
 
 export async function deleteInviteByBoardSettingsId(
   boardSettingsId: string,
-  userBoards:
-    | Record<string, { settingsId: string; role: BoardRole }>
-    | undefined,
+  userId: string,
 ) {
-  const userBoardRole = userBoards
-    ? Object.values(userBoards).find(
+  const user = await userService.getUserById(userId)
+  if (!user) {
+    throw new Error('User not found')
+  }
+
+  const userBoardRole = user.boards
+    ? Object.values(user.boards).find(
         board => board.settingsId === boardSettingsId,
       )?.role
     : undefined

@@ -1,16 +1,23 @@
 'use client'
 
+import { useRef, useState } from 'react'
 import clsx from 'classnames'
 import { Tooltip } from '../tooltip'
 import type { IconButtonProps } from './types'
 
 export function IconButton({
   icon: Icon,
+  actionIcon: ActionIcon,
   onClick,
   tooltip,
   size = 'md',
   intent = 'normal',
 }: Readonly<IconButtonProps>) {
+  const timerRef = useRef<NodeJS.Timeout | undefined>(undefined)
+  const [loadingState, setLoadingState] = useState<
+    'idle' | 'loading' | 'loaded'
+  >('idle')
+
   const sizeClasses = clsx({
     'size-4': size === 'sm',
     'size-5': size === 'md',
@@ -31,12 +38,34 @@ export function IconButton({
     'flex items-center text-sm p-1 rounded cursor-pointer h-fit',
     intentClasses,
   )
+  const handleClick = async (
+    e: React.MouseEvent<HTMLButtonElement, MouseEvent>,
+  ) => {
+    setLoadingState('loading')
+    if (onClick) {
+      await Promise.resolve(onClick(e))
+    }
+    setLoadingState('loaded')
+
+    clearTimeout(timerRef.current)
+
+    timerRef.current = setTimeout(() => {
+      setLoadingState('idle')
+    }, 1500)
+  }
 
   if (tooltip) {
     return (
       <Tooltip title={tooltip} placement='bottom' asChild>
-        <button className={buttonClasses} onClick={onClick}>
-          <Icon className={sizeClasses} />
+        <button
+          className={buttonClasses}
+          onClick={ActionIcon ? handleClick : onClick}
+        >
+          {loadingState === 'loaded' && ActionIcon ? (
+            <ActionIcon className={sizeClasses} />
+          ) : (
+            <Icon className={sizeClasses} />
+          )}
         </button>
       </Tooltip>
     )

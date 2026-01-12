@@ -1,4 +1,4 @@
-import type { BoardRole, PaymentTier } from '@/types'
+import type { BoardRole, PaymentTier } from '@/enums'
 
 export type ColumnType = 'GOOD' | 'MEH' | 'BAD' | 'SHOUTOUT'
 

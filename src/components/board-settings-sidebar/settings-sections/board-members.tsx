@@ -6,11 +6,12 @@ import {
   useBoardPermissions,
   useBoardSettings,
 } from '@/providers/retro-board/board-settings'
-// TODO: implement adding/removing members and changing roles
+
 export function BoardMembers() {
-  const { boardTier } = useBoardSettings()
+  const { boardTier, id } = useBoardSettings()
   const members = useBoardMembers()
   const {
+    canClaimBoard,
     user: { hasAdmin },
   } = useBoardPermissions()
   const { openModal } = useModals()
@@ -25,19 +26,33 @@ export function BoardMembers() {
       hasEdit: hasAdmin,
       enableAdminElection: boardTier !== 'FREE',
       onRoleChange(userId, newRole) {
-        console.warn('Change role for user:', userId, newRole)
+        fetch(`/api/board-settings/${id}/member`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ memberUserId: userId, newRole }),
+        })
       },
       onRemoveUser(userId) {
-        console.warn('Remove user with ID:', userId)
+        fetch(`/api/board-settings/${id}/member`, {
+          method: 'DELETE',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ memberUserId: userId }),
+        })
       },
     })
   }
+
+  if (canClaimBoard) return
 
   return (
     <button
       onClick={handleOpenManageUsersModal}
       disabled={members.length === 0}
-      className='w-full flex items-center justify-between px-4 py-3 bg-neutral-50 border-2 border-neutral-300 rounded-lg hover:bg-white transition-colors cursor-pointer'
+      className='w-full flex items-center justify-between px-4 py-3 bg-neutral-50 border border-border-light hover:border-primary-new rounded-lg hover:bg-white transition-colors cursor-pointer'
     >
       <div className='flex items-center gap-2'>
         <Users className='size-5 text-primary-new' />

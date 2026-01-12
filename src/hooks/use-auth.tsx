@@ -11,6 +11,7 @@ import {
 import { v7 as uuidv7 } from 'uuid'
 import { useFeatureFlags } from './use-feature-flags'
 import { COOKIE_KEY_USER_ID, COOKIE_KEY_USER_NAME } from '@/constants'
+import { PaymentTier } from '@/enums'
 import { generateUsername } from '@/utils/username-generator'
 
 type AnonymousUser = { id: string; name: string }
@@ -82,14 +83,13 @@ export function useAuth() {
 
   const effective = useMemo(() => {
     const isAuthenticated = status === 'authenticated' && !!session?.user?.id
-    const boards = session?.user.boards ?? {}
 
     const id = isAuthenticated ? session.user.id : (anonymousUser?.id ?? '')
     const name =
       (isAuthenticated ? session.user.name : anonymousUser?.name) ??
       'Anonymous User'
 
-    return { isAuthenticated, id, name, boards }
+    return { isAuthenticated, id, name }
   }, [anonymousUser?.id, anonymousUser?.name, session, status])
 
   const user = useMemo(() => {
@@ -98,16 +98,9 @@ export function useAuth() {
       name: effective.name,
       email: session?.user?.email ?? '',
       image: session?.user?.image ?? '/no-image.jpg',
-      boards: effective.boards,
+      paymentTier: session?.user?.paymentTier ?? PaymentTier.FREE,
     }
-  }, [
-    effective.id,
-    effective.name,
-    effective.boards,
-    session?.user?.email,
-    session?.user?.id,
-    session?.user?.image,
-  ])
+  }, [effective.id, effective.name, session?.user])
 
   const apiEnabled = useMemo(() => {
     return {

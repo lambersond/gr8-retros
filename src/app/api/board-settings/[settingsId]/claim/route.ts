@@ -22,6 +22,13 @@ export const PUT = withUser(
       userId,
     )
 
+    if ('error' in settings) {
+      return NextResponse.json(
+        { error: settings.error, message: settings.message },
+        { status: 400 },
+      )
+    }
+
     return NextResponse.json(settings)
   },
 )

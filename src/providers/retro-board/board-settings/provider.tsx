@@ -12,7 +12,7 @@ import { BoardSettingsMessageManager } from './board-settings-message-manager'
 import { BOARD_SETTINGS_ACTION_TYPES } from './constants'
 import { reducer } from './reducer'
 import { createInitialState } from './utils'
-import { useAuth } from '@/hooks/use-auth'
+import { useBoardMembership } from '@/providers/board-memberships'
 import type { BoardSettingsReducerAction, BoardSettingsState } from './types'
 import type { BoardSettings } from '@/types'
 
@@ -32,17 +32,18 @@ export function BoardSettingsProvider({
   children: ReactNode
   settings: BoardSettings
 }>) {
-  const { user } = useAuth()
+  const { getRole } = useBoardMembership()
   const [state, dispatch] = useReducer(reducer, settings, createInitialState)
 
   useEffect(() => {
+    const userRole = getRole(boardId)
     dispatch({
       type: BOARD_SETTINGS_ACTION_TYPES.UPDATE_PERMISSIONS,
       payload: {
-        userRole: user.boards?.[state.settings.retroSessionId]?.role,
+        userRole,
       },
     })
-  }, [state.settings, user.boards])
+  }, [state.settings, getRole])
 
   return (
     <BoardSettingsCtx.Provider value={state}>
