@@ -49,7 +49,9 @@ export async function JoinLink({
         )}
 
         <div className='flex flex-col gap-3'>
-          <GoogleButton redirectTo={process.env.NEXT_PUBLIC_SITE_URL!} />
+          <GoogleButton
+            redirectTo={`${process.env.NEXT_PUBLIC_SITE_URL}/invite/${token}`}
+          />
           {canAccessAsGuest && (
             <Link
               className='inline-flex items-center cursor-pointer justify-center rounded-md border border-zinc-700 bg-zinc-600 px-4 py-2.5 text-base font-medium text-zinc-100 hover:bg-zinc-700 focus:outline-none focus:ring-2 focus:ring-zinc-400/50'
