@@ -1,6 +1,7 @@
 export { BoardMembers } from './board-members'
 export { ClaimBoard } from './claim-board'
 export { CommentsSettings } from './comments-settings'
+export { DangerZoneSettings } from './danger-zone-settings'
 export { MusicSettings } from './music-settings'
 export { PrivateSettings } from './private-settings'
 export { TimerSettings } from './timer-settings'

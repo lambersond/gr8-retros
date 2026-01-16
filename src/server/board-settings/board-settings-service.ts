@@ -5,13 +5,34 @@ import * as repository from './board-settings-repository'
 import { MAX_BOARDS_PER_SUBSCRIPTION } from '@/constants'
 import { BoardRole } from '@/enums'
 import { publishMessageToChannel } from '@/lib/ably'
+import { SETTINGS_ROLE_MAP, userHasPermission } from '@/lib/roles'
 
 export async function updateSettingById(
   id: string,
   userId: string,
-  patch: Record<string, any>,
+  patch: Record<keyof typeof SETTINGS_ROLE_MAP, any>,
 ) {
-  return repository.updateSettingById(id, userId, patch)
+  const userBoardRole = await userService.getUserBoardRole(userId, id)
+
+  for (const key of Object.keys(patch)) {
+    const permissionKey = SETTINGS_ROLE_MAP[key]
+    if (!userHasPermission(permissionKey, userBoardRole)) {
+      return {
+        error: 'INSUFFICIENT_PERMISSIONS',
+        message: 'User does not have permission to update settings',
+      }
+    }
+  }
+
+  try {
+    const newSettings = await repository.updateSettingById(id, userId, patch)
+    return newSettings
+  } catch {
+    return {
+      error: 'UPDATE_FAILED',
+      message: 'Failed to update board settings',
+    }
+  }
 }
 
 export async function claimBoardSettings(settingsId: string, userId: string) {
@@ -92,4 +113,24 @@ async function userCanManageBoardUsers(userId: string, settingsId: string) {
   }
 
   return hasPermission
+}
+
+export async function deleteSettingById(settingsId: string, userId: string) {
+  const boardRole = await userService.getUserBoardRole(userId, settingsId)
+
+  if (boardRole !== BoardRole.OWNER) {
+    return {
+      error: 'INSUFFICIENT_PERMISSIONS',
+      message: 'Only board owners can delete the board',
+    }
+  }
+  try {
+    await repository.deleteBoardSettingById(settingsId, userId)
+    return { success: true }
+  } catch {
+    return {
+      error: 'DELETE_FAILED',
+      message: 'Failed to delete board settings',
+    }
+  }
 }

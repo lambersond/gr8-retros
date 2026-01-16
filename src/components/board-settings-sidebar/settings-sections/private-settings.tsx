@@ -45,7 +45,7 @@ export function PrivateSettings() {
           defaultChecked={subsettings.openAccess.enabled}
           label={subsettings.openAccess.title}
           size='sm'
-          disabled={userPermissions['private.openAccess'] === false}
+          disabled={!userPermissions['private.openAccess']}
           onChange={updateBoardSetting(
             subsettings.openAccess.key!,
             !subsettings.openAccess.enabled,

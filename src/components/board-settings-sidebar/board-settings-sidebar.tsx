@@ -1,6 +1,11 @@
 import { SidebarCloseIcon } from 'lucide-react'
 import { Sidebar, SidebarItem } from '../common'
-import { BoardMembers, ClaimBoard, PrivateSettings } from './settings-sections'
+import {
+  BoardMembers,
+  ClaimBoard,
+  DangerZoneSettings,
+  PrivateSettings,
+} from './settings-sections'
 import {
   useBoardSettings,
   useBoardSettingsActions,
@@ -33,6 +38,7 @@ export function BoardSettingsSidebar() {
         <section className='flex flex-col gap-4 overflow-y-auto'>
           <BoardMembers />
           <PrivateSettings />
+          <DangerZoneSettings />
         </section>
       </div>
     </Sidebar>

@@ -56,8 +56,9 @@ export function Checkbox({
           'text-sm': isSmallSize(size),
           'text-md': isMediumSize(size),
           'text-lg': isLargeSize(size),
+          'cursor-pointer': !disabled,
         },
-        'inline-flex items-center cursor-pointer',
+        'inline-flex items-center',
         labelClassName,
       )}
       htmlFor={inputId}
@@ -72,6 +73,7 @@ export function Checkbox({
         onChange={handleChange}
         {...register?.(name, registerOptions)}
         {...props}
+        disabled={disabled}
       />
 
       {iconChecked ? (

@@ -114,3 +114,19 @@ export async function removeBoardMember(settingsId: string, userId: string) {
     },
   })
 }
+
+export async function deleteBoardSettingById(
+  settingsId: string,
+  userId: string,
+) {
+  return prisma.boardSettings.delete({
+    where: {
+      id: settingsId,
+      members: {
+        some: {
+          userId,
+        },
+      },
+    },
+  })
+}

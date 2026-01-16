@@ -25,6 +25,14 @@ export async function checkUserHasPermissionOnBoard(
   boardSettingsId: string,
   permission: PermissionKey,
 ) {
+  const boardRole = await getUserBoardRole(userId, boardSettingsId)
+  return userHasPermission(permission, boardRole)
+}
+
+export async function getUserBoardRole(
+  userId: string,
+  boardSettingsId: string,
+) {
   const user = await getUserOrError(userId)
 
   const boardRole = user.boards
@@ -33,5 +41,5 @@ export async function checkUserHasPermissionOnBoard(
       )?.role
     : undefined
 
-  return userHasPermission(permission, boardRole)
+  return boardRole
 }

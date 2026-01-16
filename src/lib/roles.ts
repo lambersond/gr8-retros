@@ -2,6 +2,7 @@ import { BoardRole } from '@/enums'
 
 export type PermissionKey =
   | 'private'
+  | 'private.retention.cards'
   | 'private.openAccess'
   | 'private.createLink'
   | 'private.copyLink'
@@ -12,10 +13,27 @@ export type PermissionKey =
   | 'music'
   | 'music.anytime'
   | 'timer'
+  | 'timer.default'
   | 'timer.anytime'
   | 'upvoting'
   | 'upvoting.anytime'
   | 'upvoting.limit'
+
+export const SETTINGS_ROLE_MAP: Record<string, PermissionKey> = {
+  private: 'private',
+  privateOpenAccess: 'private.openAccess',
+  privateCardRetention: 'private.retention.cards',
+  comments: 'comments',
+  commentsAnytime: 'comments.anytime',
+  music: 'music',
+  musicAnytime: 'music.anytime',
+  timer: 'timer',
+  timerDefault: 'timer.default',
+  timerAnytime: 'timer.anytime',
+  upvoting: 'upvoting',
+  upvotingAnytime: 'upvoting.anytime',
+  upvotingLimit: 'upvoting.limit',
+}
 
 export const ROLE_HIERARCHY: Record<BoardRole, number> = {
   [BoardRole.VIEWER]: 0,
@@ -27,6 +45,7 @@ export const ROLE_HIERARCHY: Record<BoardRole, number> = {
 
 const PERMISSIONS_MAP: Record<PermissionKey, BoardRole> = {
   private: BoardRole.OWNER,
+  'private.retention.cards': BoardRole.ADMIN,
   'private.openAccess': BoardRole.ADMIN,
   'private.createLink': BoardRole.FACILITATOR,
   'private.copyLink': BoardRole.FACILITATOR,
@@ -37,6 +56,7 @@ const PERMISSIONS_MAP: Record<PermissionKey, BoardRole> = {
   music: BoardRole.ADMIN,
   'music.anytime': BoardRole.FACILITATOR,
   timer: BoardRole.ADMIN,
+  'timer.default': BoardRole.FACILITATOR,
   'timer.anytime': BoardRole.FACILITATOR,
   upvoting: BoardRole.ADMIN,
   'upvoting.anytime': BoardRole.FACILITATOR,
