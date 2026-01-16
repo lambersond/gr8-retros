@@ -8,13 +8,23 @@ import {
 import { useRetroActions } from './use-retro-actions'
 import { IconButton, Menu, Popover } from '@/components/common'
 import { useAuth } from '@/hooks/use-auth'
-import { useBoardSettingsActions } from '@/providers/retro-board/board-settings'
+import {
+  useBoardPermissions,
+  useBoardSettings,
+  useBoardSettingsActions,
+} from '@/providers/retro-board/board-settings'
 
 export function RetroActions({ id }: Readonly<{ id: string }>) {
   const { handleClearBoard, handleClearCompleted, handleSortCardsBy } =
     useRetroActions(id)
   const { openSidebar } = useBoardSettingsActions()
+  const { isClaimed } = useBoardSettings()
   const { isAuthenticated } = useAuth()
+
+  const { user } = useBoardPermissions()
+
+  const showAdminActions = !isClaimed || user.hasAdmin
+  const showSettingsButton = (isAuthenticated && !isClaimed) || user.hasMember
 
   return (
     <div className='flex gap-2 z-10'>
@@ -46,39 +56,39 @@ export function RetroActions({ id }: Readonly<{ id: string }>) {
       >
         <IconButton icon={ArrowDownWideNarrow} intent='primary' size='lg' />
       </Popover>
-      <Popover
-        modal
-        placement='bottom-start'
-        content={
-          <Menu
-            options={[
-              {
-                label: 'Clear Only Completed Items',
-                onClick: handleClearCompleted,
-                icon: <BrushCleaning size={16} />,
-              },
-              {
-                label: 'Clear All Cards',
-                onClick: handleClearBoard,
-                color: 'danger',
-                icon: <Eraser size={16} />,
-              },
-            ]}
-          />
-        }
-      >
-        <IconButton icon={Hammer} intent='primary' size='lg' />
-      </Popover>
-      <div className=''>
-        {isAuthenticated && (
-          <IconButton
-            icon={Settings}
-            intent='primary'
-            size='lg'
-            onClick={openSidebar}
-          />
-        )}
-      </div>
+      {showAdminActions && (
+        <Popover
+          modal
+          placement='bottom-start'
+          content={
+            <Menu
+              options={[
+                {
+                  label: 'Clear Only Completed Items',
+                  onClick: handleClearCompleted,
+                  icon: <BrushCleaning size={16} />,
+                },
+                {
+                  label: 'Clear All Cards',
+                  onClick: handleClearBoard,
+                  color: 'danger',
+                  icon: <Eraser size={16} />,
+                },
+              ]}
+            />
+          }
+        >
+          <IconButton icon={Hammer} intent='primary' size='lg' />
+        </Popover>
+      )}
+      {showSettingsButton && (
+        <IconButton
+          icon={Settings}
+          intent='primary'
+          size='lg'
+          onClick={openSidebar}
+        />
+      )}
     </div>
   )
 }

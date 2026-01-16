@@ -1,5 +1,5 @@
 import Image from 'next/image'
-import { PaymentLevelBadge } from '@/components/badges'
+import { Badge } from '@/components/common'
 import type { UserSectionProps } from './types'
 
 export function UserSection({
@@ -34,7 +34,7 @@ export function UserSection({
           <p className='font-medium text-text-secondary text-sm'>
             Subscription
           </p>
-          <PaymentLevelBadge level={user.paymentTier} />
+          <Badge text={user.paymentTier} />
         </div>
       </div>
     </section>

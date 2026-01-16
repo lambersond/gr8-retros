@@ -2,12 +2,14 @@ import type { Placement } from '@floating-ui/react'
 
 type PopoverPropsChildren = {
   content: React.ReactNode
+  hidePopover?: boolean
   asKabab?: false
 } & PopoverOptions &
   PopoverTriggerProps
 
 type PopoverPropsKabab = {
   content: React.ReactNode
+  hidePopover?: boolean
   asKabab: true
   children?: null
 } & Pick<PopoverTriggerProps, 'asChild'> &

@@ -43,12 +43,14 @@ interface CommentSetting extends Setting {
 interface MusicSetting extends Setting {
   subsettings: {
     anytime: ToggleSubsetting
+    restricted: ToggleSubsetting
   }
 }
 
 interface TimerSetting extends Setting {
   subsettings: {
     anytime: ToggleSubsetting
+    restricted: ToggleSubsetting
   }
 }
 
@@ -56,6 +58,7 @@ interface UpvotingSetting extends Setting {
   subsettings: {
     anytime: ToggleSubsetting
     limit: ValueSubsetting
+    restricted: ToggleSubsetting
   }
 }
 

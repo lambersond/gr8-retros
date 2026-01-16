@@ -4,6 +4,7 @@ import {
   SubsettingsContainer,
 } from '@/components/settings-toggle'
 import {
+  useBoardPermissions,
   useBoardSettings,
   useBoardSettingsActions,
 } from '@/providers/retro-board/board-settings'
@@ -15,25 +16,38 @@ export function MusicSettings() {
       music: { subsettings, ...setting },
     },
   } = useBoardSettings()
+  const { userPermissions } = useBoardPermissions()
 
   return (
     <SettingsToggle
       title={setting.title}
       Icon={setting.icon}
-      canEdit={setting.canEdit}
+      canEdit={userPermissions.music}
       isEnabled={setting.enabled}
       isUnlocked={setting.isUnlocked}
       onToggle={updateBoardSetting(setting.key, !setting.enabled)}
     >
       <SubsettingsContainer show={setting.enabled}>
+        <div className='hidden'>
+          <Checkbox
+            checked={subsettings.anytime.enabled}
+            label={subsettings.anytime.title}
+            size='sm'
+            disabled={!setting.enabled || !userPermissions['music.anytime']}
+            onChange={updateBoardSetting(
+              subsettings.anytime.key!,
+              !subsettings.anytime.enabled,
+            )}
+          />
+        </div>
         <Checkbox
-          defaultChecked={subsettings.anytime.enabled}
-          label={subsettings.anytime.title}
+          checked={subsettings.restricted.enabled}
+          label={subsettings.restricted.title}
           size='sm'
-          disabled={!setting.enabled}
+          disabled={!setting.enabled || !userPermissions['music.restricted']}
           onChange={updateBoardSetting(
-            subsettings.anytime.key!,
-            !subsettings.anytime.enabled,
+            subsettings.restricted.key!,
+            !subsettings.restricted.enabled,
           )}
         />
       </SubsettingsContainer>

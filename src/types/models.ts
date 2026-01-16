@@ -15,11 +15,14 @@ export type Board = {
     isUpvotingEnabled: boolean
     upvoteLimit: number
     upvoteAnytime: boolean
+    upvoteRestricted: boolean
     isMusicEnabled: boolean
     musicAnytime: boolean
+    musicRestricted: boolean
     isTimerEnabled: boolean
     timerDefault: number
     timerAnytime: boolean
+    timerRestricted: boolean
     isCommentsEnabled: boolean
     commentsAnytime: boolean
     isCardGroupingEnabled: boolean

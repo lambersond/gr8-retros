@@ -1,4 +1,5 @@
 import clsx from 'classnames'
+import type { BoardPermissions } from '@/lib/roles'
 
 export function upvoteTextClasses(isUpvoted: boolean, upvotes: number) {
   return clsx(
@@ -11,14 +12,20 @@ export function upvoteTextClasses(isUpvoted: boolean, upvotes: number) {
   )
 }
 
-export function upvoteArrowButtonClasses(isUpvoted: boolean) {
-  return clsx(
-    {
-      'text-success hover:text-warning': isUpvoted,
-      'text-text-tertiary hover:text-text-primary': !isUpvoted,
-    },
-    'flex items-center text-sm cursor-pointer',
-  )
+export function upvoteArrowButtonClasses(
+  isUpvoted: boolean,
+  boardPermissions: BoardPermissions,
+) {
+  const canVote = boardPermissions['upvoting.restricted.canUpvote']
+
+  return clsx({
+    'text-success': isUpvoted,
+    'text-text-tertiary': !isUpvoted,
+    'hover:text-warning': isUpvoted && canVote,
+    'hover:text-text-primary': !isUpvoted && canVote,
+    'cursor-not-allowed opacity-25': !canVote,
+    'cursor-pointer': canVote,
+  })
 }
 
 export function itemClasses(isDiscussed: boolean) {

@@ -26,9 +26,9 @@ export function SettingsToggle({
           <Switch
             size='lg'
             labelSize='lg'
+            checked={isEnabled}
             label={title}
             name={title}
-            defaultChecked={isEnabled}
             onChange={onToggle}
             disabled={!canEdit}
           />

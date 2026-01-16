@@ -4,6 +4,7 @@ import {
   SubsettingsContainer,
 } from '@/components/settings-toggle'
 import {
+  useBoardPermissions,
   useBoardSettings,
   useBoardSettingsActions,
 } from '@/providers/retro-board/board-settings'
@@ -15,6 +16,7 @@ export function TimerSettings() {
       timer: { subsettings, ...setting },
     },
   } = useBoardSettings()
+  const { userPermissions } = useBoardPermissions()
 
   return (
     <SettingsToggle
@@ -26,14 +28,26 @@ export function TimerSettings() {
       onToggle={updateBoardSetting(setting.key, !setting.enabled)}
     >
       <SubsettingsContainer show={setting.enabled}>
+        <div className='hidden'>
+          <Checkbox
+            defaultChecked={subsettings.anytime.enabled}
+            label={subsettings.anytime.title}
+            size='sm'
+            disabled={!setting.enabled || !userPermissions['timer.anytime']}
+            onChange={updateBoardSetting(
+              subsettings.anytime.key!,
+              !subsettings.anytime.enabled,
+            )}
+          />
+        </div>
         <Checkbox
-          defaultChecked={subsettings.anytime.enabled}
-          label={subsettings.anytime.title}
+          checked={subsettings.restricted.enabled}
+          label={subsettings.restricted.title}
           size='sm'
-          disabled={!setting.enabled}
+          disabled={!setting.enabled || !userPermissions['music.restricted']}
           onChange={updateBoardSetting(
-            subsettings.anytime.key!,
-            !subsettings.anytime.enabled,
+            subsettings.restricted.key!,
+            !subsettings.restricted.enabled,
           )}
         />
       </SubsettingsContainer>

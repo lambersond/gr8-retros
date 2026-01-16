@@ -5,6 +5,7 @@ export function useBoardSettings() {
   return {
     boardId: ctx.settings.retroSessionId,
     canClaimBoard: !ctx.settings.isPrivate && !ctx.settings.ownerId,
+    isClaimed: !!ctx.settings.ownerId,
     id: ctx.settings.id,
     ownerId: ctx.settings.ownerId,
     boardTier: ctx.settings.boardTier,

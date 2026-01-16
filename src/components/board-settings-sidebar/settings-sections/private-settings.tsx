@@ -42,10 +42,10 @@ export function PrivateSettings() {
     >
       <SubsettingsContainer show={setting.enabled}>
         <Checkbox
-          defaultChecked={subsettings.openAccess.enabled}
+          checked={subsettings.openAccess.enabled}
           label={subsettings.openAccess.title}
           size='sm'
-          disabled={!userPermissions['private.openAccess']}
+          disabled={!setting.enabled || !userPermissions['private.openAccess']}
           onChange={updateBoardSetting(
             subsettings.openAccess.key!,
             !subsettings.openAccess.enabled,

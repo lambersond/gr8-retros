@@ -66,6 +66,13 @@ export const BASE_SETTINGS: BoardSettingsWithPermissionsNoIcons = {
         kind: 'toggle',
         title: 'Allow Music Anytime',
       },
+      restricted: {
+        canEdit: false,
+        enabled: false,
+        key: 'musicRestricted',
+        kind: 'toggle',
+        title: 'Only Facilitators And Above Have Control',
+      },
     },
   },
   timer: {
@@ -83,6 +90,13 @@ export const BASE_SETTINGS: BoardSettingsWithPermissionsNoIcons = {
         kind: 'toggle',
         title: 'Allow Timer Anytime',
       },
+      restricted: {
+        canEdit: false,
+        enabled: false,
+        key: 'timerRestricted',
+        kind: 'toggle',
+        title: 'Only Facilitators And Above Have Control',
+      },
     },
   },
   upvoting: {
@@ -91,7 +105,7 @@ export const BASE_SETTINGS: BoardSettingsWithPermissionsNoIcons = {
     enabled: false,
     isUnlocked: true,
     key: 'isUpvotingEnabled',
-    title: 'Upvoting Enabled',
+    title: 'Voting Enabled',
     subsettings: {
       anytime: {
         canEdit: false,
@@ -107,6 +121,13 @@ export const BASE_SETTINGS: BoardSettingsWithPermissionsNoIcons = {
         kind: 'value',
         title: 'Upvote Limit',
         value: -1,
+      },
+      restricted: {
+        canEdit: false,
+        enabled: false,
+        key: 'upvoteRestricted',
+        kind: 'toggle',
+        title: 'Only Members and Above Can Vote',
       },
     },
   },

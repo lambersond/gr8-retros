@@ -41,7 +41,6 @@ model User {
 
   accounts        Account[]
   sessions        Session[]
-  retroSessions   UserRetroSession[]
   actionItems     ActionItem[]
   boards          BoardMember[]
 
@@ -102,7 +101,6 @@ model RetroSession {
   org          String? @default("Temporary")
 
   cards        Card[]
-  users        UserRetroSession[]
   settings     BoardSettings?
 
   createdAt    DateTime      @default(now())
@@ -126,14 +124,17 @@ model BoardSettings {
 
   isMusicEnabled        Boolean @default(true) // TIER = FREE
   musicAnytime          Boolean @default(true)
+  musicRestricted       Boolean @default(false)
 
   isTimerEnabled        Boolean @default(true) // TIER = FREE
   timerDefault          Int     @default(300)
   timerAnytime          Boolean @default(true)
+  timerRestricted       Boolean @default(false)
 
   isUpvotingEnabled     Boolean @default(true) // TIER = FREE
   upvoteLimit           Int     @default(-1)
   upvoteAnytime         Boolean @default(true)
+  upvoteRestricted      Boolean @default(false)
 
   // Not implemented yet
   isCardGroupingEnabled Boolean @default(false) // TIER = BELIEVER
@@ -221,15 +222,6 @@ model Comment {
 // --------------------------
 // Many-to-many relationships
 // --------------------------
-
-model UserRetroSession {
-  user           User         @relation(fields: [userId], references: [id])
-  userId         String
-  retroSession   RetroSession @relation(fields: [retroSessionId], references: [id])
-  retroSessionId String
-
-  @@id([userId, retroSessionId])
-}
 
 model BoardMember {
   userId         String

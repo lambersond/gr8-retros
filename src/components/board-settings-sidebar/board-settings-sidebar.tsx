@@ -1,11 +1,15 @@
 import { SidebarCloseIcon } from 'lucide-react'
-import { Sidebar, SidebarItem } from '../common'
+import { Badge, Sidebar, SidebarItem } from '../common'
 import {
   BoardMembers,
   ClaimBoard,
   DangerZoneSettings,
+  MusicSettings,
   PrivateSettings,
+  TimerSettings,
+  UpvoteSettings,
 } from './settings-sections'
+import { PaymentTier } from '@/enums'
 import {
   useBoardSettings,
   useBoardSettingsActions,
@@ -26,9 +30,10 @@ export function BoardSettingsSidebar() {
         <section className='flex items-start justify-between sticky top-0 bg-appbar z-10 pb-4'>
           <div>
             <p className='text-2xl font-bold'>Board Settings</p>
-            <p className='text-text-secondary text-sm'>
-              ({boardTier || 'FREE'}) {boardId}
-            </p>
+            <div className='flex gap-1'>
+              <Badge text={boardTier || PaymentTier.FREE} />
+              <p className='text-text-secondary text-sm'>{boardId}</p>
+            </div>
           </div>
           <SidebarItem>
             <SidebarCloseIcon className='size-10 p-2 transform rotate-180 text-text-secondary hover:text-text-primary hover:bg-hover rounded-full cursor-pointer' />
@@ -38,6 +43,9 @@ export function BoardSettingsSidebar() {
         <section className='flex flex-col gap-4 overflow-y-auto'>
           <BoardMembers />
           <PrivateSettings />
+          <TimerSettings />
+          <MusicSettings />
+          <UpvoteSettings />
           <DangerZoneSettings />
         </section>
       </div>

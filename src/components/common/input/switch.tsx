@@ -24,7 +24,6 @@ export function Switch({
   register,
   name = 'switch',
   disabled = false,
-  defaultChecked = false,
   registerOptions,
   size = 'md',
   labelSize = 'md',
@@ -75,7 +74,6 @@ export function Switch({
           id={name}
           name={name}
           disabled={disabled}
-          defaultChecked={defaultChecked}
           type='checkbox'
           className='sr-only peer cursor-pointer'
           {...register?.(name, registerOptions)}

@@ -1,5 +1,5 @@
 import type { BoardSettingsWithPermissions } from './settings'
-import type { PermissionKey } from '@/lib/roles'
+import type { BoardPermissions } from '@/lib/roles'
 import type { BoardSettings } from '@/types'
 
 export type BoardSettingsState = {
@@ -13,5 +13,5 @@ export type BoardSettingsState = {
     hasMember: boolean
     hasViewer: boolean
   }
-  userPermissions: Record<PermissionKey, boolean>
+  userPermissions: BoardPermissions
 }

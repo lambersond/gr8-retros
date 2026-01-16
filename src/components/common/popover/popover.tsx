@@ -168,7 +168,12 @@ export function Popover({
   placement,
   asKabab,
   children,
+  hidePopover,
 }: Readonly<PopoverProps>) {
+  if (hidePopover) {
+    return <>{children}</>
+  }
+
   return (
     <PopoverContainer placement={placement} modal={modal}>
       <PopoverTrigger asChild={asChild}>

@@ -34,7 +34,7 @@ const actionHandlers: {
     return {
       ...state,
       boardSettingsWithPermissions,
-      userPermissions: getUserBoardPermissions(userRole),
+      userPermissions: getUserBoardPermissions(userRole, state.settings),
       user: getUserLevels(userRole),
     }
   },

@@ -7,6 +7,7 @@ export function TimeInput({
   onChange,
 }: Readonly<{
   value?: number
+  disabled?: boolean
   onChange: (seconds: number) => void
 }>) {
   const minutes = Math.floor(value / 60)

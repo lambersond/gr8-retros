@@ -15,6 +15,10 @@ import { IconButton, Menu, Popover, Tooltip } from '../common'
 import { DiscussedIcon } from '../common/icons'
 import { useCard } from './use-card'
 import * as cardUtils from './utils'
+import {
+  useBoardPermissions,
+  useBoardSettings,
+} from '@/providers/retro-board/board-settings'
 import type { CardProps } from './types'
 
 export function Card({
@@ -38,22 +42,48 @@ export function Card({
     handleUpvote,
     openCommentsSidebar,
   } = useCard({ column, cardId: id, currentUserId })
+  const { userPermissions } = useBoardPermissions()
+  const { settings } = useBoardSettings()
+  const canVote = userPermissions['upvoting.restricted.canUpvote']
 
   const upvoteTextClasses = cardUtils.upvoteTextClasses(isUpvoted, upvotes)
-  const upvoteArrowButtonClasses = cardUtils.upvoteArrowButtonClasses(isUpvoted)
+  const upvoteArrowButtonClasses = cardUtils.upvoteArrowButtonClasses(
+    isUpvoted,
+    userPermissions,
+  )
   const itemClasses = cardUtils.itemClasses(isDiscussed)
   const actionsItemsExist = actionItems.length > 0
   const actionsItemsComplete = actionItems.every(item => item.isDone)
 
   return (
-    <div className='group p-2 border border-slate-200 rounded shadow flex flex-col gap-2 bg-page w-full hover:shadow-md transition-shadow hover:bg-page/80'>
+    <div className='relative group p-2 border border-slate-200 rounded shadow flex flex-col gap-2 bg-page w-full hover:shadow-md transition-shadow hover:bg-page/80'>
       <div className='flex items-start gap-2'>
-        <div className='flex flex-col items-center'>
-          <button className={upvoteArrowButtonClasses} onClick={handleUpvote}>
-            <ArrowBigUp className='size-5' />
-          </button>
-          <span className={upvoteTextClasses}>{upvotes}</span>
-        </div>
+        {settings.upvoting.enabled && (
+          <>
+            {canVote ? (
+              <div className='flex flex-col items-center'>
+                <button
+                  className={upvoteArrowButtonClasses}
+                  onClick={handleUpvote}
+                >
+                  <ArrowBigUp className='size-5' />
+                </button>
+                <span className={upvoteTextClasses}>{upvotes}</span>
+              </div>
+            ) : (
+              <>
+                {!!upvotes && (
+                  <Tooltip title='Total votes'>
+                    <p className='self-center size-7 rounded-full bg-neutral-50 border border-slate-300 text-text-primary absolute -top-3 -left-3 text-md flex items-center justify-center'>
+                      {upvotes}
+                    </p>
+                  </Tooltip>
+                )}
+              </>
+            )}
+          </>
+        )}
+
         <p className={itemClasses}>{content}</p>
         <div className='flex gap-1 items-center'>
           {actionsItemsExist && (

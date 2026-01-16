@@ -12,27 +12,42 @@ export type PermissionKey =
   | 'comments.anytime'
   | 'music'
   | 'music.anytime'
+  | 'music.restricted'
   | 'timer'
   | 'timer.default'
   | 'timer.anytime'
+  | 'timer.restricted'
   | 'upvoting'
   | 'upvoting.anytime'
   | 'upvoting.limit'
+  | 'upvoting.restricted'
 
+export type DynamcicPermissionKey =
+  | 'music.restricted.canControl'
+  | 'timer.restricted.canControl'
+  | 'upvoting.restricted.canUpvote'
+
+export type BoardPermissions = Record<PermissionKey, boolean> &
+  Record<DynamcicPermissionKey, boolean>
+
+// Direct mapping of board settings keys in db to permission keys
 export const SETTINGS_ROLE_MAP: Record<string, PermissionKey> = {
-  private: 'private',
+  isPrivate: 'private',
   privateOpenAccess: 'private.openAccess',
   privateCardRetention: 'private.retention.cards',
   comments: 'comments',
   commentsAnytime: 'comments.anytime',
-  music: 'music',
+  isMusicEnabled: 'music',
   musicAnytime: 'music.anytime',
-  timer: 'timer',
+  musicRestricted: 'music.restricted',
+  isTimerEnabled: 'timer',
   timerDefault: 'timer.default',
   timerAnytime: 'timer.anytime',
-  upvoting: 'upvoting',
-  upvotingAnytime: 'upvoting.anytime',
-  upvotingLimit: 'upvoting.limit',
+  timerRestricted: 'timer.restricted',
+  isUpvotingEnabled: 'upvoting',
+  upvoteAnytime: 'upvoting.anytime',
+  upvoteLimit: 'upvoting.limit',
+  upvoteRestricted: 'upvoting.restricted',
 }
 
 export const ROLE_HIERARCHY: Record<BoardRole, number> = {
@@ -43,7 +58,8 @@ export const ROLE_HIERARCHY: Record<BoardRole, number> = {
   [BoardRole.OWNER]: 4,
 } as const
 
-const PERMISSIONS_MAP: Record<PermissionKey, BoardRole> = {
+const PERMISSIONS_MAP: Record<PermissionKey, BoardRole> &
+  Record<DynamcicPermissionKey, BoardRole[]> = {
   private: BoardRole.OWNER,
   'private.retention.cards': BoardRole.ADMIN,
   'private.openAccess': BoardRole.ADMIN,
@@ -55,12 +71,18 @@ const PERMISSIONS_MAP: Record<PermissionKey, BoardRole> = {
   'comments.anytime': BoardRole.FACILITATOR,
   music: BoardRole.ADMIN,
   'music.anytime': BoardRole.FACILITATOR,
+  'music.restricted': BoardRole.FACILITATOR,
+  'music.restricted.canControl': [BoardRole.VIEWER, BoardRole.FACILITATOR],
   timer: BoardRole.ADMIN,
   'timer.default': BoardRole.FACILITATOR,
   'timer.anytime': BoardRole.FACILITATOR,
+  'timer.restricted': BoardRole.FACILITATOR,
+  'timer.restricted.canControl': [BoardRole.VIEWER, BoardRole.FACILITATOR],
   upvoting: BoardRole.ADMIN,
   'upvoting.anytime': BoardRole.FACILITATOR,
   'upvoting.limit': BoardRole.FACILITATOR,
+  'upvoting.restricted': BoardRole.FACILITATOR,
+  'upvoting.restricted.canUpvote': [BoardRole.VIEWER, BoardRole.MEMBER],
 } as const
 
 export function userHasPermission(
@@ -77,4 +99,13 @@ export function hasMinimumRole(
 ): boolean {
   if (!userRole) return false
   return ROLE_HIERARCHY[userRole] >= ROLE_HIERARCHY[minimumRole]
+}
+
+export function hasMinimumDynamicPermissionRoles(
+  index: number,
+  permissionKey: DynamcicPermissionKey,
+  userRole?: BoardRole,
+) {
+  const minPerm = PERMISSIONS_MAP[permissionKey][index]
+  return hasMinimumRole(minPerm, userRole)
 }
