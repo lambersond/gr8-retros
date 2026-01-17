@@ -65,7 +65,12 @@ export function RetroBoardControlsProvider({
     if (timer.isPlaying) start()
     else pause()
 
-    setSeconds(Math.max(0, remaining - diff))
+    const newSeconds = Math.max(0, remaining - diff)
+    if (newSeconds > 0) setSeconds(newSeconds)
+    else {
+      setSeconds(0)
+      reset()
+    }
   }, [boardControls, defaultTimerSeconds, pause, setSeconds, start])
 
   const syncMusicFromBoard = useCallback(() => {
