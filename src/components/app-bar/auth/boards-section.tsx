@@ -1,11 +1,11 @@
 'use client'
 
 import { BoardRoleBadge } from '@/components/badges'
-import { useBoardMembership } from '@/providers/board-memberships'
+import { useBoardMemberships } from '@/providers/board-memberships'
 import type { BoardSectionProps } from './types'
 
 export function BoardSection({ isAuthenticated }: Readonly<BoardSectionProps>) {
-  const { boards } = useBoardMembership()
+  const { boards } = useBoardMemberships()
 
   if (!isAuthenticated) return
 

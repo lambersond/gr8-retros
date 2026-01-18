@@ -1,9 +1,9 @@
 import Image from 'next/image'
-import { useViewingMembers } from './use-viewing-members'
 import { Tooltip } from '@/components/common'
+import { useViewingMembers } from '@/providers/viewing-members'
 
-export function ViewingMembers({ id }: Readonly<{ id: string }>) {
-  const { viewingMembers } = useViewingMembers(id)
+export function ViewingMembers() {
+  const { viewingMembers } = useViewingMembers()
 
   return (
     <div className='flex items-center z-10'>

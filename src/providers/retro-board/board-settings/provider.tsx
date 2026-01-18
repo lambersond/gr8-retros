@@ -12,7 +12,7 @@ import { BoardSettingsMessageManager } from './board-settings-message-manager'
 import { BOARD_SETTINGS_ACTION_TYPES } from './constants'
 import { reducer } from './reducer'
 import { createInitialState } from './utils'
-import { useBoardMembership } from '@/providers/board-memberships'
+import { useBoardMemberships } from '@/providers/board-memberships'
 import type { BoardSettingsReducerAction, BoardSettingsState } from './types'
 import type { BoardSettings } from '@/types'
 
@@ -32,7 +32,7 @@ export function BoardSettingsProvider({
   children: ReactNode
   settings: BoardSettings
 }>) {
-  const { getRole } = useBoardMembership()
+  const { getRole } = useBoardMemberships()
   const [state, dispatch] = useReducer(reducer, settings, createInitialState)
 
   useEffect(() => {

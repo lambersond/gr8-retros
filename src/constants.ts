@@ -61,3 +61,20 @@ export const SIDEBAR_ACTION_TYPES: SidebarActionType = {
   OPEN_SIDEBAR: 'OPEN_SIDEBAR',
   CLOSE_SIDEBAR: 'CLOSE_SIDEBAR',
 }
+
+export const MAX_CARD_RETENTION: Record<PaymentTier, number> = {
+  [PaymentTier.FREE]: 14,
+  [PaymentTier.BELIEVER]: 30,
+  [PaymentTier.SUPPORTER]: 90,
+  [PaymentTier.CHAMPION]: -1,
+}
+
+export const DEFAULT_CARD_RETENTION_DAYS = 7
+
+export const RETENTION_POLICY = {
+  [PaymentTier.FREE]: { boardDays: 60, defaultCardDays: 7 },
+  [PaymentTier.BELIEVER]: { boardDays: 180, defaultCardDays: 7 },
+  [PaymentTier.SUPPORTER]: { boardDays: 365, defaultCardDays: 7 },
+  [PaymentTier.CHAMPION]: { boardDays: Infinity, defaultCardDays: 7 },
+  UNDEFINED: { boardDays: 30, defaultCardDays: 7 },
+} as const

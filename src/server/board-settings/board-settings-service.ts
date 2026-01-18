@@ -134,3 +134,24 @@ export async function deleteSettingById(settingsId: string, userId: string) {
     }
   }
 }
+
+export async function addBoardMember(
+  settingsId: string,
+  newMemberId: string,
+  userId: string,
+) {
+  await userCanManageBoardUsers(userId, settingsId)
+  const newMember = await repository.addBoardMember(settingsId, newMemberId)
+  await publishMessageToChannel(newMember.settings.retroSessionId, {
+    name: 'members-updated',
+    data: {
+      type: 'NEW_MEMBER_ADDED',
+      payload: {
+        user: newMember.user,
+        permissionMask: Number(newMember.permissionMask),
+        role: newMember.role,
+      },
+    },
+  })
+  return newMember
+}

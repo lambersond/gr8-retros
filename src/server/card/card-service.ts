@@ -51,3 +51,10 @@ export async function deleteCompletedCardsByBoardId(boardId: string) {
 export async function deleteCompletedCardsOlderThanNDays(days = 7) {
   return repository.deleteCompletedCardsOlderThanNDays(days)
 }
+
+export async function deleteCompletedCardsOlderThanNDaysByBoardId(
+  boardId: string,
+  days = 7,
+) {
+  return repository.deleteCompletedCardsOlderThanNDaysByBoardId(boardId, days)
+}

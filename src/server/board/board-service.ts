@@ -39,3 +39,11 @@ export async function deleteBoardsOlderThanNDays(days = 30) {
   cutoffDate.setDate(cutoffDate.getDate() - days)
   return repository.deleteBoardsOlderThanDate(cutoffDate)
 }
+
+export async function getAllTempOrgBoards() {
+  return repository.getAllTempOrgBoards()
+}
+
+export async function deleteManyBoardsByIds(boardIds: string[]) {
+  return repository.deleteManyBoardsByIds(boardIds)
+}

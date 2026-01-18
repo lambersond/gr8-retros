@@ -1,7 +1,7 @@
 import { useContext } from 'react'
-import { BoardMembershipContext } from './provider'
+import { BoardMembershipContext } from '../provider'
 
-export function useBoardMembership() {
+export function useBoardMemberships() {
   const context = useContext(BoardMembershipContext)
   if (!context) {
     throw new Error(

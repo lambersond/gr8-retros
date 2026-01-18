@@ -14,6 +14,6 @@ export type BoardMembershipContextType = {
   hasRole: (boardId: string, minimumRole: BoardRole) => boolean
   isLoading: boolean
   fetchBoards: (force?: boolean) => Promise<void>
-  ensureBoardInCache: (boardId: string) => Promise<BoardRole | undefined> // Updated
+  ensureBoardInCache: (boardId: string) => Promise<BoardRole | undefined>
   clearCache: VoidFunction
 }

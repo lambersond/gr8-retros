@@ -1,25 +1,28 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { Trash } from 'lucide-react'
+import Image from 'next/image'
 import { ROLES } from './constants'
 import { Dropdown, IconButton, Modal } from '@/components/common'
 import { useModals } from '@/hooks/use-modals'
 import type { ManageUsersModalProps } from './types'
 
 export function ManageUsersModal({
+  availableMembers = [],
   members = [],
   enableAdminElection = false,
   open = true,
   hasEdit,
   currentUserId,
-  onRoleChange,
-  onRemoveUser,
+  settingsId,
 }: Readonly<ManageUsersModalProps>) {
   const { closeModal } = useModals()
   const [membersList, setMembersList] = useState(members)
+  const [availableUsers, setAvailableUsers] = useState(availableMembers)
 
   useEffect(() => {
     if (!open) return
     setMembersList(members)
+    setAvailableUsers(availableMembers)
   }, [open, members])
 
   const onClose = () => {
@@ -36,12 +39,39 @@ export function ManageUsersModal({
   const handleRoleChange =
     (userId: string) =>
     ({ value }: any) => {
-      onRoleChange(userId, value)
+      fetch(`/api/board-settings/${settingsId}/member`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ memberUserId: userId, newRole: value }),
+      })
     }
 
   const handleRemoveUser = (userId: string) => () => {
     setMembersList(prev => prev.filter(member => member.user.id !== userId))
-    onRemoveUser(userId)
+    fetch(`/api/board-settings/${settingsId}/member`, {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ memberUserId: userId }),
+    })
+  }
+
+  const handleAddUser = async ({ value }: any) => {
+    const res = await fetch(`/api/board-settings/${settingsId}/member`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ newMemberId: value }),
+    })
+
+    const newMember = await res.json()
+
+    setMembersList(prev => [...prev, newMember])
+    setAvailableUsers(prev => prev.filter(user => user.id !== value))
   }
 
   const getDefaultRole = (currentRole: keyof typeof ROLES) => {
@@ -85,8 +115,40 @@ export function ManageUsersModal({
     [hasEdit, handleRoleChange, rolesList, handleRemoveUser],
   )
 
+  const dropdownOptions = useMemo(
+    () =>
+      availableUsers.map(user => ({
+        id: user.id,
+        label: (
+          <div className='flex items-center text-lg'>
+            <Image
+              src={user.image}
+              alt={user.name}
+              width={24}
+              height={24}
+              className='rounded-full mr-2 inline-block'
+            />
+            {user.name}
+          </div>
+        ),
+        value: user.id,
+      })),
+    [availableUsers],
+  )
+
   return (
     <Modal title='Registered Users' isOpen={open} onClose={onClose}>
+      {availableUsers.length > 0 && (
+        <div className='mb-2'>
+          <Dropdown
+            options={dropdownOptions}
+            onSelect={handleAddUser}
+            width='w-small'
+            placeholder='Add New Member...'
+            defaultEmpty
+          />
+        </div>
+      )}
       {membersList.map(member => (
         <div
           key={member.user.id}

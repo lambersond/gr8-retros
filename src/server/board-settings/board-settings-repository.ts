@@ -130,3 +130,23 @@ export async function deleteBoardSettingById(
     },
   })
 }
+
+export async function addBoardMember(settingsId: string, newMemberId: string) {
+  return prisma.boardMember.create({
+    data: {
+      userId: newMemberId,
+      settingsId,
+    },
+    select: {
+      userId: true,
+      role: true,
+      permissionMask: true,
+      user: {
+        select: { id: true, name: true },
+      },
+      settings: {
+        select: { retroSessionId: true },
+      },
+    },
+  })
+}

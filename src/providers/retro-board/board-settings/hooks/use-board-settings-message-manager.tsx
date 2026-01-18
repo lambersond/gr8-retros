@@ -4,12 +4,12 @@ import { BOARD_SETTINGS_ACTION_TYPES } from '../constants'
 import { useBoardSettingsDispatch } from '../provider'
 import { useAblyMessageManager } from '@/hooks/use-ably-message-manager'
 import { useAuth } from '@/hooks/use-auth'
-import { useBoardMembership } from '@/providers/board-memberships'
+import { useBoardMemberships } from '@/providers/board-memberships'
 import type { BoardSettingsMessage, BoardSettingsMessageData } from '../types'
 
 export function useBoardSettingsManager(boardId: string) {
   const dispatch = useBoardSettingsDispatch()
-  const { fetchBoards } = useBoardMembership()
+  const { fetchBoards } = useBoardMemberships()
   const router = useRouter()
   const { user } = useAuth()
 

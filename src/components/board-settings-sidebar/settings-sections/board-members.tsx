@@ -1,3 +1,4 @@
+import { useMemo } from 'react'
 import { ChevronRight, Users } from 'lucide-react'
 import { useAuth } from '@/hooks/use-auth'
 import { useModals } from '@/hooks/use-modals'
@@ -6,10 +7,12 @@ import {
   useBoardPermissions,
   useBoardSettings,
 } from '@/providers/retro-board/board-settings'
+import { useViewingMembers } from '@/providers/viewing-members'
 
 export function BoardMembers() {
   const { boardTier, id } = useBoardSettings()
   const members = useBoardMembers()
+  const { viewingMembers } = useViewingMembers()
   const {
     canClaimBoard,
     user: { hasAdmin },
@@ -19,30 +22,28 @@ export function BoardMembers() {
     user: { id: currentUserId },
   } = useAuth()
 
+  const availableMembers = useMemo(() => {
+    const result = []
+    for (const [id, userDetails] of Object.entries(viewingMembers)) {
+      if (userDetails.isAuthenticated && !members.some(m => m.user.id === id)) {
+        result.push({
+          id: id,
+          name: userDetails.name,
+          image: userDetails.image,
+        })
+      }
+    }
+    return result
+  }, [members, viewingMembers])
+
   const handleOpenManageUsersModal = () => {
     openModal('ManageUsersModal', {
       members,
       currentUserId,
+      availableMembers,
+      settingsId: id,
       hasEdit: hasAdmin,
       enableAdminElection: boardTier !== 'FREE',
-      onRoleChange(userId, newRole) {
-        fetch(`/api/board-settings/${id}/member`, {
-          method: 'PUT',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ memberUserId: userId, newRole }),
-        })
-      },
-      onRemoveUser(userId) {
-        fetch(`/api/board-settings/${id}/member`, {
-          method: 'DELETE',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ memberUserId: userId }),
-        })
-      },
     })
   }
 
