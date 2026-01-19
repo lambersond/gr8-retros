@@ -1,4 +1,5 @@
 import { Checkbox } from '@/components/common'
+import { NumberInput } from '@/components/number-input'
 import {
   SettingsToggle,
   SubsettingsContainer,
@@ -35,7 +36,7 @@ export function TimerSettings() {
             size='sm'
             disabled={!setting.enabled || !userPermissions['timer.anytime']}
             onChange={updateBoardSetting(
-              subsettings.anytime.key!,
+              subsettings.anytime.key,
               !subsettings.anytime.enabled,
             )}
           />
@@ -44,11 +45,23 @@ export function TimerSettings() {
           checked={subsettings.restricted.enabled}
           label={subsettings.restricted.title}
           size='sm'
-          disabled={!setting.enabled || !userPermissions['music.restricted']}
+          disabled={!setting.enabled || !userPermissions['timer.restricted']}
           onChange={updateBoardSetting(
-            subsettings.restricted.key!,
+            subsettings.restricted.key,
             !subsettings.restricted.enabled,
           )}
+        />
+        <NumberInput
+          defaultValue={subsettings.defaultDuration.value}
+          label='Seconds'
+          title={subsettings.defaultDuration.title}
+          showRangeHint={userPermissions['timer.default']}
+          onChange={value =>
+            updateBoardSetting(subsettings.defaultDuration.key, value)()
+          }
+          disabled={!setting.enabled || !userPermissions['timer.default']}
+          min={1}
+          max={3600}
         />
       </SubsettingsContainer>
     </SettingsToggle>

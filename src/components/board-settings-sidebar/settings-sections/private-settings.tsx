@@ -1,10 +1,12 @@
 import { format } from 'date-fns'
 import { Check, Copy, Link, Unlink } from 'lucide-react'
 import { Checkbox, IconButton, LoadingButton } from '@/components/common'
+import { NumberInput } from '@/components/number-input'
 import {
   SettingsToggle,
   SubsettingsContainer,
 } from '@/components/settings-toggle'
+import { MAX_CARD_RETENTION } from '@/constants'
 import {
   useBoardPermissions,
   useBoardSettings,
@@ -19,6 +21,7 @@ export function PrivateSettings() {
     settings: {
       private: { subsettings, ...setting },
     },
+    boardTier,
     invite,
   } = useBoardSettings()
   const { userPermissions } = useBoardPermissions()
@@ -47,7 +50,7 @@ export function PrivateSettings() {
           size='sm'
           disabled={!setting.enabled || !userPermissions['private.openAccess']}
           onChange={updateBoardSetting(
-            subsettings.openAccess.key!,
+            subsettings.openAccess.key,
             !subsettings.openAccess.enabled,
           )}
         />
@@ -87,7 +90,7 @@ export function PrivateSettings() {
           </div>
         ) : (
           <LoadingButton
-            className='flex gap-2 items-center bg-primary-new/80 hover:bg-secondary-new rounded-lg hover:shadow-lg py-2 px-3 text-lg w-fit text-white w-full justify-center'
+            className='flex items-center bg-primary-new/80 hover:bg-secondary-new rounded-lg hover:shadow-lg py-2 px-3 text-lg w-fit text-white w-full justify-center'
             Icon={<Link />}
             loadedText='Link copied'
             loadedTextDurationMs={2000}
@@ -97,6 +100,18 @@ export function PrivateSettings() {
             Create An Invitation Link
           </LoadingButton>
         )}
+        <NumberInput
+          defaultValue={subsettings.cardRetention.value}
+          disabled={!userPermissions['private.retention.cards']}
+          min={0}
+          max={MAX_CARD_RETENTION[boardTier]}
+          title={subsettings.cardRetention.title}
+          label='Days'
+          showRangeHint={userPermissions['private.retention.cards']}
+          onChange={value =>
+            updateBoardSetting(subsettings.cardRetention.key, value)()
+          }
+        />
       </SubsettingsContainer>
     </SettingsToggle>
   )

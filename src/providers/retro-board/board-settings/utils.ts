@@ -38,6 +38,12 @@ export function getSettingsWithPermissions(
     'private.openAccess',
     userRole,
   )
+  baseSettings.private.subsettings.cardRetention.canEdit = userHasPermission(
+    'private.retention.cards',
+    userRole,
+  )
+  baseSettings.private.subsettings.cardRetention.value =
+    settings.privateCardRetention
 
   baseSettings.comments.enabled = settings.isCommentsEnabled
   baseSettings.comments.canEdit = userHasPermission('comments', userRole)
@@ -70,6 +76,11 @@ export function getSettingsWithPermissions(
   baseSettings.timer.subsettings.restricted.enabled = settings.timerRestricted
   baseSettings.timer.subsettings.restricted.canEdit = userHasPermission(
     'timer.restricted',
+    userRole,
+  )
+  baseSettings.timer.subsettings.defaultDuration.value = settings.timerDefault
+  baseSettings.timer.subsettings.defaultDuration.canEdit = userHasPermission(
+    'timer.default',
     userRole,
   )
 

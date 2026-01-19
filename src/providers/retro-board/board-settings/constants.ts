@@ -32,6 +32,13 @@ export const BASE_SETTINGS: BoardSettingsWithPermissionsNoIcons = {
         kind: 'toggle',
         title: 'Enable Guest Access',
       },
+      cardRetention: {
+        canEdit: false,
+        key: 'privateCardRetention',
+        kind: 'value',
+        title: 'Card Retention (Discussed)',
+        value: 7,
+      },
     },
   },
   comments: {
@@ -96,6 +103,13 @@ export const BASE_SETTINGS: BoardSettingsWithPermissionsNoIcons = {
         key: 'timerRestricted',
         kind: 'toggle',
         title: 'Only Facilitators And Above Have Control',
+      },
+      defaultDuration: {
+        canEdit: false,
+        key: 'timerDefault',
+        kind: 'value',
+        title: 'Default Timer Duration (seconds)',
+        value: 300,
       },
     },
   },

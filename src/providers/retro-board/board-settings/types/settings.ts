@@ -2,7 +2,7 @@ import type { BoardSettings } from '@/types'
 
 type BaseSubsetting = {
   title: string
-  key: keyof BoardSettings | undefined
+  key: keyof BoardSettings
   hint?: string
   canEdit?: boolean
 }
@@ -31,6 +31,7 @@ interface Setting {
 interface PrivateSetting extends Setting {
   subsettings: {
     openAccess: ToggleSubsetting
+    cardRetention: ValueSubsetting
   }
 }
 
@@ -51,6 +52,7 @@ interface TimerSetting extends Setting {
   subsettings: {
     anytime: ToggleSubsetting
     restricted: ToggleSubsetting
+    defaultDuration: ValueSubsetting
   }
 }
 

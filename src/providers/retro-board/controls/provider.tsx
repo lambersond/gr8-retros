@@ -5,7 +5,7 @@ import {
   useLayoutEffect,
   useRef,
 } from 'react'
-import { DEFAULT_TIMER_SECONDS } from './constants'
+import { useBoardSettings } from '../board-settings'
 import {
   RetroBoardControlsActionsStoreContext,
   RetroBoardControlsStateStoreContext,
@@ -31,15 +31,22 @@ type MusicState = {
 export function RetroBoardControlsProvider({
   boardId,
   children,
-  defaultTimerSeconds = DEFAULT_TIMER_SECONDS,
 }: Readonly<{
   boardId: string
   children: ReactNode
-  defaultTimerSeconds?: number
 }>) {
+  const {
+    settings: {
+      timer: {
+        subsettings: {
+          defaultDuration: { value: defaultDuration },
+        },
+      },
+    },
+  } = useBoardSettings()
   const { formatted, isRunning, start, pause, setSeconds, secondsLeft } =
     useCountdownTimer({
-      initialSeconds: defaultTimerSeconds,
+      initialSeconds: defaultDuration,
       autoStart: false,
     })
 
@@ -54,12 +61,12 @@ export function RetroBoardControlsProvider({
 
   const { boardControls, updateBoardControls } = useBoardControlsLiveMap(
     boardId,
-    defaultTimerSeconds,
+    defaultDuration,
   )
 
   const syncTimerFromBoard = useCallback(() => {
     const { timer } = boardControls
-    const remaining = timer.remaining ?? defaultTimerSeconds
+    const remaining = timer.remaining ?? defaultDuration
     const diff = elapsedSeconds(timer.startedAt)
 
     if (timer.isPlaying) start()
@@ -71,7 +78,7 @@ export function RetroBoardControlsProvider({
       setSeconds(0)
       reset()
     }
-  }, [boardControls, defaultTimerSeconds, pause, setSeconds, start])
+  }, [boardControls, defaultDuration, pause, setSeconds, start])
 
   const syncMusicFromBoard = useCallback(() => {
     const music = boardControls.music
@@ -159,7 +166,7 @@ export function RetroBoardControlsProvider({
       timer: {
         isCompleted: false,
         isPlaying: false,
-        remaining: defaultTimerSeconds,
+        remaining: defaultDuration,
         startedAt: undefined,
       },
       music: {
@@ -168,7 +175,7 @@ export function RetroBoardControlsProvider({
         isPlaying: false,
       },
     })
-  }, [boardControls.music, defaultTimerSeconds, updateBoardControls])
+  }, [boardControls.music, defaultDuration, updateBoardControls])
 
   const addOneMinute = useCallback(() => {
     setTimerState({ remaining: secondsLeft + 60 })

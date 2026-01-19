@@ -21,7 +21,10 @@ export function ActionItems({
     <div className='mt-2 flex flex-col gap-1 bg-orange-100 p-2'>
       <p className='font-semibold underline px-1'>Action Items</p>
       {actionItems.map(actionItem => (
-        <div key={actionItem.id} className='flex items-start gap-1 pl-2 py-1'>
+        <div
+          key={actionItem.id}
+          className='flex items-start gap-1 pl-2 py-1 z-0'
+        >
           <IconButton
             {...utils.getIconButtonProps(actionItem.isDone)}
             onClick={cardActions.handleToggleDoneActionItem(
@@ -36,7 +39,7 @@ export function ActionItems({
                 alt={actionItem.assignedTo.name}
                 width={22}
                 height={22}
-                className='size-5.5 rounded-full mt-0.5 z-1'
+                className='size-5.5 rounded-full mt-0.5'
               />
             </Tooltip>
           )}
@@ -46,6 +49,7 @@ export function ActionItems({
               actionItem.content,
               actionItem.assignedTo?.id,
             )}
+            style={{ zIndex: -1 }}
             className={utils.getActionItemClassNames(
               actionItem.isDone,
               !!actionItem.assignedTo,
