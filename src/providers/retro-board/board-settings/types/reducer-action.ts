@@ -32,6 +32,7 @@ export type BoardSettingsReducerAction =
         user: {
           id: string
           name: string
+          image: string | undefined
         }
       }
     }

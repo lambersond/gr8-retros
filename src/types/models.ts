@@ -48,6 +48,7 @@ export type Board = {
       user: {
         id: string
         name: string
+        image: string | undefined
       }
     }[]
   }
@@ -79,6 +80,14 @@ export type Board = {
       id: string
       isDone: boolean
       updatedAt: Date
+      assignedToId: string | undefined
+      assignedTo:
+        | {
+            id: string
+            name: string
+            image: string | undefined
+          }
+        | undefined
     }[]
   }[]
   users: {

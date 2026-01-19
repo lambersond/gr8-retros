@@ -1,7 +1,8 @@
 'use client'
 
+import Image from 'next/image'
 import { useCard } from '../card/use-card'
-import { IconButton } from '../common'
+import { IconButton, Tooltip } from '../common'
 import * as utils from './utils'
 import type { ActionItemsProps } from './types'
 
@@ -20,7 +21,7 @@ export function ActionItems({
     <div className='mt-2 flex flex-col gap-1 bg-orange-100 p-2'>
       <p className='font-semibold underline px-1'>Action Items</p>
       {actionItems.map(actionItem => (
-        <div key={actionItem.id} className='flex items-start gap-2 pl-2 py-1'>
+        <div key={actionItem.id} className='flex items-start gap-1 pl-2 py-1'>
           <IconButton
             {...utils.getIconButtonProps(actionItem.isDone)}
             onClick={cardActions.handleToggleDoneActionItem(
@@ -28,12 +29,27 @@ export function ActionItems({
               !actionItem.isDone,
             )}
           />
+          {actionItem.assignedTo && (
+            <Tooltip title={actionItem.assignedTo.name} asChild>
+              <Image
+                src={actionItem.assignedTo.image || '/no-image.png'}
+                alt={actionItem.assignedTo.name}
+                width={22}
+                height={22}
+                className='size-5.5 rounded-full mt-0.5 z-1'
+              />
+            </Tooltip>
+          )}
           <button
-            onClick={cardActions.handleUpdateActionItemContent(
+            onClick={cardActions.handleUpdateActionItem(
               actionItem.id,
               actionItem.content,
+              actionItem.assignedTo?.id,
             )}
-            className={utils.getActionItemClassNames(actionItem.isDone)}
+            className={utils.getActionItemClassNames(
+              actionItem.isDone,
+              !!actionItem.assignedTo,
+            )}
           >
             {actionItem.content}
           </button>

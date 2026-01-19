@@ -29,9 +29,14 @@ export interface EditCardContentParams extends CardId {
   userId: string
 }
 
-export interface CreateActionItemParams extends CardId {
-  content: string
-  createdBy: string
+export interface CreateActionItemParams {
+  boardId: string
+  item: {
+    cardId: string
+    content: string
+    createdBy: string
+    assignedToId?: string
+  }
 }
 
 export interface MarkDoneActionItemParams {

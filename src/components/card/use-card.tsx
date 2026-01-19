@@ -5,7 +5,8 @@ import { useParams } from 'next/navigation'
 import { CARD_ACTION } from '@/constants/retro-board'
 import { useModals } from '@/hooks/use-modals'
 import { useCommentsSidebarActions } from '@/providers/comments-sidebar'
-import { ColumnType } from '@/types'
+import { useBoardMembers } from '@/providers/retro-board/board-settings'
+import type { ColumnType } from '@/types'
 
 export function useCard({
   column,
@@ -20,6 +21,9 @@ export function useCard({
   const { id } = useParams() satisfies { id: string }
   const { publish } = useChannel(id)
   const { openSidebar } = useCommentsSidebarActions()
+  const members = useBoardMembers()
+
+  const assignableUsers = members.map(member => member.user)
 
   const handleUpvote = async (event: React.MouseEvent<HTMLButtonElement>) => {
     event.preventDefault()
@@ -111,28 +115,9 @@ export function useCard({
 
   const handleAddActionItem = (event: React.MouseEvent<HTMLButtonElement>) => {
     event.preventDefault()
-    openModal('UpsertContentModal', {
-      onSubmit: async (data: string) => {
-        const resp = await fetch('/api/action-item', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          credentials: 'include',
-          body: JSON.stringify({ cardId, content: data }),
-        })
-
-        if (resp.ok) {
-          const newActionItem = await resp.json()
-          publish({
-            data: {
-              type: CARD_ACTION.ADD_ACTION_ITEM,
-              payload: { cardId, actionItem: newActionItem },
-              column,
-            },
-          })
-        }
-      },
+    openModal('UpsertActionItemModal', {
+      assignableUsers,
+      apiPath: `/api/board/${id}/card/${cardId}/action-item`,
       title: 'Add Action Item',
       placeholder: 'Hupperduke will email client getting clarity on...',
     })
@@ -162,21 +147,18 @@ export function useCard({
       }
     }
 
-  const handleUpdateActionItemContent =
-    (actionItemId: string, content: string) =>
+  const handleUpdateActionItem =
+    (actionItemId: string, content: string, assignedToId?: string) =>
     (event: React.MouseEvent<HTMLButtonElement>) => {
       event.preventDefault()
 
-      openModal('UpsertContentModal', {
+      openModal('UpsertActionItemModal', {
+        assignableUsers,
+        apiPath: `/api/board/${id}/card/${cardId}/action-item/${actionItemId}`,
+        title: 'Edit Action Item',
+        placeholder: 'Hupperduke will edit the email getting clarity on...',
         defaultContent: content,
-        onSubmit: (data: string) =>
-          handleEditActionItemSubmit(
-            data,
-            cardId,
-            actionItemId,
-            column,
-            publish,
-          ),
+        assignedToId,
       })
     }
 
@@ -191,7 +173,7 @@ export function useCard({
     handleDelete,
     handleAddActionItem,
     handleToggleDoneActionItem,
-    handleUpdateActionItemContent,
+    handleUpdateActionItem,
     openCommentsSidebar,
   }
 }
@@ -218,39 +200,6 @@ async function handleEditCardSubmit(
           type: CARD_ACTION.UPDATE_CARD,
           column,
           payload: { cardId, patch: { content: editedCard.content } },
-        },
-      })
-    }
-  }
-}
-
-async function handleEditActionItemSubmit(
-  data: string,
-  cardId: string,
-  actionItemId: string,
-  column: ColumnType,
-  publish: (message: any) => void,
-) {
-  const resp = await fetch('/api/action-item/edit', {
-    method: 'PUT',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    credentials: 'include',
-    body: JSON.stringify({ actionItemId, content: data }),
-  })
-  if (resp.ok) {
-    const editedActionItem = await resp.json()
-    if (editedActionItem) {
-      publish({
-        data: {
-          type: CARD_ACTION.UPDATE_ACTION_ITEM,
-          column,
-          payload: {
-            cardId,
-            actionItemId,
-            patch: { content: editedActionItem.content },
-          },
         },
       })
     }

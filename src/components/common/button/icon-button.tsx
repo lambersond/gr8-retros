@@ -35,7 +35,7 @@ export function IconButton({
   })
 
   const buttonClasses = clsx(
-    'flex items-center text-sm p-1 rounded cursor-pointer h-fit',
+    'flex items-center text-sm p-1 rounded cursor-pointer h-fit z-1',
     intentClasses,
   )
   const handleClick = async (

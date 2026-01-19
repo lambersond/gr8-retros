@@ -30,6 +30,7 @@ export async function getOrCreateBoardById(id: string) {
                 select: {
                   id: true,
                   name: true,
+                  image: true,
                   paymentTier: true,
                 },
               },
@@ -45,7 +46,20 @@ export async function getOrCreateBoardById(id: string) {
       },
       cards: {
         orderBy: { createdAt: 'asc' },
-        include: { actionItems: true, comments: true },
+        include: {
+          actionItems: {
+            include: {
+              assignedTo: {
+                select: {
+                  id: true,
+                  name: true,
+                  image: true,
+                },
+              },
+            },
+          },
+          comments: true,
+        },
       },
     },
   })

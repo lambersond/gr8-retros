@@ -2,6 +2,7 @@ import { noop } from 'lodash'
 import { useForm } from 'react-hook-form'
 import { type ContentFields, contentResolver } from './schema'
 import { Form, TextArea } from '@/components/common'
+import { SubmitButton } from '@/components/submit-button'
 
 export function ContentForm({
   title,
@@ -38,12 +39,7 @@ export function ContentForm({
         }}
         autoFocus
       />
-      <button
-        type='submit'
-        className='w-full p-4 rounded-lg bg-primary/85 hover:bg-primary text-white font-bold cursor-pointer uppercase text-xl'
-      >
-        Submit
-      </button>
+      <SubmitButton />
     </Form>
   )
 }

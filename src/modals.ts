@@ -16,4 +16,9 @@ export const MODALS = {
       default: module.UpsertContentModal,
     })),
   ),
+  UpsertActionItemModal: lazy(() =>
+    import('./components/modals').then(module => ({
+      default: module.UpsertActionItemModal,
+    })),
+  ),
 }
