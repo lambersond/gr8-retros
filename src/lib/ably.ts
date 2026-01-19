@@ -1,15 +1,11 @@
 'use server'
 
+import Ably from 'ably'
+
+const ably = new Ably.Rest(process.env.ABLY_API_KEY!)
+
 export async function publishMessageToChannel(channelName: string, body: any) {
-  return await fetch(
-    `https://main.realtime.ably.net/channels/${channelName}/messages`,
-    {
-      method: 'POST',
-      headers: {
-        Authorization: 'Basic ' + btoa(process.env.ABLY_API_KEY!),
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(body),
-    },
-  )
+  const channel = ably.channels.get(channelName)
+  const resp = await channel.publish(body, { quickAck: true })
+  return resp
 }
