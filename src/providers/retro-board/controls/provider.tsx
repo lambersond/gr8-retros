@@ -28,6 +28,8 @@ type MusicState = {
   trackId?: string
 }
 
+const TICKING_TRIGGER_AT = 9 // seconds remaining when ticking starts
+
 export function RetroBoardControlsProvider({
   boardId,
   children,
@@ -51,18 +53,27 @@ export function RetroBoardControlsProvider({
     })
 
   const {
-    audioRef,
+    musicRef,
+    dingRef,
+    tickingRef,
     isPlaying,
     startMusic,
     pauseMusic,
     changeTrackById,
     selectedTrackOption,
+    startTicking,
+    stopTicking,
+    playDing,
   } = useMusic()
 
   const { boardControls, updateBoardControls } = useBoardControlsLiveMap(
     boardId,
     defaultDuration,
   )
+
+  // Track ticking/ding state to avoid re-triggering
+  const isTickingRef = useRef(false)
+  const dingPlayedRef = useRef(false)
 
   const syncTimerFromBoard = useCallback(() => {
     const { timer } = boardControls
@@ -111,6 +122,47 @@ export function RetroBoardControlsProvider({
     syncTimerFromBoard()
     syncMusicFromBoard()
   }, [syncTimerFromBoard, syncMusicFromBoard])
+
+  // --- Ticking and Ding sound effects ---
+  useEffect(() => {
+    // Determine if we should be ticking
+    const shouldTick =
+      isRunning && secondsLeft <= TICKING_TRIGGER_AT && secondsLeft > 0
+
+    // Start ticking when entering the trigger zone
+    if (shouldTick && !isTickingRef.current) {
+      startTicking(secondsLeft)
+      isTickingRef.current = true
+    }
+
+    // Stop ticking when leaving the trigger zone (time added, paused, or completed)
+    if (!shouldTick && isTickingRef.current) {
+      stopTicking()
+      isTickingRef.current = false
+    }
+
+    // Play ding when timer completes (less than 1 second remaining)
+    if (isRunning && secondsLeft < 1.1 && !dingPlayedRef.current) {
+      stopTicking()
+      isTickingRef.current = false
+      setTimeout(() => {
+        playDing()
+      }, 500)
+      dingPlayedRef.current = true
+    }
+
+    // Reset ding flag when timer is reset or has plenty of time
+    if (!isRunning || secondsLeft >= TICKING_TRIGGER_AT) {
+      dingPlayedRef.current = false
+    }
+  }, [isRunning, secondsLeft, startTicking, stopTicking, playDing])
+
+  // Cleanup ticking on unmount
+  useEffect(() => {
+    return () => {
+      stopTicking()
+    }
+  }, [stopTicking])
 
   const setTimerState = useCallback(
     (patch: Partial<RetroBoardControls['timer']>) => {
@@ -162,6 +214,11 @@ export function RetroBoardControlsProvider({
   ])
 
   const reset = useCallback(() => {
+    // Reset sound state
+    stopTicking()
+    isTickingRef.current = false
+    dingPlayedRef.current = false
+
     updateBoardControls({
       timer: {
         isCompleted: false,
@@ -175,7 +232,7 @@ export function RetroBoardControlsProvider({
         isPlaying: false,
       },
     })
-  }, [boardControls.music, defaultDuration, updateBoardControls])
+  }, [boardControls.music, defaultDuration, stopTicking, updateBoardControls])
 
   const addOneMinute = useCallback(() => {
     setTimerState({ remaining: secondsLeft + 60 })
@@ -219,7 +276,9 @@ export function RetroBoardControlsProvider({
       isRunning,
       secondsLeft,
       play: isPlaying,
-      audioRef,
+      musicRef,
+      tickingRef,
+      dingRef,
       selectedTrackOption,
     }),
   )
@@ -243,7 +302,9 @@ export function RetroBoardControlsProvider({
       isRunning,
       secondsLeft,
       play: isPlaying,
-      audioRef,
+      musicRef,
+      tickingRef,
+      dingRef,
       selectedTrackOption,
     })
   }, [
@@ -252,7 +313,9 @@ export function RetroBoardControlsProvider({
     isRunning,
     secondsLeft,
     isPlaying,
-    audioRef,
+    musicRef,
+    tickingRef,
+    dingRef,
     selectedTrackOption,
   ])
 

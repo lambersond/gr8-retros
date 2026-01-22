@@ -2,8 +2,13 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { MUSIC_OPTIONS } from '@/constants'
 import type { DropdownOption } from '@/components/common'
 
+const TICKING_DURATION = 8 // seconds
+const TICKING_TRIGGER_AT = 9 // seconds remaining
+
 type UseMusicReturn = {
-  audioRef: React.RefObject<HTMLAudioElement | null>
+  musicRef: React.RefObject<HTMLAudioElement | null>
+  dingRef: React.RefObject<HTMLAudioElement | null>
+  tickingRef: React.RefObject<HTMLAudioElement | null>
   selectedTrackOption: DropdownOption
   isPlaying: boolean
   isAutoplayBlocked: boolean
@@ -19,6 +24,9 @@ type UseMusicReturn = {
     trackId: string,
     opts?: { autoplay?: boolean },
   ) => Promise<void>
+  startTicking: (remainingSeconds: number) => void
+  stopTicking: () => void
+  playDing: () => void
 }
 
 function isNotAllowedError(err: unknown) {
@@ -29,22 +37,24 @@ function isNotAllowedError(err: unknown) {
 }
 
 export function useMusic(): UseMusicReturn {
-  const audioRef = useRef<HTMLAudioElement | null>(null)
+  const musicRef = useRef<HTMLAudioElement | null>(null)
+  const tickingRef = useRef<HTMLAudioElement | null>(null)
+  const dingRef = useRef<HTMLAudioElement | null>(null)
 
   const [selectedTrackOption, setSelectedTrackOption] =
     useState<DropdownOption>(MUSIC_OPTIONS[0])
 
-  // “Unlocked” means the user has interacted with the document so play() should be allowed.
+  // "Unlocked" means the user has interacted with the document so play() should be allowed.
   const [canAutoplay, setCanAutoplay] = useState(false)
   const [isAutoplayBlocked, setIsAutoplayBlocked] = useState(false)
   const [isPlaying, setIsPlaying] = useState(false)
 
-  // If the board wants autoplay before we’re unlocked, remember it and retry on first interaction.
+  // If the board wants autoplay before we're unlocked, remember it and retry on first interaction.
   const pendingAutoplayRef = useRef(false)
 
   // Keep isPlaying truthful even if audio is paused/played by OS controls, ends, etc.
   useEffect(() => {
-    const el = audioRef.current
+    const el = musicRef.current
     if (!el) return
 
     const onPlay = () => setIsPlaying(true)
@@ -69,7 +79,7 @@ export function useMusic(): UseMusicReturn {
     // If we previously tried to autoplay and got blocked, retry immediately on this user gesture.
     if (pendingAutoplayRef.current) {
       pendingAutoplayRef.current = false
-      audioRef.current?.play().catch(() => {
+      musicRef.current?.play().catch(() => {
         // If this still fails, keep state conservative.
         setIsAutoplayBlocked(true)
         setCanAutoplay(false)
@@ -77,7 +87,7 @@ export function useMusic(): UseMusicReturn {
     }
   }, [])
   useEffect(() => {
-    const el = audioRef.current
+    const el = musicRef.current
     const src = selectedTrackOption.value
 
     if (!el || !src) return
@@ -94,7 +104,7 @@ export function useMusic(): UseMusicReturn {
     }
   }, [selectedTrackOption])
 
-  // Global “any interaction unlocks autoplay”
+  // Global "any interaction unlocks autoplay"
   useEffect(() => {
     if (canAutoplay) return
 
@@ -123,10 +133,10 @@ export function useMusic(): UseMusicReturn {
 
   const startMusic = useCallback(
     async (opts?: { force?: boolean }) => {
-      const el = audioRef.current
+      const el = musicRef.current
       if (!el) return false
 
-      // If we haven’t had a user gesture yet, remember intent and mark as blocked.
+      // If we haven't had a user gesture yet, remember intent and mark as blocked.
       if (!canAutoplay && !opts?.force) {
         pendingAutoplayRef.current = true
         setIsAutoplayBlocked(true)
@@ -152,13 +162,13 @@ export function useMusic(): UseMusicReturn {
   )
 
   const pauseMusic = useCallback(() => {
-    const el = audioRef.current
+    const el = musicRef.current
     if (!el || el.paused) return
     el.pause()
   }, [])
 
   const toggleMusic = useCallback(async () => {
-    const el = audioRef.current
+    const el = musicRef.current
     if (!el) return false
 
     // A toggle is a user gesture → unlock immediately
@@ -175,7 +185,7 @@ export function useMusic(): UseMusicReturn {
 
   const changeTrack = useCallback(
     async (option: DropdownOption, opts?: { autoplay?: boolean }) => {
-      const el = audioRef.current
+      const el = musicRef.current
       const nextSrc = option.value
       if (!el || !nextSrc) return
 
@@ -202,9 +212,47 @@ export function useMusic(): UseMusicReturn {
     [changeTrack],
   )
 
+  // --- Ticking sound controls ---
+  const startTicking = useCallback((remainingSeconds: number) => {
+    const el = tickingRef.current
+    if (!el) return
+
+    // Calculate offset for pro-rating when starting with less than full time
+    // If remaining = 9, offset = 0 (play from start, ends at ~1 second remaining)
+    // If remaining = 5, offset = 4 (skip ahead, still ends at ~1 second remaining)
+    const offset = Math.max(0, TICKING_TRIGGER_AT - remainingSeconds)
+
+    // Don't play if we're already past the track duration
+    if (offset >= TICKING_DURATION) return
+
+    el.currentTime = offset
+    el.play().catch(() => {
+      // Silently handle autoplay restrictions
+    })
+  }, [])
+
+  const stopTicking = useCallback(() => {
+    const el = tickingRef.current
+    if (!el) return
+    el.pause()
+    el.currentTime = 0
+  }, [])
+
+  // --- Ding sound control ---
+  const playDing = useCallback(() => {
+    const el = dingRef.current
+    if (!el) return
+    el.currentTime = 0
+    el.play().catch(() => {
+      // Silently handle autoplay restrictions
+    })
+  }, [])
+
   return useMemo(
     () => ({
-      audioRef,
+      musicRef,
+      tickingRef,
+      dingRef,
       selectedTrackOption,
       isPlaying,
       isAutoplayBlocked,
@@ -214,6 +262,9 @@ export function useMusic(): UseMusicReturn {
       toggleMusic,
       changeTrack,
       changeTrackById,
+      startTicking,
+      stopTicking,
+      playDing,
     }),
     [
       selectedTrackOption,
@@ -225,6 +276,9 @@ export function useMusic(): UseMusicReturn {
       toggleMusic,
       changeTrack,
       changeTrackById,
+      startTicking,
+      stopTicking,
+      playDing,
     ],
   )
 }

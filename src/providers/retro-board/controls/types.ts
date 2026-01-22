@@ -20,7 +20,9 @@ export type RetroBoardControlsState = {
   isRunning: boolean
   secondsLeft: number
   play: boolean
-  audioRef: React.RefObject<HTMLAudioElement | null>
+  musicRef: React.RefObject<HTMLAudioElement | null>
+  tickingRef: React.RefObject<HTMLAudioElement | null>
+  dingRef: React.RefObject<HTMLAudioElement | null>
   selectedTrackOption: DropdownOption
 }
 
