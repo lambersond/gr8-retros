@@ -1,7 +1,6 @@
 import type { ModalProps } from '../types'
 
 export interface UpsertActionItemModalProps extends ModalProps {
-  apiPath: string
   assignableUsers?: {
     id: string
     name: string
@@ -11,4 +10,11 @@ export interface UpsertActionItemModalProps extends ModalProps {
   assignedToId?: string
   placeholder?: string
   title?: string
+  onDelete?(): void
+  onSubmit: (data: ActionItemSubmissionData) => void
+}
+
+type ActionItemSubmissionData = {
+  content: string
+  assignedToId?: string
 }

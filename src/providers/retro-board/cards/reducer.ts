@@ -103,6 +103,19 @@ export function reducer(state: CardsState, action: CardAction) {
       }
     }
 
+    case CARD_ACTION.DELETE_ACTION_ITEM: {
+      const { column, cardId, actionItemId } = action
+      return {
+        ...state,
+        [column]: utils.updateCardInColumn(state[column], cardId, card => ({
+          ...card,
+          actionItems: card.actionItems.filter(
+            item => item.id !== actionItemId,
+          ),
+        })),
+      }
+    }
+
     case CARD_ACTION.DELETE_ALL_CARDS: {
       const newState: CardsState = {
         ...state,

@@ -3,6 +3,8 @@ export type UpsertActionItemFormProps = {
   defaultContent?: string
   defaultAssignedToId?: string
   placeholder?: string
+  onDelete?(event: React.MouseEvent<HTMLButtonElement>): void
+  showDelete?: boolean
   availableUsers?: {
     id: string
     label: React.ReactNode

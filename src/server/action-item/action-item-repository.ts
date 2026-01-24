@@ -6,16 +6,9 @@ import type { CreateActionItemParams } from '@/types'
 const SELECT = {
   id: true,
   cardId: true,
-  card: {
-    // TODO: temp until card refactor is done
-    select: {
-      column: true,
-    },
-  },
   content: true,
   isDone: true,
   createdBy: true,
-  createdAt: true,
   assignedTo: {
     select: {
       id: true,
@@ -44,5 +37,20 @@ export async function updateActionItem(
     where: { id: actionItemId },
     data: updates,
     select: SELECT,
+  })
+}
+
+export async function deleteActionItem(actionItemId: string) {
+  return prisma.actionItem.delete({
+    where: { id: actionItemId },
+  })
+}
+
+export async function deleteOwnActionItem(
+  actionItemId: string,
+  userId: string,
+) {
+  return prisma.actionItem.delete({
+    where: { id: actionItemId, createdBy: userId },
   })
 }

@@ -11,10 +11,16 @@ export function UpsertActionItemForm({
   defaultAssignedToId,
   placeholder = 'We did a great job!',
   availableUsers = [],
+  showDelete = false,
+  onDelete,
 }: Readonly<UpsertActionItemFormProps>) {
   const { control, formState, handleSubmit, register } =
     useForm<UpsertActionItemFields>({
       resolver: upsertActionItemResolver,
+      defaultValues: {
+        content: defaultContent,
+        assignedToId: defaultAssignedToId,
+      },
     })
 
   const handleOnSubmit = (data: UpsertActionItemFields) => {
@@ -65,7 +71,17 @@ export function UpsertActionItemForm({
           />
         </div>
       )}
-      <SubmitButton />
+      <div className='flex justify-end items-center gap-0.5'>
+        {showDelete && (
+          <button
+            onClick={onDelete}
+            className='p-4 rounded-lg bg-danger/85 hover:bg-danger uppercase text-white font-bold cursor-pointer text-xl mr-2'
+          >
+            Delete
+          </button>
+        )}
+        <SubmitButton />
+      </div>
     </Form>
   )
 }

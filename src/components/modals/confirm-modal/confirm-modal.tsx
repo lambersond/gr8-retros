@@ -45,14 +45,14 @@ export function ConfirmModal({
 const colorMap = {
   confirm: {
     primary:
-      'bg-primary/85 py-2 px-4 hover:bg-primary rounded-xl text-lg text-tertiary uppercase text-center font-bold cursor-pointer flex items-center justify-center gap-2',
+      'bg-primary/85 py-2 px-4 hover:bg-primary rounded-xl text-lg text-text-secondary uppercase text-center font-bold cursor-pointer flex items-center justify-center gap-2',
     danger:
-      'px-4 py-2 bg-danger/85 text-error hover:bg-danger cursor-pointer rounded-lg text-lg font-bold uppercase',
+      'px-4 py-2 bg-danger/90 text-white/90 hover:text-white hover:bg-danger cursor-pointer rounded-lg text-lg font-bold uppercase',
   },
   cancel: {
     primary:
       'border border-secondary py-2 px-4 hover:border-primary rounded-xl text-lg text-secondary uppercase text-center font-bold cursor-pointer flex items-center justify-center gap-2',
     danger:
-      'px-4 py-2 text-text-secondary border-2 border-border  hover:text-text-primary/70 hover:border-text-primary/70 hover:text-text-primary/70 cursor-pointer rounded-lg text-lg font-bold uppercase',
+      'px-4 py-2 text-border-light border-2 border-border-light hover:text-text-primary/70 hover:border-text-primary/70 hover:text-text-primary/70 cursor-pointer rounded-lg text-lg font-bold uppercase',
   },
 }

@@ -5,15 +5,16 @@ import { useModals } from '@/hooks/use-modals'
 import type { UpsertActionItemModalProps } from './types'
 
 export function UpsertActionItemModal({
-  apiPath,
   open = true,
   defaultContent,
   assignedToId,
   placeholder,
   title = 'Add Action Item',
+  onSubmit,
+  onDelete,
   assignableUsers = [],
 }: Readonly<UpsertActionItemModalProps>) {
-  const { closeModal } = useModals()
+  const { closeModal, openModal } = useModals()
 
   const onClose = () => {
     closeModal('UpsertActionItemModal')
@@ -39,15 +40,25 @@ export function UpsertActionItemModal({
   }))
 
   const handleSubmit = (content: string, assignedToId: string) => {
-    fetch(apiPath, {
-      method: defaultContent ? 'PUT' : 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      credentials: 'include',
-      body: JSON.stringify({ content, assignedToId }),
-    })
+    onSubmit({ content, assignedToId })
     onClose()
+  }
+
+  const handleOnDelete = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault()
+    e.stopPropagation()
+
+    if (!onDelete) return
+
+    openModal('ConfirmModal', {
+      title: 'Delete Action Item',
+      color: 'danger',
+      message: 'Are you sure you want to delete this action item?',
+      onConfirm: () => {
+        onDelete()
+        onClose()
+      },
+    })
   }
 
   return (
@@ -58,6 +69,8 @@ export function UpsertActionItemModal({
         placeholder={placeholder}
         availableUsers={formatedAssignableUsers}
         defaultAssignedToId={assignedToId}
+        showDelete={Boolean(onDelete)}
+        onDelete={handleOnDelete}
       />
     </Modal>
   )

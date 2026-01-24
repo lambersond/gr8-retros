@@ -87,6 +87,16 @@ export function useCardsManager(boardId: string) {
         })
       },
 
+      [CARD_ACTION.DELETE_ACTION_ITEM]: data => {
+        const { cardId, actionItemId } = data.payload
+        dispatch({
+          type: CARD_ACTION.DELETE_ACTION_ITEM,
+          column: data.column,
+          cardId,
+          actionItemId,
+        })
+      },
+
       [CARD_ACTION.DELETE_ALL_CARDS]: () =>
         dispatch({ type: CARD_ACTION.DELETE_ALL_CARDS }),
 

@@ -13,6 +13,7 @@ export type CardActionType = {
   TOGGLE_DONE_ACTION_ITEM: 'TOGGLE_DONE_ACTION_ITEM'
   UPDATE_ACTION_ITEM: 'UPDATE_ACTION_ITEM'
   ADD_CARD_COMMENT: 'ADD_CARD_COMMENT'
+  DELETE_ACTION_ITEM: 'DELETE_ACTION_ITEM'
   UPDATE_CARD_COMMENT: 'UPDATE_CARD_COMMENT'
   DELETE_CARD_COMMENT: 'DELETE_CARD_COMMENT'
 
@@ -90,4 +91,10 @@ export type CardAction =
   | {
       type: CardActionType['SORT_CARDS']
       sort: 'byUpvotes' | 'byDiscussed' | 'byActionItems' | 'byComments'
+    }
+  | {
+      type: CardActionType['DELETE_ACTION_ITEM']
+      column: ColumnType
+      cardId: string
+      actionItemId: string
     }

@@ -117,9 +117,32 @@ export function useCard({
     event.preventDefault()
     openModal('UpsertActionItemModal', {
       assignableUsers,
-      apiPath: `/api/board/${id}/card/${cardId}/action-item`,
       title: 'Add Action Item',
       placeholder: 'Hupperduke will email client getting clarity on...',
+      onSubmit: async (data: any) => {
+        const resp = await fetch(
+          `/api/board/${id}/card/${cardId}/action-item`,
+          {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            credentials: 'include',
+            body: JSON.stringify(data),
+          },
+        )
+
+        if (resp.ok) {
+          const newActionItem = await resp.json()
+          publish({
+            data: {
+              type: CARD_ACTION.ADD_ACTION_ITEM,
+              payload: { cardId, actionItem: newActionItem },
+              column,
+            },
+          })
+        }
+      },
     })
   }
 
@@ -148,17 +171,45 @@ export function useCard({
     }
 
   const handleUpdateActionItem =
-    (actionItemId: string, content: string, assignedToId?: string) =>
+    (actionItemId: string, defaultContent: string, assignedToId?: string) =>
     (event: React.MouseEvent<HTMLButtonElement>) => {
       event.preventDefault()
 
       openModal('UpsertActionItemModal', {
         assignableUsers,
-        apiPath: `/api/board/${id}/card/${cardId}/action-item/${actionItemId}`,
         title: 'Edit Action Item',
         placeholder: 'Hupperduke will edit the email getting clarity on...',
-        defaultContent: content,
+        defaultContent,
         assignedToId,
+        onSubmit: (data: any) =>
+          handleEditActionItemSubmit(
+            data,
+            cardId,
+            actionItemId,
+            column,
+            `/api/board/${id}/card/${cardId}/action-item/${actionItemId}`,
+            publish,
+          ),
+        onDelete: () => {
+          fetch('/api/action-item', {
+            method: 'DELETE',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            credentials: 'include',
+            body: JSON.stringify({ actionItemId }),
+          }).then(res => {
+            if (res.ok) {
+              publish({
+                data: {
+                  type: CARD_ACTION.DELETE_ACTION_ITEM,
+                  payload: { cardId, actionItemId },
+                  column,
+                },
+              })
+            }
+          })
+        },
       })
     }
 
@@ -203,5 +254,37 @@ async function handleEditCardSubmit(
         },
       })
     }
+  }
+}
+
+async function handleEditActionItemSubmit(
+  data: string,
+  cardId: string,
+  actionItemId: string,
+  column: ColumnType,
+  apiPath: string,
+  publish: (message: any) => void,
+) {
+  const resp = await fetch(apiPath, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    credentials: 'include',
+    body: JSON.stringify(data),
+  })
+  if (resp.ok) {
+    const patch = await resp.json()
+    publish({
+      data: {
+        type: CARD_ACTION.UPDATE_ACTION_ITEM,
+        column,
+        payload: {
+          cardId,
+          actionItemId,
+          patch,
+        },
+      },
+    })
   }
 }

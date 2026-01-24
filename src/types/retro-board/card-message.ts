@@ -54,5 +54,9 @@ export type CardMessageData =
       CardActionType['DELETE_CARD_COMMENT'],
       { cardId: string; commentId: string }
     >
+  | WithColumn<
+      CardActionType['DELETE_ACTION_ITEM'],
+      { cardId: string; actionItemId: string }
+    >
 
 export type CardMessage = { data: CardMessageData }
