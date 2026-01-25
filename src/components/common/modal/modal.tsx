@@ -13,8 +13,11 @@ export function Modal({
   onClose,
   title,
   subtitle,
-  width = 'w-sm md:w-md',
+  width = '',
   fullHeight = false,
+  fullScreen = false,
+  disableContainerStyles = false,
+  containerClassName = '',
 }: Readonly<ModalProps>) {
   const headerRef = useRef<HTMLDivElement>(null)
   const [headerHeight, setHeaderHeight] = useState(52)
@@ -54,7 +57,17 @@ export function Modal({
       />
       <div
         data-testid='modal'
-        className={`relative bg-paper max-w-2xl ${width} z-1000 overflow-hidden shadow-lg h-full min-w-full sm:min-w-sm  sm:rounded-xl ${fullHeight ? '' : 'sm:h-fit'}`}
+        className={clsx(
+          'relative bg-paper z-1500 overflow-hidden shadow-lg h-full sm:rounded-none',
+          {
+            'sm:rounded-xl max-w-2xl min-w-full sm:min-w-sm sm:w-auto':
+              !fullScreen,
+            'min-w-full w-full min-h-full': fullScreen,
+            'w-sm md:w-md': !fullScreen,
+            'sm:h-fit': !fullHeight,
+          },
+          width,
+        )}
       >
         <div className={headerClassNames} ref={headerRef}>
           <div>
@@ -66,8 +79,14 @@ export function Modal({
         <div
           style={{
             maxHeight: `calc(100vh - ${headerHeight}px)`,
+            height: fullScreen ? `calc(100vh - ${headerHeight}px)` : 'auto',
           }}
-          className='overflow-y-auto p-3 h-full md:h-unset'
+          className={clsx(
+            {
+              'overflow-y-auto p-3 h-full md:h-unset': !disableContainerStyles,
+            },
+            containerClassName,
+          )}
         >
           {children}
         </div>

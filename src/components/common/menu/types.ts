@@ -1,5 +1,5 @@
 export type MenuProps = {
-  options: Option[] | GroupOption[]
+  options: (Option | GroupOption)[]
 }
 
 export type OptionsProps = {

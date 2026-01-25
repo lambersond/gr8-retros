@@ -9,4 +9,7 @@ export type ModalProps = {
   onClose: VoidFunction
   width?: string
   fullHeight?: boolean
+  fullScreen?: boolean
+  disableContainerStyles?: boolean
+  containerClassName?: string
 }

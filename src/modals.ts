@@ -21,4 +21,9 @@ export const MODALS = {
       default: module.UpsertActionItemModal,
     })),
   ),
+  PDFPreviewerModal: lazy(() =>
+    import('./components/modals').then(module => ({
+      default: module.PDFPreviewerModal,
+    })),
+  ),
 }

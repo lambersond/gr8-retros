@@ -32,27 +32,6 @@
   --color-text-primary: oklch(14.5% 0 0);
   --color-text-secondary: oklch(45.6% 0 0);
   --color-text-tertiary: oklch(70.8% 0 0);
-
-  /* Retro colors[green, yellow, red, sky] | 50, 100, 400, 600 */
-  --color-good-bg: oklch(98.2% 0.018 155.826);
-  --color-good: oklch(96.2% 0.044 156.743);
-  --color-good-accent: oklch(79.2% 0.209 151.711);
-  --color-good-text: oklch(62.7% 0.194 149.214);
-
-  --color-meh-bg: oklch(98.7% 0.026 102.212);
-  --color-meh: oklch(97.3% 0.071 103.193);
-  --color-meh-accent: oklch(85.2% 0.199 91.936);
-  --color-meh-text: oklch(68.1% 0.162 75.834);
-
-  --color-bad-bg: oklch(97.1% 0.013 17.38);
-  --color-bad: oklch(93.6% 0.032 17.717);
-  --color-bad-accent: oklch(70.4% 0.191 22.216);
-  --color-bad-text: oklch(57.7% 0.245 27.325);
-
-  --color-shoutout-bg: oklch(97.7% 0.013 236.62);
-  --color-shoutout: oklch(95.1% 0.026 236.824);
-  --color-shoutout-accent: oklch(74.6% 0.16 232.661);
-  --color-shoutout-text: oklch(58.8% 0.158 241.966);
 }
 
 :root {
