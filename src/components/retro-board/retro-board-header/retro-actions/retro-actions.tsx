@@ -21,7 +21,10 @@ import {
   useBoardSettings,
   useBoardSettingsActions,
 } from '@/providers/retro-board/board-settings'
-import { useBoardCards } from '@/providers/retro-board/cards'
+import {
+  BoardCardsSortOptions,
+  useBoardCards,
+} from '@/providers/retro-board/cards'
 
 export function RetroActions({ id }: Readonly<{ id: string }>) {
   const { handleClearBoard, handleClearCompleted, handleSortCardsBy } =
@@ -89,19 +92,23 @@ export function RetroActions({ id }: Readonly<{ id: string }>) {
             options={[
               {
                 label: 'Sort by Discussed Status',
-                onClick: () => handleSortCardsBy('byDiscussed'),
+                onClick: () =>
+                  handleSortCardsBy(BoardCardsSortOptions.BY_DISCUSSED),
               },
               {
                 label: 'Sort by Most Votes',
-                onClick: () => handleSortCardsBy('byUpvotes'),
+                onClick: () =>
+                  handleSortCardsBy(BoardCardsSortOptions.BY_VOTES),
               },
               {
                 label: 'Sort by Most Comments',
-                onClick: () => handleSortCardsBy('byComments'),
+                onClick: () =>
+                  handleSortCardsBy(BoardCardsSortOptions.BY_COMMENT_COUNT),
               },
               {
                 label: 'Sort by Most Action Items',
-                onClick: () => handleSortCardsBy('byActionItems'),
+                onClick: () =>
+                  handleSortCardsBy(BoardCardsSortOptions.BY_ACTION_ITEM_COUNT),
               },
             ]}
           />

@@ -12,7 +12,7 @@ export function useColumn(
 ) {
   const { id } = useParams()
   const { user } = useAuth()
-  const { cards } = useCards(columnType)
+  const cards = useCards(columnType)
   const { openModal } = useModals()
   const { publish } = useChannel(id as string)
 
@@ -32,7 +32,6 @@ export function useColumn(
             publish({
               data: {
                 type: 'ADD_CARD',
-                column: columnType,
                 payload: newCard,
               },
             })

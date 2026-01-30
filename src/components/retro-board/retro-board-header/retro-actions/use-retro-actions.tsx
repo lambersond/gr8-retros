@@ -1,30 +1,30 @@
 import { useCallback } from 'react'
 import { useChannel } from 'ably/react'
-import { CARD_ACTION } from '@/constants/retro-board'
 import { useModals } from '@/hooks/use-modals'
-import { useBoardCardsDispatch } from '@/providers/retro-board/cards/board-cards-provider' // temp until we have a decidated board settings provider
+import {
+  BoardCardsInternalActionType,
+  BoardCardsMessageType,
+  BoardCardsSortOptions,
+} from '@/providers/retro-board/cards'
+import { useBoardCardsDispatch } from '@/providers/retro-board/cards/provider' // temp until we have a decidated board settings provider
 
 export function useRetroActions(channelName: string) {
   const { openModal } = useModals()
   const dispatch = useBoardCardsDispatch()
+  const { publish } = useChannel({ channelName })
 
   const handleSortCardsBy = useCallback(
-    (sort: any) => {
+    (sort: BoardCardsSortOptions) => {
       dispatch({
-        type: CARD_ACTION.SORT_CARDS,
+        type: BoardCardsInternalActionType.SORT_CARDS,
         sort,
       })
     },
     [dispatch],
   )
 
-  const { publish } = useChannel({ channelName })
-
   const deleteThenBroadcast = useCallback(
-    async (
-      url: string,
-      type: (typeof CARD_ACTION)[keyof typeof CARD_ACTION],
-    ) => {
+    async (url: string, type: BoardCardsMessageType) => {
       try {
         const resp = await fetch(url, {
           method: 'DELETE',
@@ -66,7 +66,7 @@ export function useRetroActions(channelName: string) {
       onConfirm: () => {
         deleteThenBroadcast(
           `/api/board/${channelName}/cards`,
-          CARD_ACTION.DELETE_ALL_CARDS,
+          BoardCardsMessageType.DELETE_ALL_CARDS,
         )
       },
     })
@@ -81,7 +81,7 @@ export function useRetroActions(channelName: string) {
       onConfirm: () => {
         deleteThenBroadcast(
           `/api/board/${channelName}/cards/completed`,
-          CARD_ACTION.DELETE_COMPLETED_CARDS,
+          BoardCardsMessageType.DELETE_COMPLETED_CARDS,
         )
       },
     })

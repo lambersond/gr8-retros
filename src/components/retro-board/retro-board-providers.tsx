@@ -1,3 +1,4 @@
+import { MessageOrchestrator } from '../message-orchestrator'
 import { CommentsSidebarProvider } from '@/providers/comments-sidebar'
 import { BoardSettingsProvider } from '@/providers/retro-board/board-settings'
 import { BoardCardsProvider } from '@/providers/retro-board/cards'
@@ -18,7 +19,9 @@ export function RetroBoardProviders({
         <RetroBoardControlsProvider boardId={board.id}>
           <BoardCardsProvider board={board}>
             <CommentsSidebarProvider boardId={board.id}>
-              {children}
+              <MessageOrchestrator boardId={board.id}>
+                {children}
+              </MessageOrchestrator>
             </CommentsSidebarProvider>
           </BoardCardsProvider>
         </RetroBoardControlsProvider>

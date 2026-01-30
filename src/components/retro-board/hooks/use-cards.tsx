@@ -1,11 +1,6 @@
-import { useBoardCards } from '@/providers/retro-board/cards'
-import type { ColumnType } from '@/types'
+import { useBoardCardsByColumn } from '@/providers/retro-board/cards'
 
-export function useCards(column: ColumnType) {
-  const state = useBoardCards()
-  const columnState = state[column]
-
-  return {
-    cards: columnState.cards,
-  }
+export function useCards(column: string) {
+  const cards = useBoardCardsByColumn(column)
+  return cards
 }

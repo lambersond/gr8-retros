@@ -1,19 +1,4 @@
-import { SIDEBAR_ACTION_TYPES } from '@/constants'
-import type {
-  BoardSettingsReducerActionType,
-  BoardSettingsWithPermissionsNoIcons,
-} from './types'
-
-export const BOARD_SETTINGS_ACTION_TYPES: BoardSettingsReducerActionType = {
-  ...SIDEBAR_ACTION_TYPES,
-  UPDATE_BOARD_SETTINGS: 'UPDATE_BOARD_SETTINGS',
-  UPDATE_PERMISSIONS: 'UPDATE_PERMISSIONS',
-  CREATE_INVITATION_LINK: 'CREATE_INVITATION_LINK',
-  REVOKE_INVITATION_LINK: 'REVOKE_INVITATION_LINK',
-  NEW_MEMBER_ADDED: 'NEW_MEMBER_ADDED',
-  MEMBER_REMOVED: 'MEMBER_REMOVED',
-  UPDATE_MEMBER_ROLE: 'UPDATE_MEMBER_ROLE',
-}
+import type { BoardSettingsWithPermissionsNoIcons } from './types'
 
 export const BASE_SETTINGS: BoardSettingsWithPermissionsNoIcons = {
   private: {

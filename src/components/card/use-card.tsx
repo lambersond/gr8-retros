@@ -2,10 +2,10 @@
 
 import { useChannel } from 'ably/react'
 import { useParams } from 'next/navigation'
-import { CARD_ACTION } from '@/constants/retro-board'
 import { useModals } from '@/hooks/use-modals'
 import { useCommentsSidebarActions } from '@/providers/comments-sidebar'
 import { useBoardMembers } from '@/providers/retro-board/board-settings'
+import { BoardCardsMessageType } from '@/providers/retro-board/cards'
 import type { ColumnType } from '@/types'
 
 export function useCard({
@@ -40,9 +40,8 @@ export function useCard({
     if (resp.ok && currentUserId) {
       publish({
         data: {
-          type: CARD_ACTION.TOGGLE_UPVOTE,
+          type: BoardCardsMessageType.TOGGLE_UPVOTE,
           payload: { cardId, userId: currentUserId },
-          column,
         },
       })
     }
@@ -64,9 +63,8 @@ export function useCard({
       if (resp.ok) {
         publish({
           data: {
-            type: CARD_ACTION.MARK_DISCUSSED,
-            payload: { cardId, isDiscussed },
-            column,
+            type: BoardCardsMessageType.UPDATE_CARD,
+            payload: { cardId, patch: { isDiscussed } },
           },
         })
       }
@@ -102,9 +100,8 @@ export function useCard({
           if (res.ok) {
             publish({
               data: {
-                type: CARD_ACTION.DELETE_CARD,
+                type: BoardCardsMessageType.DELETE_CARD,
                 payload: { cardId },
-                column,
               },
             })
           }
@@ -136,9 +133,8 @@ export function useCard({
           const newActionItem = await resp.json()
           publish({
             data: {
-              type: CARD_ACTION.ADD_ACTION_ITEM,
+              type: BoardCardsMessageType.ADD_ACTION_ITEM,
               payload: { cardId, actionItem: newActionItem },
-              column,
             },
           })
         }
@@ -162,9 +158,8 @@ export function useCard({
       if (resp.ok) {
         publish({
           data: {
-            type: CARD_ACTION.TOGGLE_DONE_ACTION_ITEM,
-            payload: { cardId, actionItemId, isDone },
-            column,
+            type: BoardCardsMessageType.UPDATE_ACTION_ITEM,
+            payload: { cardId, actionItemId, patch: { isDone } },
           },
         })
       }
@@ -202,9 +197,8 @@ export function useCard({
             if (res.ok) {
               publish({
                 data: {
-                  type: CARD_ACTION.DELETE_ACTION_ITEM,
+                  type: BoardCardsMessageType.DELETE_ACTION_ITEM,
                   payload: { cardId, actionItemId },
-                  column,
                 },
               })
             }
@@ -248,8 +242,7 @@ async function handleEditCardSubmit(
     if (editedCard) {
       publish({
         data: {
-          type: CARD_ACTION.UPDATE_CARD,
-          column,
+          type: BoardCardsMessageType.UPDATE_CARD,
           payload: { cardId, patch: { content: editedCard.content } },
         },
       })
@@ -277,8 +270,7 @@ async function handleEditActionItemSubmit(
     const patch = await resp.json()
     publish({
       data: {
-        type: CARD_ACTION.UPDATE_ACTION_ITEM,
-        column,
+        type: BoardCardsMessageType.UPDATE_ACTION_ITEM,
         payload: {
           cardId,
           actionItemId,

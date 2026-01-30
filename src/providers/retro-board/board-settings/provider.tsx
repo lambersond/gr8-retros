@@ -8,8 +8,7 @@ import {
   type ReactNode,
   useEffect,
 } from 'react'
-import { BoardSettingsMessageManager } from './board-settings-message-manager'
-import { BOARD_SETTINGS_ACTION_TYPES } from './constants'
+import { BoardSettingsInternalActionType } from './enums'
 import { reducer } from './reducer'
 import { createInitialState } from './utils'
 import { useBoardMemberships } from '@/providers/board-memberships'
@@ -38,19 +37,17 @@ export function BoardSettingsProvider({
   useEffect(() => {
     const userRole = getRole(boardId)
     dispatch({
-      type: BOARD_SETTINGS_ACTION_TYPES.UPDATE_PERMISSIONS,
+      type: BoardSettingsInternalActionType.UPDATE_PERMISSIONS,
       payload: {
         userRole,
       },
     })
-  }, [state.settings, getRole])
+  }, [state.settings, getRole, boardId])
 
   return (
     <BoardSettingsCtx.Provider value={state}>
       <BoardSettingsDispatchCtx.Provider value={dispatch}>
-        <BoardSettingsMessageManager boardId={boardId}>
-          {children}
-        </BoardSettingsMessageManager>
+        {children}
       </BoardSettingsDispatchCtx.Provider>
     </BoardSettingsCtx.Provider>
   )

@@ -1,5 +1,5 @@
 import { useChannel } from 'ably/react'
-import { BOARD_SETTINGS_ACTION_TYPES } from '../constants'
+import { BoardSettingsMessageType } from '../enums'
 import { useBoardSettings } from './use-board-settings'
 import { useBoardSettingsDispatcher } from './use-board-settings-dispatcher'
 import { useBoardMemberships } from '@/providers/board-memberships'
@@ -36,7 +36,7 @@ export function useBoardSettingsActions() {
       const updatedSetting: BoardSettings = await resp.json()
       publish({
         data: {
-          type: BOARD_SETTINGS_ACTION_TYPES.UPDATE_BOARD_SETTINGS,
+          type: BoardSettingsMessageType.UPDATE_BOARD_SETTINGS,
           payload: updatedSetting,
         },
       })
@@ -55,7 +55,7 @@ export function useBoardSettingsActions() {
     const updatedSetting: BoardSettings = await resp.json()
 
     publish('claim-board', {
-      type: BOARD_SETTINGS_ACTION_TYPES.UPDATE_BOARD_SETTINGS,
+      type: BoardSettingsMessageType.UPDATE_BOARD_SETTINGS,
       payload: updatedSetting,
     })
     void ensureBoardInCache(boardId)
@@ -78,7 +78,7 @@ export function useBoardSettingsActions() {
     )
     publish({
       data: {
-        type: BOARD_SETTINGS_ACTION_TYPES.CREATE_INVITATION_LINK,
+        type: BoardSettingsMessageType.CREATE_INVITATION_LINK,
         payload: data,
       },
     })
@@ -96,7 +96,7 @@ export function useBoardSettingsActions() {
 
     publish({
       data: {
-        type: BOARD_SETTINGS_ACTION_TYPES.REVOKE_INVITATION_LINK,
+        type: BoardSettingsMessageType.REVOKE_INVITATION_LINK,
       },
     })
   }

@@ -11,8 +11,8 @@ import {
 
 export function CommentsSidebar() {
   const { closeSidebar } = useCommentsSidebarActions()
-  const { sidebarOpen, column, cardId } = useCommentsSidebar()
-  const comments = useCardComments(column, cardId)
+  const { sidebarOpen, cardId } = useCommentsSidebar()
+  const comments = useCardComments(cardId)
   const { addComment } = useCommentsActions()
 
   const handleAddComment = (content: string) => {

@@ -1,6 +1,6 @@
 import { useChannel } from 'ably/react'
 import { useCommentsSidebar } from '../comments-sidebar-provider'
-import { CARD_ACTION } from '@/constants/retro-board'
+import { BoardCardsMessageType } from '@/providers/retro-board/cards'
 
 export function useCommentsActions() {
   const { boardId, column } = useCommentsSidebar()
@@ -21,7 +21,7 @@ export function useCommentsActions() {
       const newComment = await resp.json()
       publish({
         data: {
-          type: CARD_ACTION.ADD_CARD_COMMENT,
+          type: BoardCardsMessageType.ADD_CARD_COMMENT,
           payload: { column, newComment },
         },
       })
@@ -41,7 +41,7 @@ export function useCommentsActions() {
       const updatedComment = await resp.json()
       publish({
         data: {
-          type: CARD_ACTION.UPDATE_CARD_COMMENT,
+          type: BoardCardsMessageType.UPDATE_CARD_COMMENT,
           payload: { updatedComment, column },
         },
       })
@@ -60,7 +60,7 @@ export function useCommentsActions() {
     if (resp.ok) {
       publish({
         data: {
-          type: CARD_ACTION.DELETE_CARD_COMMENT,
+          type: BoardCardsMessageType.DELETE_CARD_COMMENT,
           payload: { commentId: id, cardId, column },
         },
       })

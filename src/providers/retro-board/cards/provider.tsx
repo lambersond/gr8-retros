@@ -7,17 +7,16 @@ import {
   type Dispatch,
   type ReactNode,
 } from 'react'
-import { CardsManager } from './cards-manager'
+import { DEFAULT_STATE } from './constants'
 import { reducer } from './reducer'
 import * as utils from './utils'
-import type { CardsState } from './types'
+import type { BoardCardsReducerAction, BoardCardsState } from './types'
 import type { Board } from '@/types'
-import type { CardAction } from '@/types/retro-board'
 
-const CardProviderCtx = createContext<CardsState | undefined>(undefined)
-const CardProviderDispatchCtx = createContext<Dispatch<CardAction> | undefined>(
-  undefined,
-)
+const CardsProviderCtx = createContext<BoardCardsState>(DEFAULT_STATE)
+const CardsProviderDispatchCtx = createContext<
+  Dispatch<BoardCardsReducerAction> | undefined
+>(undefined)
 
 export function BoardCardsProvider({
   board,
@@ -29,16 +28,16 @@ export function BoardCardsProvider({
   const [state, dispatch] = useReducer(reducer, board, utils.createInitialState)
 
   return (
-    <CardProviderCtx.Provider value={state}>
-      <CardProviderDispatchCtx.Provider value={dispatch}>
-        <CardsManager boardId={board.id}>{children}</CardsManager>
-      </CardProviderDispatchCtx.Provider>
-    </CardProviderCtx.Provider>
+    <CardsProviderCtx.Provider value={state}>
+      <CardsProviderDispatchCtx.Provider value={dispatch}>
+        {children}
+      </CardsProviderDispatchCtx.Provider>
+    </CardsProviderCtx.Provider>
   )
 }
 
 export function useBoardCards() {
-  const ctx = useContext(CardProviderCtx)
+  const ctx = useContext(CardsProviderCtx)
   if (!ctx) {
     throw new Error('useBoardCards must be used within CardsProvider')
   }
@@ -46,7 +45,7 @@ export function useBoardCards() {
 }
 
 export function useBoardCardsDispatch() {
-  const ctx = useContext(CardProviderDispatchCtx)
+  const ctx = useContext(CardsProviderDispatchCtx)
   if (!ctx) {
     throw new Error('useBoardCardsDispatch must be used within CardsProvider')
   }
