@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { cardService } from '@/server/card'
+import { dailyCleanup } from '@/server/cleanup-service'
 
 export async function GET(request: NextRequest) {
   // Verify the request is from the cron job (add your own authentication)
@@ -9,12 +9,8 @@ export async function GET(request: NextRequest) {
   }
 
   try {
-    const result = await cardService.deleteCompletedCardsOlderThanNDays(7)
-
-    return NextResponse.json({
-      success: true,
-      deletedCount: result.count,
-    })
+    await dailyCleanup()
+    return NextResponse.json({ success: true })
   } catch (error) {
     console.error('Failed to clean up cards:', error)
     return NextResponse.json(
