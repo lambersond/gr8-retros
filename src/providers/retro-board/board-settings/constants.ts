@@ -1,3 +1,4 @@
+import { VotingMode } from '@/enums'
 import type { BoardSettingsWithPermissionsNoIcons } from './types'
 
 export const BASE_SETTINGS: BoardSettingsWithPermissionsNoIcons = {
@@ -144,6 +145,7 @@ export const BASE_SETTINGS: BoardSettingsWithPermissionsNoIcons = {
         kind: 'choice',
         title: 'Mode',
         choices: [],
+        choice: VotingMode.MULTI,
       },
       limit: {
         canEdit: false,

@@ -20,6 +20,7 @@ type ValueSubsetting = BaseSubsetting & {
 type ChoiceSubsetting = BaseSubsetting & {
   kind: 'choice'
   choices: string[]
+  choice: string
 }
 
 interface Setting {

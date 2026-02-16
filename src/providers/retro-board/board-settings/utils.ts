@@ -103,6 +103,24 @@ export function getSettingsWithPermissions(
     userRole,
   )
 
+  baseSettings.voting.enabled = settings.isVotingEnabled
+  baseSettings.voting.canEdit = userHasPermission('voting', userRole)
+  baseSettings.voting.subsettings.votingMode.choice = settings.votingMode
+  baseSettings.voting.subsettings.votingMode.canEdit = userHasPermission(
+    'voting.mode',
+    userRole,
+  )
+  baseSettings.voting.subsettings.limit.value = settings.votingLimit
+  baseSettings.voting.subsettings.limit.canEdit = userHasPermission(
+    'voting.limit',
+    userRole,
+  )
+  baseSettings.voting.subsettings.restricted.enabled = settings.votingRestricted
+  baseSettings.voting.subsettings.restricted.canEdit = userHasPermission(
+    'voting.restricted',
+    userRole,
+  )
+
   return baseSettings
 }
 
@@ -151,6 +169,10 @@ function getStaticBoardPermissions(userRole: BoardRole) {
     'upvoting.anytime': userHasPermission('upvoting.anytime', userRole),
     'upvoting.limit': userHasPermission('upvoting.limit', userRole),
     'upvoting.restricted': userHasPermission('upvoting.restricted', userRole),
+    voting: userHasPermission('voting', userRole),
+    'voting.mode': userHasPermission('voting.mode', userRole),
+    'voting.limit': userHasPermission('voting.limit', userRole),
+    'voting.restricted': userHasPermission('voting.restricted', userRole),
   } satisfies Record<PermissionKey, boolean>
 }
 
