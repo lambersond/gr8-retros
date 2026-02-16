@@ -6,7 +6,7 @@ import Image from 'next/image'
 export function Avatar({
   alt,
   src,
-  className = 'size-5.5 rounded-full mt-0.5',
+  className = 'rounded-full mt-0.5 min-w-5.5 min-h-5.5',
 }: Readonly<{
   alt: string
   src?: string | null

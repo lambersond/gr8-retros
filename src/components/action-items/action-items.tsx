@@ -33,7 +33,7 @@ export function ActionItems({
             )}
           />
           {actionItem.assignedTo && (
-            <Tooltip title={actionItem.assignedTo.name} asChild>
+            <Tooltip title={actionItem.assignedTo.name}>
               <Avatar
                 alt={actionItem.assignedTo.name}
                 src={actionItem.assignedTo.image}
