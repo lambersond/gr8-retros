@@ -104,7 +104,7 @@ export const BASE_SETTINGS: BoardSettingsWithPermissionsNoIcons = {
     enabled: false,
     isUnlocked: true,
     key: 'isUpvotingEnabled',
-    title: 'Voting Enabled',
+    title: 'Upvoting Enabled',
     subsettings: {
       anytime: {
         canEdit: false,
@@ -125,6 +125,38 @@ export const BASE_SETTINGS: BoardSettingsWithPermissionsNoIcons = {
         canEdit: false,
         enabled: false,
         key: 'upvoteRestricted',
+        kind: 'toggle',
+        title: 'Only Members and Above Can Upvote',
+      },
+    },
+  },
+  voting: {
+    render: true,
+    canEdit: false,
+    enabled: false,
+    isUnlocked: true,
+    key: 'isVotingEnabled',
+    title: 'Voting Enabled',
+    subsettings: {
+      votingMode: {
+        canEdit: false,
+        key: 'votingMode',
+        kind: 'choice',
+        title: 'Mode',
+        choices: [],
+      },
+      limit: {
+        canEdit: false,
+        hint: '-1 for unlimited',
+        key: 'votingLimit',
+        kind: 'value',
+        title: 'Voting Limit',
+        value: -1,
+      },
+      restricted: {
+        canEdit: false,
+        enabled: false,
+        key: 'votingRestricted',
         kind: 'toggle',
         title: 'Only Members and Above Can Vote',
       },

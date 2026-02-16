@@ -1,4 +1,4 @@
-import { Clock, MessageSquare, Music, ThumbsUp, UserLock } from 'lucide-react'
+import { ArrowBigUp, Clock, MessageSquare, Music, UserLock } from 'lucide-react'
 import { BASE_SETTINGS } from './constants'
 import {
   type BoardPermissions,
@@ -19,7 +19,7 @@ const getBaseSettings = (): BoardSettingsWithPermissions => {
   baseSettings.comments.icon = MessageSquare
   baseSettings.music.icon = Music
   baseSettings.timer.icon = Clock
-  baseSettings.upvoting.icon = ThumbsUp
+  baseSettings.upvoting.icon = ArrowBigUp
 
   return baseSettings
 }

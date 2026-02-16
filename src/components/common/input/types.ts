@@ -44,4 +44,11 @@ export interface CheckboxProps
   defaultChecked?: boolean
   labelClassName?: string
   size?: Size
+  direction?: 'horizontal' | 'vertical'
+  textDirection?: 'start' | 'end'
+}
+
+export type NumberIncrementorProps = {
+  defaultValue?: number
+  onChange?: (value: number) => void
 }

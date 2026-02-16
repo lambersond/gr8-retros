@@ -18,6 +18,8 @@ export function Checkbox({
   checked,
   onChange,
   id,
+  direction = 'horizontal',
+  textDirection = 'end',
   ...props
 }: Readonly<CheckboxProps>) {
   const reactId = useId()
@@ -57,8 +59,15 @@ export function Checkbox({
           'text-md': isMediumSize(size),
           'text-lg': isLargeSize(size),
           'cursor-pointer': !disabled,
+
+          'flex-row': direction === 'horizontal' && textDirection === 'end',
+          'flex-row-reverse':
+            direction === 'horizontal' && textDirection === 'start',
+          'flex-col': direction === 'vertical' && textDirection === 'end',
+          'flex-col-reverse items-center':
+            direction === 'vertical' && textDirection === 'start',
         },
-        'inline-flex items-center',
+        'flex items-center w-fit',
         labelClassName,
       )}
       htmlFor={inputId}
@@ -75,14 +84,23 @@ export function Checkbox({
         {...props}
         disabled={disabled}
       />
-
       {iconChecked ? (
         <CheckSquare className={`${classes} text-info`} />
       ) : (
         <Square className={`${classes} text-secondary`} />
       )}
-
-      <p className='ml-2 select-none text-text-primary'>{label}</p>
+      <p
+        className={clsx(
+          {
+            'mr-2': direction === 'horizontal' && textDirection === 'start',
+            'ml-2': direction === 'horizontal' && textDirection === 'end',
+          },
+          'select-none',
+          labelClassName,
+        )}
+      >
+        {label}
+      </p>
     </label>
   )
 }

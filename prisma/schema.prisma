@@ -26,6 +26,11 @@ enum PaymentTier {
   CHAMPION
 }
 
+enum VotingMode {
+  SINGLE
+  MULTI
+}
+
 // -----------------------
 // User model
 // -----------------------
@@ -114,36 +119,42 @@ model RetroSession {
   Paid tiers unlock additional settings.
 */
 model BoardSettings {
-  isPrivate             Boolean @default(false) // TIER = FREE
-  privateOpenAccess     Boolean @default(false)
-  privateCardRetention  Int     @default(7) // days
-  ownerId               String?
+  isPrivate                Boolean    @default(false) // TIER = FREE
+  privateOpenAccess        Boolean    @default(false)
+  privateCardRetention     Int        @default(7) // days
+  ownerId                  String?
 
-  isCommentsEnabled     Boolean @default(true) // TIER = FREE
-  commentsAnytime       Boolean @default(true)
+  isCommentsEnabled        Boolean    @default(true) // TIER = FREE
+  commentsAnytime          Boolean    @default(true)
+  isMusicEnabled           Boolean    @default(true) // TIER = FREE
+  musicAnytime             Boolean    @default(true)
+  musicRestricted          Boolean    @default(false)
 
-  isMusicEnabled        Boolean @default(true) // TIER = FREE
-  musicAnytime          Boolean @default(true)
-  musicRestricted       Boolean @default(false)
+  isTimerEnabled           Boolean    @default(true) // TIER = FREE
+  timerDefault             Int        @default(300)
+  timerAnytime             Boolean    @default(true)
+  timerRestricted          Boolean    @default(false)
 
-  isTimerEnabled        Boolean @default(true) // TIER = FREE
-  timerDefault          Int     @default(300)
-  timerAnytime          Boolean @default(true)
-  timerRestricted       Boolean @default(false)
+  isUpvotingEnabled        Boolean    @default(true) // TIER = FREE
+  upvoteLimit              Int        @default(-1)
+  upvoteAnytime            Boolean    @default(true) // needed?
+  upvoteRestricted         Boolean    @default(false)
 
-  isUpvotingEnabled     Boolean @default(true) // TIER = FREE
-  upvoteLimit           Int     @default(-1)
-  upvoteAnytime         Boolean @default(true)
-  upvoteRestricted      Boolean @default(false)
+  isVotingEnabled         Boolean    @default(true) // TIER = FREE
+  votingMode              VotingMode @default(MULTI)
+  votingLimit             Int        @default(3)
+  votingRestricted        Boolean    @default(false)
 
   // Not implemented yet
-  isCardGroupingEnabled Boolean @default(false) // TIER = BELIEVER
-  cardGroupingAnytime   Boolean @default(false)
+  isActionItemsEnabled     Boolean    @default(true) // TIER = FREE
 
-  isFocusModeEnabled    Boolean @default(false) // TIER = BELIEVER
+  isCardGroupingEnabled    Boolean    @default(false) // TIER = BELIEVER
+  cardGroupingAnytime      Boolean    @default(false)
 
-  isAiNamingEnabled     Boolean @default(false) // TIER = SUPPORTER
-  isAiSummaryEnabled    Boolean @default(false) // TIER = SUPPORTER
+  isFacilitatorModeEnabled Boolean    @default(false) // TIER = BELIEVER
+
+  isAiNamingEnabled        Boolean    @default(false) // TIER = SUPPORTER
+  isAiSummaryEnabled       Boolean    @default(false) // TIER = SUPPORTER
 
   // Default columns and relations
   id                    String  @id @default(cuid())
@@ -193,6 +204,7 @@ model Card {
   creatorId   String
   isDiscussed Boolean  @default(false)
   upvotedBy   String[] @default([])
+  votes       Int      @default(0)
   position    Int      @default(0)
   createdBy   String   @default("Anonymous")
 

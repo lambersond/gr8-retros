@@ -1,14 +1,13 @@
 import * as React from 'react'
 import { Volume1, Volume2, VolumeX } from 'lucide-react'
+import { VOLUME_STORAGE_KEY } from '@/constants'
+import { clamp01 } from '@/utils/clamp01'
 
 type MusicVolumeSliderProps = {
-  audioRef: React.RefObject<HTMLAudioElement | null>
-  defaultVolume?: number // 0..1
+  defaultVolume?: number
   storageKey?: string
   className?: string
 }
-
-const clamp01 = (n: number) => Math.min(1, Math.max(0, n))
 
 const VolumeIcon = ({ volume }: { volume: number }) => {
   if (volume === 0) return VolumeX
@@ -17,27 +16,22 @@ const VolumeIcon = ({ volume }: { volume: number }) => {
 }
 
 export function MusicVolumeSlider({
-  audioRef,
   defaultVolume = 0.6,
-  storageKey = 'music:volume',
+  storageKey = VOLUME_STORAGE_KEY,
 }: Readonly<MusicVolumeSliderProps>) {
   const [volume, setVolume] = React.useState(() => {
     if (globalThis.window === undefined) return clamp01(defaultVolume)
-    const stored = globalThis.localStorage.getItem(storageKey)
+    const stored = localStorage.getItem(storageKey)
     const parsed = stored ? Number(stored) : Number.NaN
     return Number.isFinite(parsed) ? clamp01(parsed) : clamp01(defaultVolume)
   })
 
   React.useEffect(() => {
-    const el = audioRef.current
-    if (!el) return
-    el.volume = clamp01(volume)
-  }, [audioRef, volume])
-
-  // Persist locally only
-  React.useEffect(() => {
     if (globalThis.window === undefined) return
-    globalThis.localStorage.setItem(storageKey, String(volume))
+    localStorage.setItem(storageKey, String(volume))
+    globalThis.dispatchEvent(
+      new CustomEvent('volume-change', { detail: { key: storageKey, volume } }),
+    )
   }, [storageKey, volume])
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {

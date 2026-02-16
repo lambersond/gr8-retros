@@ -73,7 +73,7 @@ export function Card({
             ) : (
               <>
                 {!!upvotes && (
-                  <Tooltip title='Total votes'>
+                  <Tooltip title='Total Upvotes'>
                     <p className='self-center size-7 rounded-full bg-neutral-50 border border-slate-300 text-text-primary absolute -top-3 -left-3 text-md flex items-center justify-center'>
                       {upvotes}
                     </p>

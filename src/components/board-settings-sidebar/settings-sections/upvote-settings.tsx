@@ -19,7 +19,7 @@ export function UpvoteSettings() {
   const { userPermissions } = useBoardPermissions()
 
   const handleLimitChange = (e: React.FocusEvent<HTMLInputElement>) => {
-    updateBoardSetting(subsettings.limit.key!, Number(e.target.value))
+    updateBoardSetting(subsettings.limit.key, Number(e.target.value))
   }
 
   return (
@@ -39,7 +39,7 @@ export function UpvoteSettings() {
             size='sm'
             disabled={!setting.enabled}
             onChange={updateBoardSetting(
-              subsettings.anytime.key!,
+              subsettings.anytime.key,
               !subsettings.anytime.enabled,
             )}
           />
@@ -61,7 +61,7 @@ export function UpvoteSettings() {
           size='sm'
           disabled={!setting.enabled || !userPermissions['upvoting.restricted']}
           onChange={updateBoardSetting(
-            subsettings.restricted.key!,
+            subsettings.restricted.key,
             !subsettings.restricted.enabled,
           )}
         />

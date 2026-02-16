@@ -1,3 +1,5 @@
+export const VOLUME_STORAGE_KEY = 'music:volume'
+
 export const MUSIC = {
   lofi: {
     name: 'Lo-Fi Beats',

@@ -21,6 +21,10 @@ export type PermissionKey =
   | 'upvoting.anytime'
   | 'upvoting.limit'
   | 'upvoting.restricted'
+  | 'voting'
+  | 'voting.mode'
+  | 'voting.limit'
+  | 'voting.restricted'
 
 export type DynamcicPermissionKey =
   | 'music.restricted.canControl'
@@ -48,6 +52,10 @@ export const SETTINGS_ROLE_MAP: Record<string, PermissionKey> = {
   upvoteAnytime: 'upvoting.anytime',
   upvoteLimit: 'upvoting.limit',
   upvoteRestricted: 'upvoting.restricted',
+  isVotingEnabled: 'voting',
+  votingMode: 'voting.mode',
+  votingLimit: 'voting.limit',
+  votingRestricted: 'voting.restricted',
 }
 
 export const ROLE_HIERARCHY: Record<BoardRole, number> = {
@@ -83,6 +91,10 @@ const PERMISSIONS_MAP: Record<PermissionKey, BoardRole> &
   'upvoting.limit': BoardRole.FACILITATOR,
   'upvoting.restricted': BoardRole.FACILITATOR,
   'upvoting.restricted.canUpvote': [BoardRole.VIEWER, BoardRole.MEMBER],
+  voting: BoardRole.ADMIN,
+  'voting.mode': BoardRole.FACILITATOR,
+  'voting.limit': BoardRole.FACILITATOR,
+  'voting.restricted': BoardRole.FACILITATOR,
 } as const
 
 export function userHasPermission(

@@ -1,4 +1,4 @@
-export { Audio } from './audio'
+export { AudioRefs } from './audio-refs'
 export { MusicControls } from './music-controls'
 export { MusicPlayButton } from './music-play-button'
 export { MusicVolumeSlider } from './music-volume-slider'

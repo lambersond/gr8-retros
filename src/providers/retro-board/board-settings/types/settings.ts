@@ -17,6 +17,11 @@ type ValueSubsetting = BaseSubsetting & {
   value: number
 }
 
+type ChoiceSubsetting = BaseSubsetting & {
+  kind: 'choice'
+  choices: string[]
+}
+
 interface Setting {
   canEdit?: boolean
   enabled: boolean
@@ -64,21 +69,31 @@ interface UpvotingSetting extends Setting {
   }
 }
 
+interface VotingSetting extends Setting {
+  subsettings: {
+    votingMode: ChoiceSubsetting
+    limit: ValueSubsetting
+    restricted: ToggleSubsetting
+  }
+}
+
 export type BoardSettingsWithPermissions = {
   private: PrivateSetting
   comments: CommentSetting
   music: MusicSetting
   timer: TimerSetting
   upvoting: UpvotingSetting
+  voting: VotingSetting
 }
 
 export type BoardSettingsWithPermissionsNoIcons = Omit<
   BoardSettingsWithPermissions,
-  'private' | 'comments' | 'music' | 'timer' | 'upvoting'
+  'private' | 'comments' | 'music' | 'timer' | 'upvoting' | 'voting'
 > & {
   private: Omit<PrivateSetting, 'icon'>
   comments: Omit<CommentSetting, 'icon'>
   music: Omit<MusicSetting, 'icon'>
   timer: Omit<TimerSetting, 'icon'>
   upvoting: Omit<UpvotingSetting, 'icon'>
+  voting: Omit<VotingSetting, 'icon'>
 }

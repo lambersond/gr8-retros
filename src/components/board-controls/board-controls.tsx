@@ -2,9 +2,10 @@
 
 import { Popover } from '../common'
 import { BoardControlItem } from './board-control-item'
-import { MusicStatus, TimeRemaining } from './indicators'
-import { Audio, MusicControls, VolumeControl } from './music'
+import { MusicStatus, TimeRemaining, VotesRemaining } from './indicators'
+import { AudioRefs, MusicControls, VolumeControl } from './music'
 import { TimerInputs } from './timer'
+import { Voting } from './voting'
 import {
   useBoardPermissions,
   useBoardSettings,
@@ -30,7 +31,7 @@ export function BoardControls() {
   return (
     <div className='w-full flex justify-center absolute top-2 left-0'>
       <div className='relative py-1 px-2 bg-info/20 w-fit rounded-md flex items-center'>
-        {settings.music.enabled && <Audio />}
+        {settings.music.enabled && <AudioRefs />}
         <Popover
           asChild
           hidePopover={!showPopover}
@@ -61,12 +62,19 @@ export function BoardControls() {
                     <MusicControls />
                   </BoardControlItem>
                 )}
+              <BoardControlItem className='border-b-0 hidden'>
+                <Voting />
+              </BoardControlItem>
             </div>
           }
         >
           <div className='text-xl font-mono text-center select-none z-10 flex items-center gap-2'>
             {settings.timer.enabled && <TimeRemaining />}
             {settings.music.enabled && <MusicStatus />}
+            {/* Hidden for now until we have the voting system implemented more fully */}
+            <div className='hidden'>
+              <VotesRemaining />
+            </div>
           </div>
         </Popover>
       </div>

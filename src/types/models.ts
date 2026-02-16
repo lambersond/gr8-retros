@@ -1,4 +1,4 @@
-import type { BoardRole, PaymentTier } from '@/enums'
+import type { BoardRole, PaymentTier, VotingMode } from '@/enums'
 
 export type ColumnType = 'GOOD' | 'MEH' | 'BAD' | 'SHOUTOUT'
 
@@ -18,7 +18,11 @@ export type Board = {
     isAiSummaryEnabled: boolean
     isCardGroupingEnabled: boolean
     isCommentsEnabled: boolean
-    isFocusModeEnabled: boolean
+    isActionItemsEnabled: boolean
+    isVotingEnabled: boolean
+    votingMode: VotingMode
+    votingLimit: number
+    votingRestricted: boolean
     isMusicEnabled: boolean
     isPrivate: boolean
     isTimerEnabled: boolean
@@ -63,6 +67,7 @@ export type Board = {
     column: string
     isDiscussed: boolean
     upvotedBy: string[]
+    votes: number
     position: number
     createdBy: string
     comments: {

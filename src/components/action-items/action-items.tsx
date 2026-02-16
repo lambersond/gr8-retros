@@ -1,6 +1,6 @@
 'use client'
 
-import Image from 'next/image'
+import { Avatar } from '../avatar'
 import { useCard } from '../card/use-card'
 import { IconButton, Tooltip } from '../common'
 import * as utils from './utils'
@@ -34,12 +34,9 @@ export function ActionItems({
           />
           {actionItem.assignedTo && (
             <Tooltip title={actionItem.assignedTo.name} asChild>
-              <Image
-                src={actionItem.assignedTo.image || '/no-image.png'}
+              <Avatar
                 alt={actionItem.assignedTo.name}
-                width={22}
-                height={22}
-                className='size-5.5 rounded-full mt-0.5'
+                src={actionItem.assignedTo.image}
               />
             </Tooltip>
           )}
