@@ -27,7 +27,7 @@ export function Column({
           onClick={onAdd}
         />
       </div>
-      <div className='flex-1 min-h-0 flex flex-col gap-3 p-3 overflow-y-auto'>
+      <div className='flex-1 min-h-0 flex flex-col gap-3 p-3 overflow-y-auto scrollbar-thin scrollbar-thumb-rounded scrollbar-thumb-gray-700/10 scrollbar-track-transparent'>
         {cards.map(card => (
           <Card
             key={card.id}

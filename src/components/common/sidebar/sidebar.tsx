@@ -69,7 +69,7 @@ export function Sidebar({
 
       <div
         data-testid='sidebar'
-        className={`fixed top-16 z-50 h-full max-h-[calc(100vh_-_64px)] overflow-y-auto bg-appbar shadow-lg transform transition-transform ${currentSide.position} ${currentSide.transform} ${className}`}
+        className={`scrollbar-thin scrollbar-thumb-rounded scrollbar-thumb-gray-400 scrollbar-track-transparent fixed top-16 z-50 h-full max-h-[calc(100vh_-_64px)] overflow-y-auto bg-appbar shadow-lg transform transition-transform ${currentSide.position} ${currentSide.transform} ${className}`}
       >
         <SidebarContext.Provider value={providerValue}>
           {open && children}
