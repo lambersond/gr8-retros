@@ -6,14 +6,11 @@ import { useModals } from '@/hooks/use-modals'
 import { useCommentsSidebarActions } from '@/providers/comments-sidebar'
 import { useBoardMembers } from '@/providers/retro-board/board-settings'
 import { BoardCardsMessageType } from '@/providers/retro-board/cards'
-import type { ColumnType } from '@/types'
 
 export function useCard({
-  column,
   cardId,
   currentUserId,
 }: {
-  column: ColumnType
   cardId: string
   currentUserId?: string
 }) {
@@ -75,8 +72,7 @@ export function useCard({
       event.preventDefault()
       openModal('UpsertContentModal', {
         defaultContent: content,
-        onSubmit: (data: string) =>
-          handleEditCardSubmit(data, cardId, column, publish),
+        onSubmit: (data: string) => handleEditCardSubmit(data, cardId, publish),
         title: 'Edit Card',
       })
     }
@@ -181,7 +177,6 @@ export function useCard({
             data,
             cardId,
             actionItemId,
-            column,
             `/api/board/${id}/card/${cardId}/action-item/${actionItemId}`,
             publish,
           ),
@@ -208,7 +203,7 @@ export function useCard({
     }
 
   const openCommentsSidebar = () => {
-    openSidebar(cardId, id, column)
+    openSidebar(cardId, id)
   }
 
   return {
@@ -226,7 +221,6 @@ export function useCard({
 async function handleEditCardSubmit(
   data: string,
   cardId: string,
-  column: ColumnType,
   publish: (message: any) => void,
 ) {
   const resp = await fetch('/api/card/edit', {
@@ -254,7 +248,6 @@ async function handleEditActionItemSubmit(
   data: string,
   cardId: string,
   actionItemId: string,
-  column: ColumnType,
   apiPath: string,
   publish: (message: any) => void,
 ) {

@@ -12,31 +12,33 @@ export type Board = {
   settings: {
     id: string
     boardTier: PaymentTier
-    cardGroupingAnytime: boolean
-    commentsAnytime: boolean
+    isActionItemsEnabled: boolean
     isAiNamingEnabled: boolean
     isAiSummaryEnabled: boolean
     isCardGroupingEnabled: boolean
     isCommentsEnabled: boolean
-    isActionItemsEnabled: boolean
-    isVotingEnabled: boolean
-    votingMode: VotingMode
-    votingLimit: number
-    votingRestricted: boolean
     isMusicEnabled: boolean
     isPrivate: boolean
     isTimerEnabled: boolean
     isUpvotingEnabled: boolean
+    isVotingEnabled: boolean
+    actionItemsAnytime: boolean
+    actionItemsRestricted: boolean
+    cardGroupingAnytime: boolean
+    commentsAnytime: boolean
+    commentsRestricted: boolean
     musicAnytime: boolean
     musicRestricted: boolean
     privateCardRetention: number
     privateOpenAccess: boolean
-    timerAnytime: boolean
     timerDefault: number
     timerRestricted: boolean
     upvoteAnytime: boolean
     upvoteLimit: number
     upvoteRestricted: boolean
+    votingLimit: number
+    votingMode: VotingMode
+    votingRestricted: boolean
     invite:
       | ({
           token: string

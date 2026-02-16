@@ -11,14 +11,12 @@ export function reducer(
         ...state,
         cardId: undefined,
         sidebarOpen: false,
-        column: undefined,
       }
     }
     case COMMENTS_SIDEBAR_ACTION_TYPES.OPEN_SIDEBAR: {
       return {
         ...state,
         cardId: action.payload.cardId,
-        column: action.payload.column,
         sidebarOpen: true,
       }
     }

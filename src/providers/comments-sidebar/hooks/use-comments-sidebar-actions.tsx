@@ -1,17 +1,15 @@
 import { useCommentsSidebarDispatch } from '../comments-sidebar-provider'
 import { COMMENTS_SIDEBAR_ACTION_TYPES } from '../constants'
-import type { ColumnType } from '@/types'
 
 export function useCommentsSidebarActions() {
   const dispatch = useCommentsSidebarDispatch()
 
-  function openSidebar(cardId: string, boardId: string, column: ColumnType) {
+  function openSidebar(cardId: string, boardId: string) {
     dispatch({
       type: COMMENTS_SIDEBAR_ACTION_TYPES.OPEN_SIDEBAR,
       payload: {
         cardId,
         boardId,
-        column,
       },
     })
   }

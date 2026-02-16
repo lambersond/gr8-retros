@@ -4,6 +4,7 @@ import {
   SubsettingsContainer,
 } from '@/components/settings-toggle'
 import {
+  useBoardPermissions,
   useBoardSettings,
   useBoardSettingsActions,
 } from '@/providers/retro-board/board-settings'
@@ -15,6 +16,7 @@ export function CommentsSettings() {
       comments: { subsettings, ...setting },
     },
   } = useBoardSettings()
+  const { userPermissions } = useBoardPermissions()
 
   return (
     <SettingsToggle
@@ -27,13 +29,13 @@ export function CommentsSettings() {
     >
       <SubsettingsContainer show={setting.enabled}>
         <Checkbox
-          defaultChecked={subsettings.anytime.enabled}
-          label={subsettings.anytime.title}
+          checked={subsettings.restricted.enabled}
+          label={subsettings.restricted.title}
           size='sm'
-          disabled={!setting.enabled}
+          disabled={!setting.enabled || !userPermissions['comments.restricted']}
           onChange={updateBoardSetting(
-            subsettings.anytime.key!,
-            !subsettings.anytime.enabled,
+            subsettings.restricted.key,
+            !subsettings.restricted.enabled,
           )}
         />
       </SubsettingsContainer>

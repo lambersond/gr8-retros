@@ -44,6 +44,7 @@ interface PrivateSetting extends Setting {
 interface CommentSetting extends Setting {
   subsettings: {
     anytime: ToggleSubsetting
+    restricted: ToggleSubsetting
   }
 }
 
@@ -56,9 +57,15 @@ interface MusicSetting extends Setting {
 
 interface TimerSetting extends Setting {
   subsettings: {
-    anytime: ToggleSubsetting
     restricted: ToggleSubsetting
     defaultDuration: ValueSubsetting
+  }
+}
+
+interface ActionItemsSetting extends Setting {
+  subsettings: {
+    anytime: ToggleSubsetting
+    restricted: ToggleSubsetting
   }
 }
 
@@ -83,18 +90,26 @@ export type BoardSettingsWithPermissions = {
   comments: CommentSetting
   music: MusicSetting
   timer: TimerSetting
+  actionItems: ActionItemsSetting
   upvoting: UpvotingSetting
   voting: VotingSetting
 }
 
 export type BoardSettingsWithPermissionsNoIcons = Omit<
   BoardSettingsWithPermissions,
-  'private' | 'comments' | 'music' | 'timer' | 'upvoting' | 'voting'
+  | 'private'
+  | 'comments'
+  | 'music'
+  | 'timer'
+  | 'actionItems'
+  | 'upvoting'
+  | 'voting'
 > & {
   private: Omit<PrivateSetting, 'icon'>
   comments: Omit<CommentSetting, 'icon'>
   music: Omit<MusicSetting, 'icon'>
   timer: Omit<TimerSetting, 'icon'>
+  actionItems: Omit<ActionItemsSetting, 'icon'>
   upvoting: Omit<UpvotingSetting, 'icon'>
   voting: Omit<VotingSetting, 'icon'>
 }

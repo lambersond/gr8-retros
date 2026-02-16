@@ -1,4 +1,12 @@
-import { ArrowBigUp, Clock, MessageSquare, Music, UserLock } from 'lucide-react'
+import {
+  ArrowBigUp,
+  Clock,
+  MessageSquare,
+  MessageSquareWarning,
+  Music,
+  UserLock,
+  Vote,
+} from 'lucide-react'
 import { BASE_SETTINGS } from './constants'
 import {
   type BoardPermissions,
@@ -20,6 +28,8 @@ const getBaseSettings = (): BoardSettingsWithPermissions => {
   baseSettings.music.icon = Music
   baseSettings.timer.icon = Clock
   baseSettings.upvoting.icon = ArrowBigUp
+  baseSettings.actionItems.icon = MessageSquareWarning
+  baseSettings.voting.icon = Vote
 
   return baseSettings
 }
@@ -30,6 +40,7 @@ export function getSettingsWithPermissions(
 ) {
   const baseSettings = getBaseSettings()
 
+  // Private Settings
   baseSettings.private.enabled = settings.isPrivate
   baseSettings.private.canEdit = userHasPermission('private', userRole)
   baseSettings.private.subsettings.openAccess.enabled =
@@ -45,6 +56,7 @@ export function getSettingsWithPermissions(
   baseSettings.private.subsettings.cardRetention.value =
     settings.privateCardRetention
 
+  // Comments Settings
   baseSettings.comments.enabled = settings.isCommentsEnabled
   baseSettings.comments.canEdit = userHasPermission('comments', userRole)
   baseSettings.comments.subsettings.anytime.enabled = settings.commentsAnytime
@@ -52,7 +64,14 @@ export function getSettingsWithPermissions(
     'comments.anytime',
     userRole,
   )
+  baseSettings.comments.subsettings.restricted.enabled =
+    settings.commentsRestricted
+  baseSettings.comments.subsettings.restricted.canEdit = userHasPermission(
+    'comments.restricted',
+    userRole,
+  )
 
+  // Music Settings
   baseSettings.music.enabled = settings.isMusicEnabled
   baseSettings.music.canEdit = userHasPermission('music', userRole)
   baseSettings.music.subsettings.anytime.enabled = settings.musicAnytime
@@ -66,13 +85,9 @@ export function getSettingsWithPermissions(
     userRole,
   )
 
+  // Timer Settings
   baseSettings.timer.enabled = settings.isTimerEnabled
   baseSettings.timer.canEdit = userHasPermission('timer', userRole)
-  baseSettings.timer.subsettings.anytime.enabled = settings.timerAnytime
-  baseSettings.timer.subsettings.anytime.canEdit = userHasPermission(
-    'timer.anytime',
-    userRole,
-  )
   baseSettings.timer.subsettings.restricted.enabled = settings.timerRestricted
   baseSettings.timer.subsettings.restricted.canEdit = userHasPermission(
     'timer.restricted',
@@ -84,6 +99,23 @@ export function getSettingsWithPermissions(
     userRole,
   )
 
+  // Action Items Settings
+  baseSettings.actionItems.enabled = settings.isActionItemsEnabled
+  baseSettings.actionItems.canEdit = userHasPermission('actionItems', userRole)
+  baseSettings.actionItems.subsettings.anytime.enabled =
+    settings.actionItemsAnytime
+  baseSettings.actionItems.subsettings.anytime.canEdit = userHasPermission(
+    'actionItems.anytime',
+    userRole,
+  )
+  baseSettings.actionItems.subsettings.restricted.enabled =
+    settings.actionItemsRestricted
+  baseSettings.actionItems.subsettings.restricted.canEdit = userHasPermission(
+    'actionItems.restricted',
+    userRole,
+  )
+
+  // Upvoting Settings
   baseSettings.upvoting.enabled = settings.isUpvotingEnabled
   baseSettings.upvoting.canEdit = userHasPermission('upvoting', userRole)
   baseSettings.upvoting.subsettings.anytime.enabled = settings.upvoteAnytime
@@ -103,6 +135,7 @@ export function getSettingsWithPermissions(
     userRole,
   )
 
+  // Voting Settings
   baseSettings.voting.enabled = settings.isVotingEnabled
   baseSettings.voting.canEdit = userHasPermission('voting', userRole)
   baseSettings.voting.subsettings.votingMode.choice = settings.votingMode
@@ -141,6 +174,9 @@ export function getUserBoardPermissions(
     'music.restricted.canControl': false,
     'timer.restricted.canControl': false,
     'upvoting.restricted.canUpvote': false,
+    'actionItems.restricted.canManage': false,
+    'actionItems.restricted.canAdd': false,
+    'comments.restricted.canComment': false,
   }
 }
 
@@ -158,13 +194,19 @@ function getStaticBoardPermissions(userRole: BoardRole) {
     ),
     comments: userHasPermission('comments', userRole),
     'comments.anytime': userHasPermission('comments.anytime', userRole),
+    'comments.restricted': userHasPermission('comments.restricted', userRole),
     music: userHasPermission('music', userRole),
     'music.anytime': userHasPermission('music.anytime', userRole),
     'music.restricted': userHasPermission('music.restricted', userRole),
     timer: userHasPermission('timer', userRole),
-    'timer.anytime': userHasPermission('timer.anytime', userRole),
     'timer.restricted': userHasPermission('timer.restricted', userRole),
     'timer.default': userHasPermission('timer.default', userRole),
+    actionItems: userHasPermission('actionItems', userRole),
+    'actionItems.anytime': userHasPermission('actionItems.anytime', userRole),
+    'actionItems.restricted': userHasPermission(
+      'actionItems.restricted',
+      userRole,
+    ),
     upvoting: userHasPermission('upvoting', userRole),
     'upvoting.anytime': userHasPermission('upvoting.anytime', userRole),
     'upvoting.limit': userHasPermission('upvoting.limit', userRole),
@@ -194,6 +236,21 @@ function getDynamicBoardPermissions(
     'upvoting.restricted.canUpvote': hasMinimumDynamicPermissionRoles(
       +settings.upvoteRestricted,
       'upvoting.restricted.canUpvote',
+      userRole,
+    ),
+    'actionItems.restricted.canManage': hasMinimumDynamicPermissionRoles(
+      +settings.actionItemsRestricted,
+      'actionItems.restricted.canManage',
+      userRole,
+    ),
+    'actionItems.restricted.canAdd': hasMinimumDynamicPermissionRoles(
+      +settings.actionItemsRestricted,
+      'actionItems.restricted.canAdd',
+      userRole,
+    ),
+    'comments.restricted.canComment': hasMinimumDynamicPermissionRoles(
+      +settings.commentsRestricted,
+      'comments.restricted.canComment',
       userRole,
     ),
   } satisfies Record<DynamcicPermissionKey, boolean>

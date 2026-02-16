@@ -35,7 +35,7 @@ export function MusicSettings() {
             size='sm'
             disabled={!setting.enabled || !userPermissions['music.anytime']}
             onChange={updateBoardSetting(
-              subsettings.anytime.key!,
+              subsettings.anytime.key,
               !subsettings.anytime.enabled,
             )}
           />
@@ -46,7 +46,7 @@ export function MusicSettings() {
           size='sm'
           disabled={!setting.enabled || !userPermissions['music.restricted']}
           onChange={updateBoardSetting(
-            subsettings.restricted.key!,
+            subsettings.restricted.key,
             !subsettings.restricted.enabled,
           )}
         />

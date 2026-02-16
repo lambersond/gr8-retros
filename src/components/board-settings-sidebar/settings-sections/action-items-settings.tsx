@@ -9,11 +9,11 @@ import {
   useBoardSettingsActions,
 } from '@/providers/retro-board/board-settings'
 
-export function UpvoteSettings() {
+export function ActionItemsSettings() {
   const { updateBoardSetting } = useBoardSettingsActions()
   const {
     settings: {
-      upvoting: { subsettings, ...setting },
+      actionItems: { subsettings, ...setting },
     },
   } = useBoardSettings()
   const { userPermissions } = useBoardPermissions()
@@ -32,7 +32,9 @@ export function UpvoteSettings() {
           checked={subsettings.restricted.enabled}
           label={subsettings.restricted.title}
           size='sm'
-          disabled={!setting.enabled || !userPermissions['upvoting.restricted']}
+          disabled={
+            !setting.enabled || !userPermissions['actionItems.restricted']
+          }
           onChange={updateBoardSetting(
             subsettings.restricted.key,
             !subsettings.restricted.enabled,

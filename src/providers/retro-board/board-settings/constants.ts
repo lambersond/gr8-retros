@@ -33,7 +33,7 @@ export const BASE_SETTINGS: BoardSettingsWithPermissionsNoIcons = {
     enabled: false,
     isUnlocked: true,
     key: 'isCommentsEnabled',
-    title: 'Comments Enabled',
+    title: 'Comments',
     subsettings: {
       anytime: {
         canEdit: false,
@@ -41,6 +41,13 @@ export const BASE_SETTINGS: BoardSettingsWithPermissionsNoIcons = {
         key: 'commentsAnytime',
         kind: 'toggle',
         title: 'Allow Comments Anytime',
+      },
+      restricted: {
+        canEdit: false,
+        enabled: false,
+        key: 'commentsRestricted',
+        kind: 'toggle',
+        title: 'Only Members And Above Can Comment',
       },
     },
   },
@@ -50,7 +57,7 @@ export const BASE_SETTINGS: BoardSettingsWithPermissionsNoIcons = {
     enabled: false,
     isUnlocked: true,
     key: 'isMusicEnabled',
-    title: 'Music Enabled',
+    title: 'Music',
     subsettings: {
       anytime: {
         canEdit: false,
@@ -74,15 +81,8 @@ export const BASE_SETTINGS: BoardSettingsWithPermissionsNoIcons = {
     enabled: false,
     isUnlocked: true,
     key: 'isTimerEnabled',
-    title: 'Timer Enabled',
+    title: 'Timer',
     subsettings: {
-      anytime: {
-        canEdit: false,
-        enabled: false,
-        key: 'timerAnytime',
-        kind: 'toggle',
-        title: 'Allow Timer Anytime',
-      },
       restricted: {
         canEdit: false,
         enabled: false,
@@ -99,13 +99,37 @@ export const BASE_SETTINGS: BoardSettingsWithPermissionsNoIcons = {
       },
     },
   },
+  actionItems: {
+    render: true,
+    canEdit: false,
+    enabled: false,
+    isUnlocked: true,
+    key: 'isActionItemsEnabled',
+    title: 'Action Items',
+    subsettings: {
+      anytime: {
+        canEdit: false,
+        enabled: false,
+        key: 'actionItemsAnytime',
+        kind: 'toggle',
+        title: 'Allow Action Items Anytime',
+      },
+      restricted: {
+        canEdit: false,
+        enabled: false,
+        key: 'actionItemsRestricted',
+        kind: 'toggle',
+        title: 'Only Facilitators And Above Can Manage',
+      },
+    },
+  },
   upvoting: {
     render: true,
     canEdit: false,
     enabled: false,
     isUnlocked: true,
     key: 'isUpvotingEnabled',
-    title: 'Upvoting Enabled',
+    title: 'Upvoting',
     subsettings: {
       anytime: {
         canEdit: false,
@@ -127,7 +151,7 @@ export const BASE_SETTINGS: BoardSettingsWithPermissionsNoIcons = {
         enabled: false,
         key: 'upvoteRestricted',
         kind: 'toggle',
-        title: 'Only Members and Above Can Upvote',
+        title: 'Only Members And Above Can Upvote',
       },
     },
   },
@@ -137,7 +161,7 @@ export const BASE_SETTINGS: BoardSettingsWithPermissionsNoIcons = {
     enabled: false,
     isUnlocked: true,
     key: 'isVotingEnabled',
-    title: 'Voting Enabled',
+    title: 'Voting',
     subsettings: {
       votingMode: {
         canEdit: false,

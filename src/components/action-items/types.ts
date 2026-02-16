@@ -1,7 +1,6 @@
-import type { ActionItem, ColumnType } from '@/types'
+import type { ActionItem } from '@/types'
 
 export type ActionItemsProps = {
   cardId: string
   actionItems: ActionItem[]
-  column: ColumnType
 }

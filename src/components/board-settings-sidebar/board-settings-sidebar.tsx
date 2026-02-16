@@ -1,8 +1,10 @@
 import { SidebarCloseIcon } from 'lucide-react'
 import { Badge, Sidebar, SidebarItem } from '../common'
 import {
+  ActionItemsSettings,
   BoardMembers,
   ClaimBoard,
+  CommentsSettings,
   DangerZoneSettings,
   MusicSettings,
   PrivateSettings,
@@ -26,7 +28,7 @@ export function BoardSettingsSidebar() {
       onClose={closeSidebar}
       className='w-full sm:w-sm shadow-xl'
     >
-      <div className='flex flex-col p-2 pt-0 h-full'>
+      <div className='flex flex-col p-2 pt-0'>
         <section className='flex items-start justify-between sticky top-0 bg-appbar z-10 pb-4'>
           <div>
             <p className='text-2xl font-bold'>Board Settings</p>
@@ -40,12 +42,14 @@ export function BoardSettingsSidebar() {
           </SidebarItem>
         </section>
         <ClaimBoard />
-        <section className='flex flex-col gap-4 overflow-y-auto'>
+        <section className='flex flex-col gap-4 pb-4'>
           <BoardMembers />
           <PrivateSettings />
           <TimerSettings />
           <MusicSettings />
           <UpvoteSettings />
+          <ActionItemsSettings />
+          <CommentsSettings />
           <DangerZoneSettings />
         </section>
       </div>

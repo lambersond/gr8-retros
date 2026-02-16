@@ -10,7 +10,7 @@ export function SubsettingsContainer({
   return (
     <div
       className={clsx(
-        'flex flex-col gap-2 -mt-1',
+        'flex flex-col -mt-1',
         'ml-6 space-y-2 overflow-hidden transition-all duration-300 ease-in-out',
         {
           'max-h-96 opacity-100': show,

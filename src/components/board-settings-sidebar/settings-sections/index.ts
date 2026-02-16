@@ -1,3 +1,4 @@
+export { ActionItemsSettings } from './action-items-settings'
 export { BoardMembers } from './board-members'
 export { ClaimBoard } from './claim-board'
 export { CommentsSettings } from './comments-settings'

@@ -10,13 +10,16 @@ export type PermissionKey =
   | 'private.manageUsers'
   | 'comments'
   | 'comments.anytime'
+  | 'comments.restricted'
   | 'music'
   | 'music.anytime'
   | 'music.restricted'
   | 'timer'
   | 'timer.default'
-  | 'timer.anytime'
   | 'timer.restricted'
+  | 'actionItems'
+  | 'actionItems.anytime'
+  | 'actionItems.restricted'
   | 'upvoting'
   | 'upvoting.anytime'
   | 'upvoting.limit'
@@ -30,6 +33,9 @@ export type DynamcicPermissionKey =
   | 'music.restricted.canControl'
   | 'timer.restricted.canControl'
   | 'upvoting.restricted.canUpvote'
+  | 'actionItems.restricted.canManage'
+  | 'actionItems.restricted.canAdd'
+  | 'comments.restricted.canComment'
 
 export type BoardPermissions = Record<PermissionKey, boolean> &
   Record<DynamcicPermissionKey, boolean>
@@ -39,15 +45,17 @@ export const SETTINGS_ROLE_MAP: Record<string, PermissionKey> = {
   isPrivate: 'private',
   privateOpenAccess: 'private.openAccess',
   privateCardRetention: 'private.retention.cards',
-  comments: 'comments',
+  isCommentsEnabled: 'comments',
   commentsAnytime: 'comments.anytime',
+  commentsRestricted: 'comments.restricted',
   isMusicEnabled: 'music',
   musicAnytime: 'music.anytime',
   musicRestricted: 'music.restricted',
   isTimerEnabled: 'timer',
   timerDefault: 'timer.default',
-  timerAnytime: 'timer.anytime',
   timerRestricted: 'timer.restricted',
+  isActionItemsEnabled: 'actionItems',
+  actionItemsRestricted: 'actionItems.restricted',
   isUpvotingEnabled: 'upvoting',
   upvoteAnytime: 'upvoting.anytime',
   upvoteLimit: 'upvoting.limit',
@@ -77,15 +85,21 @@ const PERMISSIONS_MAP: Record<PermissionKey, BoardRole> &
   'private.manageUsers': BoardRole.ADMIN,
   comments: BoardRole.ADMIN,
   'comments.anytime': BoardRole.FACILITATOR,
+  'comments.restricted': BoardRole.FACILITATOR,
+  'comments.restricted.canComment': [BoardRole.VIEWER, BoardRole.MEMBER],
   music: BoardRole.ADMIN,
   'music.anytime': BoardRole.FACILITATOR,
   'music.restricted': BoardRole.FACILITATOR,
   'music.restricted.canControl': [BoardRole.VIEWER, BoardRole.FACILITATOR],
   timer: BoardRole.ADMIN,
   'timer.default': BoardRole.FACILITATOR,
-  'timer.anytime': BoardRole.FACILITATOR,
   'timer.restricted': BoardRole.FACILITATOR,
   'timer.restricted.canControl': [BoardRole.VIEWER, BoardRole.FACILITATOR],
+  actionItems: BoardRole.ADMIN,
+  'actionItems.anytime': BoardRole.FACILITATOR,
+  'actionItems.restricted': BoardRole.FACILITATOR,
+  'actionItems.restricted.canManage': [BoardRole.VIEWER, BoardRole.FACILITATOR],
+  'actionItems.restricted.canAdd': [BoardRole.VIEWER, BoardRole.MEMBER],
   upvoting: BoardRole.ADMIN,
   'upvoting.anytime': BoardRole.FACILITATOR,
   'upvoting.limit': BoardRole.FACILITATOR,

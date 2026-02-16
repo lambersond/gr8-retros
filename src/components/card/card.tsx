@@ -23,7 +23,6 @@ import type { CardProps } from './types'
 
 export function Card({
   id,
-  column,
   content,
   canEdit = false,
   upvotes = 0,
@@ -41,10 +40,11 @@ export function Card({
     handleEdit,
     handleUpvote,
     openCommentsSidebar,
-  } = useCard({ column, cardId: id, currentUserId })
+  } = useCard({ cardId: id, currentUserId })
   const { userPermissions } = useBoardPermissions()
   const { settings } = useBoardSettings()
   const canVote = userPermissions['upvoting.restricted.canUpvote']
+  const canAddActionItem = userPermissions['actionItems.restricted.canAdd']
 
   const upvoteTextClasses = cardUtils.upvoteTextClasses(isUpvoted, upvotes)
   const upvoteArrowButtonClasses = cardUtils.upvoteArrowButtonClasses(
@@ -129,7 +129,7 @@ export function Card({
           )}
         </div>
       </div>
-      <ActionItems actionItems={actionItems} cardId={id} column={column} />
+      <ActionItems actionItems={actionItems} cardId={id} />
       <div id='footer' className='flex items-center gap-2 justify-between'>
         <div className='flex items-center gap-1'>
           {!isDiscussed && (
@@ -139,32 +139,36 @@ export function Card({
               onClick={handleDiscussed(!isDiscussed)}
             />
           )}
-          <IconButton
-            icon={MessageSquareWarning}
-            tooltip='Add Action Item'
-            intent='warning'
-            onClick={handleAddActionItem}
-          />
-          <div className='relative'>
-            {comments.length > 0 && (
-              <div id='comments-badge' className='absolute -top-1 -right-1'>
-                {comments.length > 99 ? (
-                  <div className='size-4 bg-info text-white text-xs rounded-full flex items-center justify-center px-0.75'>
-                    99+
-                  </div>
-                ) : (
-                  <div className='size-4 bg-info text-white text-xs rounded-full flex items-center justify-center px-0.5'>
-                    {comments.length}
-                  </div>
-                )}
-              </div>
-            )}
+          {settings.actionItems.enabled && canAddActionItem && (
             <IconButton
-              icon={MessageSquareIcon}
-              tooltip='Comments'
-              onClick={openCommentsSidebar}
+              icon={MessageSquareWarning}
+              tooltip='Add Action Item'
+              intent='warning'
+              onClick={handleAddActionItem}
             />
-          </div>
+          )}
+          {settings.comments.enabled && (
+            <div className='relative'>
+              {comments.length > 0 && (
+                <div id='comments-badge' className='absolute -top-1 -right-1'>
+                  {comments.length > 99 ? (
+                    <div className='size-4 bg-info text-white text-xs rounded-full flex items-center justify-center px-0.75'>
+                      99+
+                    </div>
+                  ) : (
+                    <div className='size-4 bg-info text-white text-xs rounded-full flex items-center justify-center px-0.5'>
+                      {comments.length}
+                    </div>
+                  )}
+                </div>
+              )}
+              <IconButton
+                icon={MessageSquareIcon}
+                tooltip='Comments'
+                onClick={openCommentsSidebar}
+              />
+            </div>
+          )}
         </div>
         <span className='text-xs text-text-tertiary italic'>{createdBy}</span>
       </div>

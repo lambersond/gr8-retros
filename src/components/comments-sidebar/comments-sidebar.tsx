@@ -8,12 +8,15 @@ import {
   useCommentsSidebar,
   useCommentsSidebarActions,
 } from '@/providers/comments-sidebar'
+import { useBoardPermissions } from '@/providers/retro-board/board-settings/hooks/use-board-permissions'
 
 export function CommentsSidebar() {
   const { closeSidebar } = useCommentsSidebarActions()
   const { sidebarOpen, cardId } = useCommentsSidebar()
   const comments = useCardComments(cardId)
   const { addComment } = useCommentsActions()
+  const { userPermissions } = useBoardPermissions()
+  const canComment = userPermissions['comments.restricted.canComment']
 
   const handleAddComment = (content: string) => {
     addComment(content, cardId)
@@ -42,9 +45,14 @@ export function CommentsSidebar() {
           {comments?.map(comment => (
             <Comment key={comment.id} comment={comment} />
           ))}
+          {comments?.length === 0 && (
+            <p className='text-center text-text-secondary mt-4'>
+              No comments yet.
+            </p>
+          )}
         </section>
         <div className='flex-1' id='spacer' />
-        <AddCommentForm onSubmit={handleAddComment} />
+        {canComment && <AddCommentForm onSubmit={handleAddComment} />}
       </div>
     </Sidebar>
   )

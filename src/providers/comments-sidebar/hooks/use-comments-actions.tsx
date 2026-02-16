@@ -3,7 +3,7 @@ import { useCommentsSidebar } from '../comments-sidebar-provider'
 import { BoardCardsMessageType } from '@/providers/retro-board/cards'
 
 export function useCommentsActions() {
-  const { boardId, column } = useCommentsSidebar()
+  const { boardId } = useCommentsSidebar()
   const { publish } = useChannel(boardId)
 
   async function addComment(content: string, cardId?: string) {
@@ -22,7 +22,7 @@ export function useCommentsActions() {
       publish({
         data: {
           type: BoardCardsMessageType.ADD_CARD_COMMENT,
-          payload: { column, newComment },
+          payload: { newComment },
         },
       })
     }
@@ -42,7 +42,7 @@ export function useCommentsActions() {
       publish({
         data: {
           type: BoardCardsMessageType.UPDATE_CARD_COMMENT,
-          payload: { updatedComment, column },
+          payload: { updatedComment },
         },
       })
     }
@@ -61,7 +61,7 @@ export function useCommentsActions() {
       publish({
         data: {
           type: BoardCardsMessageType.DELETE_CARD_COMMENT,
-          payload: { commentId: id, cardId, column },
+          payload: { commentId: id, cardId },
         },
       })
     }

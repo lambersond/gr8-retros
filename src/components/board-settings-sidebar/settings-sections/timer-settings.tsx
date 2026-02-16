@@ -29,18 +29,6 @@ export function TimerSettings() {
       onToggle={updateBoardSetting(setting.key, !setting.enabled)}
     >
       <SubsettingsContainer show={setting.enabled}>
-        <div className='hidden'>
-          <Checkbox
-            defaultChecked={subsettings.anytime.enabled}
-            label={subsettings.anytime.title}
-            size='sm'
-            disabled={!setting.enabled || !userPermissions['timer.anytime']}
-            onChange={updateBoardSetting(
-              subsettings.anytime.key,
-              !subsettings.anytime.enabled,
-            )}
-          />
-        </div>
         <Checkbox
           checked={subsettings.restricted.enabled}
           label={subsettings.restricted.title}
