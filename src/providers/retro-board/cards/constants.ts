@@ -1,7 +1,9 @@
-import { BoardCardsSortOptions } from './enums'
+import { BoardCardsFilterOptions, BoardCardsSortOptions } from './enums'
 import type { BoardCardsState } from './types'
 
 export const DEFAULT_STATE: BoardCardsState = {
   sort: BoardCardsSortOptions.NONE,
+  filter: BoardCardsFilterOptions.ALL,
   cards: {},
+  votingResults: {},
 }

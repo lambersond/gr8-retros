@@ -10,6 +10,7 @@ import {
   PrivateSettings,
   TimerSettings,
   UpvoteSettings,
+  VotingSettings,
 } from './settings-sections'
 import { PaymentTier } from '@/enums'
 import {
@@ -50,6 +51,7 @@ export function BoardSettingsSidebar() {
           <UpvoteSettings />
           <ActionItemsSettings />
           <CommentsSettings />
+          <VotingSettings />
           <DangerZoneSettings />
         </section>
       </div>

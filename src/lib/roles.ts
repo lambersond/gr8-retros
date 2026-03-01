@@ -8,34 +8,35 @@ export type PermissionKey =
   | 'private.copyLink'
   | 'private.revokeLink'
   | 'private.manageUsers'
-  | 'comments'
-  | 'comments.anytime'
-  | 'comments.restricted'
-  | 'music'
-  | 'music.anytime'
-  | 'music.restricted'
-  | 'timer'
-  | 'timer.default'
-  | 'timer.restricted'
-  | 'actionItems'
   | 'actionItems.anytime'
   | 'actionItems.restricted'
-  | 'upvoting'
+  | 'actionItems'
+  | 'comments.anytime'
+  | 'comments.restricted'
+  | 'comments'
+  | 'music.anytime'
+  | 'music.restricted'
+  | 'music'
+  | 'timer.default'
+  | 'timer.restricted'
+  | 'timer'
   | 'upvoting.anytime'
   | 'upvoting.limit'
   | 'upvoting.restricted'
-  | 'voting'
-  | 'voting.mode'
+  | 'upvoting'
   | 'voting.limit'
+  | 'voting.mode'
   | 'voting.restricted'
+  | 'voting'
 
 export type DynamcicPermissionKey =
+  | 'actionItems.restricted.canAdd'
+  | 'actionItems.restricted.canManage'
+  | 'comments.restricted.canComment'
   | 'music.restricted.canControl'
   | 'timer.restricted.canControl'
   | 'upvoting.restricted.canUpvote'
-  | 'actionItems.restricted.canManage'
-  | 'actionItems.restricted.canAdd'
-  | 'comments.restricted.canComment'
+  | 'voting.restricted.canVote'
 
 export type BoardPermissions = Record<PermissionKey, boolean> &
   Record<DynamcicPermissionKey, boolean>
@@ -109,6 +110,7 @@ const PERMISSIONS_MAP: Record<PermissionKey, BoardRole> &
   'voting.mode': BoardRole.FACILITATOR,
   'voting.limit': BoardRole.FACILITATOR,
   'voting.restricted': BoardRole.FACILITATOR,
+  'voting.restricted.canVote': [BoardRole.VIEWER, BoardRole.MEMBER],
 } as const
 
 export function userHasPermission(

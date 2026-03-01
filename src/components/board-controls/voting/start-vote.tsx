@@ -1,14 +1,28 @@
 import { Checkbox, NumberIncrementor } from '@/components/common'
+import { VotingMode } from '@/enums'
+import {
+  useBoardControlsActions,
+  useBoardControlsState,
+} from '@/providers/retro-board/controls'
 
 export function StartVote() {
-  // eslint-disable-next-line unicorn/consistent-function-scoping
-  const handleVotesPerUserChange = (value: number) => {
-    console.error('Votes per user changed:', value)
-  }
+  const { votingMode, votingLimit } = useBoardControlsState(s => ({
+    votingMode: s.boardControls.voting.mode,
+    votingLimit: s.boardControls.voting.limit,
+  }))
 
-  // eslint-disable-next-line unicorn/consistent-function-scoping
+  const { setVotingLimit, setVotingMode, openVoting } = useBoardControlsActions(
+    a => ({
+      setVotingLimit: a.setVotingLimit,
+      setVotingMode: a.setVotingMode,
+      openVoting: a.openVoting,
+    }),
+  )
+
+  const isMultiMode = votingMode === VotingMode.MULTI
+
   const handleMultiModeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    console.error('Multi-mode changed:', e.target.checked)
+    setVotingMode(e.target.checked ? VotingMode.MULTI : VotingMode.SINGLE)
   }
 
   return (
@@ -18,10 +32,7 @@ export function StartVote() {
           <p className='text-sm text-text-secondary tracking-tight italic'>
             Votes Per User
           </p>
-          <NumberIncrementor
-            defaultValue={0}
-            onChange={handleVotesPerUserChange}
-          />
+          <NumberIncrementor value={votingLimit} onChange={setVotingLimit} />
         </div>
         <Checkbox
           label='Multi-mode'
@@ -30,9 +41,14 @@ export function StartVote() {
           textDirection='start'
           labelClassName='italic text-sm text-text-secondary'
           onChange={handleMultiModeChange}
+          info='Multi-mode allows users to vote for the same item multiple times. Single-mode allows only one vote per item.'
+          checked={isMultiMode}
         />
       </div>
-      <button className='px-4 py-2 bg-primary-new text-white rounded-md hover:bg-primary-new/90 active:bg-primary-new/80 transition tracking-wide text-sm cursor-pointer'>
+      <button
+        onClick={openVoting}
+        className='px-4 py-2 bg-primary-new text-white rounded-md hover:bg-primary-new/90 active:bg-primary-new/80 transition tracking-wide text-sm cursor-pointer'
+      >
         Start Voting
       </button>
     </div>

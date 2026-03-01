@@ -2,12 +2,27 @@
 
 import clsx from 'classnames'
 import { Check } from 'lucide-react'
+import {
+  useBoardControlsActions,
+  useBoardControlsState,
+} from '@/providers/retro-board/controls'
 import type { IAmDoneButtonProps } from './types'
 
 export function IAmDoneButton({
   showBounceAnimation = false,
-  onClick,
 }: Readonly<IAmDoneButtonProps>) {
+  const { submitVotes } = useBoardControlsActions(a => ({
+    submitVotes: a.submitVotes,
+  }))
+
+  const { hasVoted } = useBoardControlsState(s => ({
+    hasVoted: s.hasVoted,
+  }))
+
+  if (hasVoted) {
+    return
+  }
+
   return (
     <button
       className={clsx(
@@ -19,7 +34,7 @@ export function IAmDoneButton({
       onClick={e => {
         e.stopPropagation()
         e.preventDefault()
-        onClick()
+        submitVotes()
       }}
     >
       <Check className='size-4' /> I&apos;m done

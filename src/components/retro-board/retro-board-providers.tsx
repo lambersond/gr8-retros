@@ -14,8 +14,8 @@ export function RetroBoardProviders({
   children: React.ReactNode
 }>) {
   return (
-    <ViewingMembersProvider channelName={board.id}>
-      <BoardSettingsProvider settings={board.settings} boardId={board.id}>
+    <BoardSettingsProvider settings={board.settings} boardId={board.id}>
+      <ViewingMembersProvider channelName={board.id}>
         <RetroBoardControlsProvider boardId={board.id}>
           <BoardCardsProvider board={board}>
             <CommentsSidebarProvider boardId={board.id}>
@@ -25,7 +25,7 @@ export function RetroBoardProviders({
             </CommentsSidebarProvider>
           </BoardCardsProvider>
         </RetroBoardControlsProvider>
-      </BoardSettingsProvider>
-    </ViewingMembersProvider>
+      </ViewingMembersProvider>
+    </BoardSettingsProvider>
   )
 }

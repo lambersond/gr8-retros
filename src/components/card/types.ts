@@ -12,4 +12,7 @@ export interface CardProps {
   upvotes?: number
   actionItems?: ActionItem[]
   comments?: Comment[]
+  votes?: number
 }
+
+export type CardVotingProps = Pick<CardProps, 'id' | 'content' | 'upvotes'>

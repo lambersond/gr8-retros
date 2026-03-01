@@ -1,24 +1,34 @@
-import { useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import * as Ably from 'ably'
 import { useAbly } from 'ably/react'
+import { VotingMode, VotingState } from '@/enums'
 
-const BOARD_CONTROLS_KEY = 'boardControls'
+const BOARD_CONTROLS_KEY = 'boardControlsV3'
 type BoardControlsKey = typeof BOARD_CONTROLS_KEY
 
-type BoardControlsMap = {
-  [BOARD_CONTROLS_KEY]: {
-    timer: {
-      startedAt: number | undefined
-      remaining: number | undefined
-      isPlaying: boolean
-      isCompleted: boolean
-    }
-    music: {
-      shouldPlay: boolean
-      isPlaying: boolean
-      trackId: string | undefined
-    }
+type BoardControls = {
+  timer: {
+    startedAt: number | undefined
+    remaining: number | undefined
+    isPlaying: boolean
+    isCompleted: boolean
   }
+  music: {
+    shouldPlay: boolean
+    isPlaying: boolean
+    trackId: string | undefined
+  }
+  voting: {
+    state: VotingState
+    mode: VotingMode
+    limit: number
+    collectedVotes: Record<string, string[]>
+    results: Record<string, string[]>
+  }
+}
+
+type BoardControlsMap = {
+  [BOARD_CONTROLS_KEY]: BoardControls
 }
 
 const DEFAULT_BOARD_CONTROLS: BoardControlsMap = {
@@ -34,13 +44,31 @@ const DEFAULT_BOARD_CONTROLS: BoardControlsMap = {
       isPlaying: false,
       trackId: undefined,
     },
+    voting: {
+      state: VotingState.IDLE,
+      mode: VotingMode.SINGLE,
+      limit: 0,
+      collectedVotes: {},
+      results: {},
+    },
   },
 }
 
-export function useBoardControlsLiveMap(
-  channelName: string,
+type UseBoardControlsLiveMapParams = {
+  channelName: string
+  defaultTimerDuration?: number
+  defaultVotingMode?: VotingMode
+  defaultVotingLimit?: number
+  onLoad?: (initialBoardControls: BoardControls) => void
+}
+
+export function useBoardControlsLiveMap({
+  channelName,
   defaultTimerDuration = 300,
-) {
+  defaultVotingMode = VotingMode.MULTI,
+  defaultVotingLimit = 3,
+  onLoad,
+}: UseBoardControlsLiveMapParams) {
   const [map, setMap] = useState<Ably.LiveMap<BoardControlsMap>>()
   const [boardControls, setBoardControls] = useState<
     BoardControlsMap[BoardControlsKey]
@@ -55,7 +83,7 @@ export function useBoardControlsLiveMap(
       try {
         // Get the root map for this channel
         const root = await channel.objects.getRoot<{
-          boardControls: Ably.LiveMap<BoardControlsMap> | undefined
+          [BOARD_CONTROLS_KEY]: Ably.LiveMap<BoardControlsMap> | undefined
         }>()
 
         // Try to get existing players map
@@ -75,6 +103,13 @@ export function useBoardControlsLiveMap(
               isPlaying: false,
               trackId: undefined,
             },
+            voting: {
+              state: VotingState.IDLE,
+              mode: defaultVotingMode,
+              limit: defaultVotingLimit,
+              collectedVotes: {},
+              results: {},
+            },
           }
           boardControlsMap = await channel.objects.createMap<BoardControlsMap>({
             [BOARD_CONTROLS_KEY]: initialControls,
@@ -93,10 +128,13 @@ export function useBoardControlsLiveMap(
         })
 
         setMap(boardControlsMap)
-        setBoardControls(
+
+        const initialBoardControls =
           boardControlsMap.get(BOARD_CONTROLS_KEY) ||
-            DEFAULT_BOARD_CONTROLS[BOARD_CONTROLS_KEY],
-        )
+          DEFAULT_BOARD_CONTROLS[BOARD_CONTROLS_KEY]
+        setBoardControls(initialBoardControls)
+        onLoad?.(initialBoardControls)
+
         isSetup.current = true
       } catch (error_: any) {
         setError(error_)
@@ -108,19 +146,21 @@ export function useBoardControlsLiveMap(
     }
   }, [channelName])
 
-  function updateBoardControls(
-    updates: Partial<BoardControlsMap[BoardControlsKey]>,
-  ) {
-    if (!map) return
+  const updateBoardControls = useCallback(
+    (updates: Partial<BoardControlsMap[BoardControlsKey]>) => {
+      if (!map) return
 
-    const current =
-      map.get(BOARD_CONTROLS_KEY) || DEFAULT_BOARD_CONTROLS[BOARD_CONTROLS_KEY]
-    const newControls = {
-      ...current,
-      ...updates,
-    }
-    map.set(BOARD_CONTROLS_KEY, newControls)
-  }
+      const current =
+        map.get(BOARD_CONTROLS_KEY) ||
+        DEFAULT_BOARD_CONTROLS[BOARD_CONTROLS_KEY]
+      const newControls = {
+        ...current,
+        ...updates,
+      }
+      map.set(BOARD_CONTROLS_KEY, newControls)
+    },
+    [map],
+  )
 
   return { map, boardControls, error, updateBoardControls }
 }

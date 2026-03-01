@@ -13,7 +13,7 @@ export function useMessageOrchestrator(channelId: string) {
   }
 
   const onMessage = (msg: unknown) => {
-    const { data } = msg as WSMessage<string, any & { type: string }>
+    const { data } = msg as WSMessage<string, { type: string }>
     const handler = handlers[data.type as keyof typeof handlers]
     if (handler) {
       handler(data)

@@ -1,5 +1,9 @@
 import { DEFAULT_STATE } from './constants'
-import { BoardCardsMessageType, BoardCardsInternalActionType } from './enums'
+import {
+  BoardCardsMessageType,
+  BoardCardsInternalActionType,
+  BoardCardsFilterOptions,
+} from './enums'
 import * as utils from './utils'
 import type { ActionHandler, BoardCardsReducerAction } from './types'
 
@@ -105,5 +109,22 @@ export const boardCardActionHandlers: {
   },
   [BoardCardsInternalActionType.SORT_CARDS]: (state, action) => {
     return { ...state, sort: action.sort }
+  },
+  [BoardCardsInternalActionType.FILTER_CARDS]: (state, action) => {
+    return { ...state, filter: action.filter }
+  },
+  [BoardCardsInternalActionType.CLOSE_VOTING_RESULTS]: (state, action) => {
+    return {
+      ...state,
+      votingResults: action.votingResults,
+      filter: BoardCardsFilterOptions.WITH_VOTES,
+    }
+  },
+  [BoardCardsInternalActionType.RESET_VOTING_RESULTS]: state => {
+    return {
+      ...state,
+      votingResults: {},
+      filter: BoardCardsFilterOptions.ALL,
+    }
   },
 }

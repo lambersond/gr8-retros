@@ -177,6 +177,7 @@ export function getUserBoardPermissions(
     'actionItems.restricted.canManage': false,
     'actionItems.restricted.canAdd': false,
     'comments.restricted.canComment': false,
+    'voting.restricted.canVote': false,
   }
 }
 
@@ -251,6 +252,11 @@ function getDynamicBoardPermissions(
     'comments.restricted.canComment': hasMinimumDynamicPermissionRoles(
       +settings.commentsRestricted,
       'comments.restricted.canComment',
+      userRole,
+    ),
+    'voting.restricted.canVote': hasMinimumDynamicPermissionRoles(
+      +settings.votingRestricted,
+      'voting.restricted.canVote',
       userRole,
     ),
   } satisfies Record<DynamcicPermissionKey, boolean>

@@ -1,3 +1,4 @@
+import type { VotingMode } from '@/enums'
 import type { BoardSettings } from '@/types'
 
 type BaseSubsetting = {
@@ -17,10 +18,10 @@ type ValueSubsetting = BaseSubsetting & {
   value: number
 }
 
-type ChoiceSubsetting = BaseSubsetting & {
+type ChoiceSubsetting<T> = BaseSubsetting & {
   kind: 'choice'
-  choices: string[]
-  choice: string
+  choices: T[]
+  choice: T
 }
 
 interface Setting {
@@ -79,7 +80,7 @@ interface UpvotingSetting extends Setting {
 
 interface VotingSetting extends Setting {
   subsettings: {
-    votingMode: ChoiceSubsetting
+    votingMode: ChoiceSubsetting<VotingMode>
     limit: ValueSubsetting
     restricted: ToggleSubsetting
   }

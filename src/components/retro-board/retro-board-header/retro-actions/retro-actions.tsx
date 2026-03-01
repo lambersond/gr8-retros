@@ -4,6 +4,7 @@ import {
   BrushCleaning,
   Download,
   Eraser,
+  Funnel,
   Hammer,
   Settings,
 } from 'lucide-react'
@@ -14,6 +15,7 @@ import {
   calculateStatsForPDF,
   formatColumnDataForPDF,
 } from '@/components/pdf-views/utils'
+import { VotingState } from '@/enums'
 import { useAuth } from '@/hooks/use-auth'
 import { useModals } from '@/hooks/use-modals'
 import {
@@ -22,13 +24,22 @@ import {
   useBoardSettingsActions,
 } from '@/providers/retro-board/board-settings'
 import {
+  BoardCardsFilterOptions,
   BoardCardsSortOptions,
   useBoardCards,
 } from '@/providers/retro-board/cards'
+import { useBoardControlsState } from '@/providers/retro-board/controls'
 
 export function RetroActions({ id }: Readonly<{ id: string }>) {
-  const { handleClearBoard, handleClearCompleted, handleSortCardsBy } =
-    useRetroActions(id)
+  const {
+    handleClearBoard,
+    handleClearCompleted,
+    handleSortCardsBy,
+    handleFilterCardsBy,
+  } = useRetroActions(id)
+  const { hasVotingResults } = useBoardControlsState(s => ({
+    hasVotingResults: s.boardControls.voting.state === VotingState.CLOSED,
+  }))
   const { openSidebar } = useBoardSettingsActions()
   const { isClaimed } = useBoardSettings()
   const { isAuthenticated } = useAuth()
@@ -41,6 +52,7 @@ export function RetroActions({ id }: Readonly<{ id: string }>) {
 
   const showAdminActions = !isClaimed || user.hasFacilitator
   const showSettingsButton = (isAuthenticated && !isClaimed) || user.hasMember
+  const showFilterButton = hasVotingResults
 
   const hammerOptions = useMemo(() => {
     const options = [
@@ -84,6 +96,35 @@ export function RetroActions({ id }: Readonly<{ id: string }>) {
 
   return (
     <div className='flex gap-2 z-10'>
+      {showFilterButton && (
+        <Popover
+          modal
+          placement='bottom-start'
+          content={
+            <Menu
+              options={[
+                {
+                  label: 'Show All Cards',
+                  onClick: () =>
+                    handleFilterCardsBy(BoardCardsFilterOptions.ALL),
+                },
+                {
+                  label: 'Show Only Cards With Votes',
+                  onClick: () =>
+                    handleFilterCardsBy(BoardCardsFilterOptions.WITH_VOTES),
+                },
+                {
+                  label: 'Show Cards Without Votes',
+                  onClick: () =>
+                    handleFilterCardsBy(BoardCardsFilterOptions.WITHOUT_VOTES),
+                },
+              ]}
+            />
+          }
+        >
+          <IconButton icon={Funnel} intent='primary' size='lg' />
+        </Popover>
+      )}
       <Popover
         modal
         placement='bottom-start'
@@ -96,9 +137,9 @@ export function RetroActions({ id }: Readonly<{ id: string }>) {
                   handleSortCardsBy(BoardCardsSortOptions.BY_DISCUSSED),
               },
               {
-                label: 'Sort by Most Votes',
+                label: 'Sort by Most Upvotes',
                 onClick: () =>
-                  handleSortCardsBy(BoardCardsSortOptions.BY_VOTES),
+                  handleSortCardsBy(BoardCardsSortOptions.BY_UPVOTES),
               },
               {
                 label: 'Sort by Most Comments',

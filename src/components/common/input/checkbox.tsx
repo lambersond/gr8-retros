@@ -3,6 +3,7 @@
 import { useEffect, useId, useState } from 'react'
 import clsx from 'classnames'
 import { CheckSquare, Square } from 'lucide-react'
+import { Info } from '../info'
 import { isLargeSize, isMediumSize, isSmallSize } from '../utils'
 import type { CheckboxProps } from './types'
 
@@ -20,6 +21,7 @@ export function Checkbox({
   id,
   direction = 'horizontal',
   textDirection = 'end',
+  info,
   ...props
 }: Readonly<CheckboxProps>) {
   const reactId = useId()
@@ -95,11 +97,12 @@ export function Checkbox({
             'mr-2': direction === 'horizontal' && textDirection === 'start',
             'ml-2': direction === 'horizontal' && textDirection === 'end',
           },
-          'select-none',
+          'select-none flex items-center gap-1',
           labelClassName,
         )}
       >
         {label}
+        {info && <Info info={info} />}
       </p>
     </label>
   )

@@ -1,10 +1,16 @@
 import { useBoardCards } from '../provider'
-import { sortCardsBy } from '../utils'
+import { filterCardsBy, sortCardsBy } from '../utils'
 
 export function useBoardCardsByColumn(column: string) {
   const boardCards = useBoardCards()
   const unsortedCards = Object.values(boardCards.cards).filter(
     card => card.column === column,
   )
-  return sortCardsBy(unsortedCards, boardCards.sort)
+
+  const filteredCards = filterCardsBy(
+    unsortedCards,
+    boardCards.filter,
+    boardCards.votingResults,
+  )
+  return sortCardsBy(filteredCards, boardCards.sort)
 }

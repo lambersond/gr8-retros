@@ -11,23 +11,33 @@ import {
   useBoardSettings,
 } from '@/providers/retro-board/board-settings'
 
-const getHeaderLabel = (timerEnabled: boolean, musicEnabled: boolean) => {
-  if (timerEnabled && musicEnabled) return 'Timer and Music'
-  if (timerEnabled) return 'Timer'
-  if (musicEnabled) return 'Music'
-  return ''
+const getHeaderLabel = (
+  timerEnabled: boolean,
+  musicEnabled: boolean,
+  votingEnabled = false,
+) => {
+  const parts = [
+    timerEnabled && 'Timer',
+    musicEnabled && 'Music',
+    votingEnabled && 'Voting',
+  ].filter(Boolean) as string[]
+
+  if (parts.length === 0) return ''
+  if (parts.length === 1) return parts[0]
+  return `${parts.slice(0, -1).join(', ')}, and ${parts.at(-1)}`
 }
 
 export function BoardControls() {
   const { userPermissions } = useBoardPermissions()
   const { settings } = useBoardSettings()
-  const shouldRender = settings.timer.enabled || settings.music.enabled
+  const shouldRender =
+    settings.timer.enabled || settings.music.enabled || settings.voting.enabled
   const showPopover =
     settings.music.enabled ||
     (settings.timer.enabled && userPermissions['timer.restricted.canControl'])
+  const canVote = userPermissions['voting.restricted.canVote']
 
   if (!shouldRender) return
-
   return (
     <div className='w-full flex justify-center absolute top-2 left-0'>
       <div className='relative py-1 px-2 bg-info/20 w-fit rounded-md flex items-center'>
@@ -58,23 +68,20 @@ export function BoardControls() {
                 )}
               {userPermissions['music.restricted.canControl'] &&
                 settings.music.enabled && (
-                  <BoardControlItem className='flex gap-2 items-center border-b-0'>
+                  <BoardControlItem className='flex gap-2 items-center'>
                     <MusicControls />
                   </BoardControlItem>
                 )}
-              <BoardControlItem className='border-b-0 hidden'>
+              <BoardControlItem className='border-b-0'>
                 <Voting />
               </BoardControlItem>
             </div>
           }
         >
           <div className='text-xl font-mono text-center select-none z-10 flex items-center gap-2'>
+            {settings.voting.enabled && canVote && <VotesRemaining />}
             {settings.timer.enabled && <TimeRemaining />}
             {settings.music.enabled && <MusicStatus />}
-            {/* Hidden for now until we have the voting system implemented more fully */}
-            <div className='hidden'>
-              <VotesRemaining />
-            </div>
           </div>
         </Popover>
       </div>

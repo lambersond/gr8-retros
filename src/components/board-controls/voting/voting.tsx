@@ -1,22 +1,21 @@
-import { noop } from 'lodash'
 import { ActiveVote } from './active-vote'
 import { ClosedVote } from './closed-vote'
 import { StartVote } from './start-vote'
 import { VotingState } from '@/enums'
-
-// Placeholder until we have the voting system implemented more fully
-const votingState: VotingState = VotingState.OPEN
+import { useBoardControlsState } from '@/providers/retro-board/controls'
 
 export function Voting() {
+  const votingState = useBoardControlsState(s => s.boardControls.voting.state)
+
   switch (votingState) {
     case VotingState.IDLE: {
       return <StartVote />
     }
     case VotingState.OPEN: {
-      return <ActiveVote voting={2} voted={7} />
+      return <ActiveVote />
     }
     case VotingState.CLOSED: {
-      return <ClosedVote voted={8} onResults={noop} onReset={noop} />
+      return <ClosedVote />
     }
     default: {
       return (

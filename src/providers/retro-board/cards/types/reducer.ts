@@ -1,4 +1,5 @@
 import type {
+  BoardCardsFilterOptions,
   BoardCardsInternalActionType,
   BoardCardsMessageType,
   BoardCardsSortOptions,
@@ -69,4 +70,15 @@ export type BoardCardsReducerAction =
   | {
       type: BoardCardsInternalActionType.SORT_CARDS
       sort: BoardCardsSortOptions
+    }
+  | {
+      type: BoardCardsInternalActionType.FILTER_CARDS
+      filter: BoardCardsFilterOptions
+    }
+  | {
+      type: BoardCardsInternalActionType.CLOSE_VOTING_RESULTS
+      votingResults: Record<string, string[]>
+    }
+  | {
+      type: BoardCardsInternalActionType.RESET_VOTING_RESULTS
     }

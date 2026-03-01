@@ -5,8 +5,9 @@ import {
   BoardCardsInternalActionType,
   BoardCardsMessageType,
   BoardCardsSortOptions,
+  BoardCardsFilterOptions,
+  useBoardCardsDispatch,
 } from '@/providers/retro-board/cards'
-import { useBoardCardsDispatch } from '@/providers/retro-board/cards/provider' // temp until we have a decidated board settings provider
 
 export function useRetroActions(channelName: string) {
   const { openModal } = useModals()
@@ -18,6 +19,16 @@ export function useRetroActions(channelName: string) {
       dispatch({
         type: BoardCardsInternalActionType.SORT_CARDS,
         sort,
+      })
+    },
+    [dispatch],
+  )
+
+  const handleFilterCardsBy = useCallback(
+    (filter: BoardCardsFilterOptions) => {
+      dispatch({
+        type: BoardCardsInternalActionType.FILTER_CARDS,
+        filter,
       })
     },
     [dispatch],
@@ -91,5 +102,6 @@ export function useRetroActions(channelName: string) {
     handleClearBoard,
     handleClearCompleted,
     handleSortCardsBy,
+    handleFilterCardsBy,
   }
 }

@@ -3,6 +3,8 @@ import { IconButton } from '../common'
 import { COLUMN } from './constants'
 import { getTitleClasses, getWrapperClasses } from './utils'
 import { Card } from '@/components/card'
+import { VotingState } from '@/enums'
+import { useBoardControlsState } from '@/providers/retro-board/controls'
 import type { ColumnProps } from './types'
 import type { ColumnType } from '@/types'
 
@@ -14,19 +16,24 @@ export function Column({
 }: Readonly<ColumnProps>) {
   const wrapperClasses = getWrapperClasses(type)
   const titleClasses = getTitleClasses(type)
+  const { isVoteOpen } = useBoardControlsState(s => ({
+    isVoteOpen: s.boardControls.voting.state === VotingState.OPEN,
+  }))
 
   return (
     <div className={wrapperClasses}>
       <p className={titleClasses}>{COLUMN[type]}</p>
-      <div className='absolute top-1 right-1'>
-        <IconButton
-          icon={Plus}
-          tooltip='Add Card'
-          size='xl'
-          intent='primary'
-          onClick={onAdd}
-        />
-      </div>
+      {!isVoteOpen && (
+        <div className='absolute top-1 right-1'>
+          <IconButton
+            icon={Plus}
+            tooltip='Add Card'
+            size='xl'
+            intent='primary'
+            onClick={onAdd}
+          />
+        </div>
+      )}
       <div className='flex-1 min-h-0 flex flex-col gap-3 p-3 overflow-y-auto scrollbar-thin scrollbar-thumb-rounded scrollbar-thumb-gray-700/10 scrollbar-track-transparent'>
         {cards.map(card => (
           <Card

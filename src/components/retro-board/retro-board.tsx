@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { BoardSettingsSidebar } from '../board-settings-sidebar'
 import { CommentsSidebar } from '../comments-sidebar'
+import { SideEffectsHandler } from '../side-effects-handler'
 import { SignInGate } from '../signin-gate'
 import { BadColumn, GoodColumn, ShoutoutColumn, MehColumn } from './columns'
 import { COLUMN_CLASSES, COLUMN_CONTAINER_CLASSES } from './constants'
@@ -55,6 +56,7 @@ export function RetroBoard({ board }: Readonly<{ board: Board }>) {
           </div>
         </div>
         <CommentsSidebar />
+        <SideEffectsHandler />
         <BoardSettingsSidebar />
       </RetroBoardProviders>
     </AblyChannelProvider>

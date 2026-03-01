@@ -2,6 +2,7 @@
 
 import { createContext, useEffect, useMemo, useState } from 'react'
 import { usePresence, usePresenceListener } from 'ably/react'
+import { useBoardRole } from '../board-memberships'
 import { useAuth } from '@/hooks/use-auth'
 import type {
   ViewingMembers,
@@ -18,12 +19,13 @@ export function ViewingMembersProvider({
   children,
 }: Readonly<ViewingMembersProviderProps>) {
   const { user, isAuthenticated } = useAuth()
+  const { role } = useBoardRole()
 
   const [viewingMembers, setViewingMembers] = useState<ViewingMembers>({})
 
   const presencePayload = useMemo(
-    () => ({ name: user.name, image: user.image, isAuthenticated }),
-    [user.id, user.name, user.image, isAuthenticated],
+    () => ({ name: user.name, image: user.image, isAuthenticated, role }),
+    [user.id, user.name, user.image, isAuthenticated, role],
   )
 
   const { updateStatus } = usePresence(channelName, presencePayload)

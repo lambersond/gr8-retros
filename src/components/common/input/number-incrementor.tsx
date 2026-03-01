@@ -5,30 +5,27 @@ import type { NumberIncrementorProps } from './types'
 
 export function NumberIncrementor({
   defaultValue = 0,
+  value: controlledValue,
   onChange,
 }: Readonly<NumberIncrementorProps>) {
-  const [value, setValue] = useState(defaultValue)
+  const [internalValue, setInternalValue] = useState(defaultValue)
 
-  const handleDecrement = () => {
-    const newValue = value - 1
-    setValue(newValue)
-    onChange?.(newValue)
+  const isControlled = controlledValue !== undefined
+  const value = isControlled ? controlledValue : internalValue
+
+  const updateValue = (next: number) => {
+    if (!isControlled) setInternalValue(next)
+    onChange?.(next)
   }
 
-  const handleIncrement = () => {
-    const newValue = value + 1
-    setValue(newValue)
-    onChange?.(newValue)
-  }
+  const handleDecrement = () => updateValue(value - 1)
+  const handleIncrement = () => updateValue(value + 1)
 
   const handleInputChange: React.ChangeEventHandler<
     HTMLInputElement
   > = event => {
-    const newValue = Number.parseInt(event.target.value, 10)
-    if (!Number.isNaN(newValue)) {
-      setValue(newValue)
-      onChange?.(newValue)
-    }
+    const parsed = Number.parseInt(event.target.value, 10)
+    if (!Number.isNaN(parsed)) updateValue(parsed)
   }
 
   return (
@@ -51,7 +48,7 @@ export function NumberIncrementor({
         type='number'
         value={value}
         className='
-          w-12 h-8 border-none text-center text-sm text-gray-700 bg-white
+          w-8 h-8 border-none text-center text-sm text-gray-700 bg-white
           outline-none font-medium
           [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-outer-spin-button]:m-0
           [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-inner-spin-button]:m-0

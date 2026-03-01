@@ -15,14 +15,23 @@ export enum BoardCardsMessageType {
 
 export enum BoardCardsInternalActionType {
   SORT_CARDS = 'SORT_CARDS',
+  FILTER_CARDS = 'FILTER_CARDS',
+  CLOSE_VOTING_RESULTS = 'CLOSE_VOTING_RESULTS',
+  RESET_VOTING_RESULTS = 'RESET_VOTING_RESULTS',
 }
 
 export enum BoardCardsSortOptions {
-  BY_VOTES = 'BY_VOTES',
+  BY_UPVOTES = 'BY_UPVOTES',
   BY_DISCUSSED = 'BY_DISCUSSED',
   BY_ACTION_ITEM_COUNT = 'BY_ACTION_ITEM_COUNT',
   BY_COMMENT_COUNT = 'BY_COMMENT_COUNT',
   BY_NEWEST = 'BY_NEWEST',
   BY_OLDEST = 'BY_OLDEST',
   NONE = 'NONE',
+}
+
+export enum BoardCardsFilterOptions {
+  ALL = 'ALL',
+  WITH_VOTES = 'WITH_VOTES',
+  WITHOUT_VOTES = 'WITHOUT_VOTES',
 }
