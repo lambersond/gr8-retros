@@ -20,16 +20,17 @@ export function ActionItems({
   }
 
   return (
-    <div className='mt-2 flex flex-col gap-1 bg-orange-100 p-2'>
-      <p className='font-semibold underline px-1'>Action Items</p>
+    <div className='mt-2 flex flex-col gap-1 bg-ai-bg p-2 border-t border-ai-border rounded-b'>
+      <p className='list-disc uppercase font-bold tracking-wide text-ai-label text-xs px-2'>
+        Action Items
+      </p>
       {actionItems.map(actionItem => (
-        <div
-          key={actionItem.id}
-          className='flex items-start gap-1 pl-2 py-1 z-0'
-        >
+        <div key={actionItem.id} className='flex items-start gap-1 pl-2 z-0'>
           {canManage && (
             <IconButton
               {...utils.getIconButtonProps(actionItem.isDone)}
+              intent='custom'
+              className='text-ai-checkbox hover:bg-ai-checkbox/10'
               onClick={cardActions.handleToggleDoneActionItem(
                 actionItem.id,
                 !actionItem.isDone,

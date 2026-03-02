@@ -59,8 +59,8 @@ export function CardDefault({
   const actionsItemsComplete = actionItems.every(item => item.isDone)
 
   return (
-    <div className='relative group p-2 border border-slate-200 rounded shadow flex flex-col gap-2 bg-page w-full hover:shadow-md transition-shadow hover:bg-page/80'>
-      <div className='flex items-start gap-2'>
+    <div className='relative group border border-slate-200 rounded-lg shadow-card flex flex-col bg-page/80 w-full hover:shadow-card-hover transition-shadow'>
+      <div className='flex items-start gap-2 p-2 pb-0'>
         {settings.upvoting.enabled && (
           <>
             {canVote ? (
@@ -145,7 +145,10 @@ export function CardDefault({
         </div>
       </div>
       <ActionItems actionItems={actionItems} cardId={id} />
-      <div id='footer' className='flex items-center gap-2 justify-between'>
+      <div
+        id='footer'
+        className='flex items-center gap-2 justify-between p-2 border-t border-slate-200'
+      >
         <div className='flex items-center gap-1'>
           {!isDiscussed && (
             <IconButton

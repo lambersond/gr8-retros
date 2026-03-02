@@ -12,6 +12,7 @@ export function IconButton({
   tooltip,
   size = 'md',
   intent = 'normal',
+  className,
 }: Readonly<IconButtonProps>) {
   const timerRef = useRef<NodeJS.Timeout | undefined>(undefined)
   const [loadingState, setLoadingState] = useState<
@@ -37,6 +38,7 @@ export function IconButton({
   const buttonClasses = clsx(
     'flex items-center text-sm p-1 rounded cursor-pointer h-fit',
     intentClasses,
+    className,
   )
   const handleClick = async (
     e: React.MouseEvent<HTMLButtonElement, MouseEvent>,

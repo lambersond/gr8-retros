@@ -32,11 +32,11 @@ export function getWrapperClasses(type: string) {
 export function getTitleClasses(type: string) {
   return clsx(
     {
-      'bg-green-100 text-green-600': isGood(type),
-      'bg-yellow-100 text-yellow-600': isMeh(type),
-      'bg-red-100 text-red-600': isBad(type),
-      'bg-blue-100 text-blue-600': isShoutout(type),
+      'bg-green-100 text-green-700': isGood(type),
+      'bg-yellow-100 text-yellow-700': isMeh(type),
+      'bg-red-100 text-red-700': isBad(type),
+      'bg-blue-100 text-blue-700': isShoutout(type),
     },
-    'text-xl font-bold w-full text-center p-3',
+    'text-xl tracking-tight font-semibold w-full text-left p-3',
   )
 }
