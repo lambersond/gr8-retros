@@ -16,15 +16,13 @@ export function upvoteArrowButtonClasses(
   isUpvoted: boolean,
   boardPermissions: BoardPermissions,
 ) {
-  const canVote = boardPermissions['upvoting.restricted.canUpvote']
+  const canUpvote = boardPermissions['upvoting.restricted.canUpvote']
 
   return clsx({
-    'text-success': isUpvoted,
-    'text-text-tertiary': !isUpvoted,
-    'hover:text-warning': isUpvoted && canVote,
-    'hover:text-text-primary': !isUpvoted && canVote,
-    'cursor-not-allowed opacity-25': !canVote,
-    'cursor-pointer': canVote,
+    'text-success hover:text-warning': isUpvoted && canUpvote,
+    'text-text-secondary hover:text-text-primary': !isUpvoted && canUpvote,
+    'cursor-not-allowed opacity-50': !canUpvote,
+    'cursor-pointer': canUpvote,
   })
 }
 
@@ -34,6 +32,6 @@ export function itemClasses(isDiscussed: boolean) {
       'text-text-secondary line-through group-hover:no-underline': isDiscussed,
       'text-text-primary': !isDiscussed,
     },
-    'lg:text-lg xl:text-xl font-bold flex-1',
+    'lg:text-lg xl:text-xl font-bold flex-1 -mt-1',
   )
 }

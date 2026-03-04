@@ -6,7 +6,7 @@ export function DiscussedIcon({
   ...props
 }: Readonly<
   SVGAttributes<SVGElement> & {
-    'data-testid': string
+    'data-testid'?: string
     checkColor?: string
     backgroundColor?: string
   }

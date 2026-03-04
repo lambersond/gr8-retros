@@ -7,13 +7,14 @@ import {
   CircleCheckBig,
   MessageSquareIcon,
   MessageSquareWarning,
-  MoreVertical,
   Pencil,
   Trash2,
+  Vote,
 } from 'lucide-react'
 import { ActionItems } from '../action-items'
-import { IconButton, Menu, Popover, Tooltip } from '../common'
+import { IconButton, Tooltip } from '../common'
 import { DiscussedIcon } from '../common/icons'
+import { CardAction } from './card-action'
 import { useCard } from './use-card'
 import * as cardUtils from './utils'
 import {
@@ -46,59 +47,18 @@ export function CardDefault({
   const { userPermissions } = useBoardPermissions()
   const { settings } = useBoardSettings()
 
-  const canVote = userPermissions['upvoting.restricted.canUpvote']
+  const canUpvote = userPermissions['upvoting.restricted.canUpvote']
   const canAddActionItem = userPermissions['actionItems.restricted.canAdd']
 
-  const upvoteTextClasses = cardUtils.upvoteTextClasses(isUpvoted, upvotes)
-  const upvoteArrowButtonClasses = cardUtils.upvoteArrowButtonClasses(
-    isUpvoted,
-    userPermissions,
-  )
   const itemClasses = cardUtils.itemClasses(isDiscussed)
   const actionsItemsExist = actionItems.length > 0
   const actionsItemsComplete = actionItems.every(item => item.isDone)
 
+  const upvoteAction = canUpvote ? handleUpvote : undefined
+
   return (
     <div className='relative group border border-slate-200 rounded-lg shadow-card flex flex-col bg-page/80 w-full hover:shadow-card-hover transition-shadow'>
       <div className='flex items-start gap-2 p-2 pb-0'>
-        {settings.upvoting.enabled && (
-          <>
-            {canVote ? (
-              <div className='flex flex-col items-center'>
-                <button
-                  className={upvoteArrowButtonClasses}
-                  onClick={handleUpvote}
-                >
-                  <ArrowBigUp className='size-5' />
-                </button>
-                <span className={upvoteTextClasses}>{upvotes}</span>
-              </div>
-            ) : (
-              !!upvotes && (
-                <Tooltip title='Total Upvotes'>
-                  <p
-                    className={clsx(
-                      'self-center size-7 rounded-full bg-neutral-50 border border-slate-300 text-text-primary absolute -left-3 text-md flex items-center justify-center',
-                      {
-                        '-top-3': !votes,
-                        'top-4.5': !!votes,
-                      },
-                    )}
-                  >
-                    {upvotes}
-                  </p>
-                </Tooltip>
-              )
-            )}
-          </>
-        )}
-        {!!votes && (
-          <Tooltip title={`${votes} ${votes > 1 ? 'Votes' : 'Vote'}`}>
-            <p className='self-center size-7 rounded-full bg-neutral-50 border border-slate-300 text-text-primary absolute -top-3 -left-3 text-md flex items-center justify-center'>
-              {votes}
-            </p>
-          </Tooltip>
-        )}
         <p className={itemClasses}>{content}</p>
         <div className='flex gap-1 items-center'>
           {actionsItemsExist && (
@@ -114,35 +74,73 @@ export function CardDefault({
               )}
             </div>
           )}
-          {canEdit && (
-            <Popover
-              content={
-                <Menu
-                  options={[
-                    {
-                      label: 'Edit Title',
-                      onClick: handleEdit(content),
-                      icon: <Pencil size={18} />,
-                    },
-                    {
-                      label: 'Delete Card',
-                      onClick: handleDelete,
-                      icon: <Trash2 size={18} />,
-                      color: 'danger',
-                    },
-                  ]}
-                />
-              }
-              placement='top-start'
-            >
-              <IconButton
-                icon={MoreVertical}
-                tooltip='Owner actions'
-                size='md'
-              />
-            </Popover>
-          )}
         </div>
+      </div>
+      <div id='card-actions' className='flex items-center py-1 px-2 gap-1'>
+        {!isDiscussed && (
+          <CardAction
+            icon={<DiscussedIcon className='size-4 text-text-secondary' />}
+            text='Discussed'
+            onClick={handleDiscussed(!isDiscussed)}
+            buttonClasses='bg-secondary/8 cursor-pointer'
+            textClasses='text-text-secondary'
+          />
+        )}
+        {settings.upvoting.enabled && (
+          <CardAction
+            amount={upvotes}
+            icon={
+              <ArrowBigUp
+                className={clsx(
+                  {
+                    'text-success group-hover/action:text-warning': isUpvoted,
+                    'text-text-tertiary group-hover/action:text-primary':
+                      !isUpvoted && upvotes === 0,
+                    'text-text-secondary group-hover/action:text-primary':
+                      !isUpvoted && upvotes > 0,
+                  },
+                  'size-4 transition-colors',
+                )}
+              />
+            }
+            text={`Upvote${upvotes === 1 ? '' : 's'}`}
+            onClick={upvoteAction}
+            buttonClasses={clsx({
+              'bg-transparent cursor-not-allowed': !canUpvote,
+              'bg-success/10 hover:bg-success/20 cursor-pointer':
+                canUpvote && isUpvoted,
+              'bg-neutral-100 cursor-pointer': canUpvote && !isUpvoted,
+            })}
+          />
+        )}
+        {!!votes && (
+          <CardAction
+            icon={<Vote className='size-4 text-primary-new' />}
+            text={`Vote${votes === 1 ? '' : 's'}`}
+            amount={votes}
+            buttonClasses='bg-primary-new/20'
+            textClasses='text-primary-new'
+          />
+        )}
+        {settings.actionItems.enabled && canAddActionItem && (
+          <CardAction
+            icon={<MessageSquareWarning className='size-4 text-ai-checkbox' />}
+            text='Add Action Item'
+            onClick={handleAddActionItem}
+            buttonClasses='bg-ai-bg cursor-pointer'
+            textClasses='text-ai-label'
+          />
+        )}
+        {settings.comments.enabled && (
+          <CardAction
+            icon={<MessageSquareIcon className='size-4 text-text-secondary' />}
+            text={`Comment${comments.length === 1 ? '' : 's'}`}
+            amount={comments.length > 0 ? comments.length : undefined}
+            onClick={openCommentsSidebar}
+            buttonClasses='bg-secondary/8 cursor-pointer'
+            textClasses='text-text-secondary'
+          />
+        )}
       </div>
       <ActionItems actionItems={actionItems} cardId={id} />
       <div
@@ -150,42 +148,22 @@ export function CardDefault({
         className='flex items-center gap-2 justify-between p-2 border-t border-slate-200'
       >
         <div className='flex items-center gap-1'>
-          {!isDiscussed && (
-            <IconButton
-              icon={DiscussedIcon}
-              tooltip='Mark Discussed'
-              onClick={handleDiscussed(!isDiscussed)}
-            />
-          )}
-          {settings.actionItems.enabled && canAddActionItem && (
-            <IconButton
-              icon={MessageSquareWarning}
-              tooltip='Add Action Item'
-              intent='warning'
-              onClick={handleAddActionItem}
-            />
-          )}
-          {settings.comments.enabled && (
-            <div className='relative'>
-              {comments.length > 0 && (
-                <div id='comments-badge' className='absolute -top-1 -right-1'>
-                  {comments.length > 99 ? (
-                    <div className='size-4 bg-info text-white text-xs rounded-full flex items-center justify-center px-0.75'>
-                      99+
-                    </div>
-                  ) : (
-                    <div className='size-4 bg-info text-white text-xs rounded-full flex items-center justify-center px-0.5'>
-                      {comments.length}
-                    </div>
-                  )}
-                </div>
-              )}
+          {canEdit && (
+            <>
               <IconButton
-                icon={MessageSquareIcon}
-                tooltip='Comments'
-                onClick={openCommentsSidebar}
+                icon={Pencil}
+                tooltip='Edit'
+                onClick={handleEdit(content)}
+                size='sm'
               />
-            </div>
+              <IconButton
+                icon={Trash2}
+                tooltip='Delete'
+                onClick={handleDelete}
+                intent='danger'
+                size='sm'
+              />
+            </>
           )}
         </div>
         <span className='text-xs text-text-tertiary italic'>{createdBy}</span>

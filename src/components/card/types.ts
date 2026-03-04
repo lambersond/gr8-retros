@@ -16,3 +16,12 @@ export interface CardProps {
 }
 
 export type CardVotingProps = Pick<CardProps, 'id' | 'content' | 'upvotes'>
+
+export type CardActionProps = {
+  icon: React.ReactNode
+  text: string
+  onClick?: (e: React.MouseEvent<HTMLButtonElement>) => void
+  amount?: number
+  textClasses?: string
+  buttonClasses?: string
+}
