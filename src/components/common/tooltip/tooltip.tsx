@@ -162,6 +162,8 @@ export function Tooltip({
   contentContainerClasses = 'max-w-[calc(100vw_- _8px)] bg-neutral-300 px-3 py-1 mb-1 rounded-lg z-10000',
   asChild = false,
 }: Readonly<TooltipProps>) {
+  if (!title) return <>{children}</>
+
   return (
     <TooltipContainer placement={placement}>
       <TooltipTrigger asChild={asChild}>{children}</TooltipTrigger>

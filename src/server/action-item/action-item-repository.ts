@@ -33,9 +33,30 @@ export async function updateActionItem(
     assignedToId: string | null
   }>,
 ) {
+  // Destructure assignedToId from updates and prepare the rest
+  const { assignedToId, ...restUpdates } = updates
+
   return prisma.actionItem.update({
     where: { id: actionItemId },
-    data: updates,
+    data: {
+      ...restUpdates,
+      ...(assignedToId !== undefined && {
+        assignedTo:
+          assignedToId === null
+            ? { disconnect: true }
+            : { connect: { id: assignedToId } },
+      }),
+      card: {
+        update: {
+          updatedAt: new Date(),
+          retroSession: {
+            update: {
+              updatedAt: new Date(),
+            },
+          },
+        },
+      },
+    },
     select: SELECT,
   })
 }

@@ -39,3 +39,59 @@ export async function getUserById(userId: string) {
     },
   })
 }
+
+export async function getUserInfo(userId: string) {
+  return prisma.user.findUnique({
+    where: { id: userId },
+    select: {
+      id: true,
+      name: true,
+      email: true,
+      image: true,
+      paymentTier: true,
+    },
+  })
+}
+
+export async function getUserBoards(userId: string) {
+  return prisma.user.findUnique({
+    where: { id: userId },
+    select: {
+      boards: {
+        select: {
+          settings: {
+            select: {
+              retroSession: {
+                select: { id: true, name: true },
+              },
+            },
+          },
+          role: true,
+        },
+      },
+    },
+  })
+}
+
+export async function getUserActionItems(userId: string) {
+  return prisma.actionItem.findMany({
+    where: { assignedToId: userId },
+    select: {
+      id: true,
+      content: true,
+      isDone: true,
+      card: {
+        select: {
+          content: true,
+          column: true,
+          retroSessionId: true,
+          retroSession: {
+            select: {
+              name: true,
+            },
+          },
+        },
+      },
+    },
+  })
+}

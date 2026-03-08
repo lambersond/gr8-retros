@@ -43,3 +43,15 @@ export async function getUserBoardRole(
 
   return boardRole
 }
+
+export async function getUserInfo(userId: string) {
+  return repository.getUserInfo(userId)
+}
+
+export async function getUserBoards(userId: string) {
+  return repository.getUserBoards(userId)
+}
+
+export async function getUserActionItems(userId: string) {
+  return repository.getUserActionItems(userId)
+}

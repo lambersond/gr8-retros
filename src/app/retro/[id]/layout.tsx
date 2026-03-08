@@ -7,8 +7,6 @@ export const metadata: Metadata = {
 
 export default function RetroLayout({
   children,
-}: {
-  children: React.ReactNode
-}) {
+}: Readonly<{ children: React.ReactNode }>) {
   return <>{children}</>
 }
