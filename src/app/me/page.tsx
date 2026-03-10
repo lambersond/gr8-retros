@@ -5,20 +5,32 @@ import { userService } from '@/server/user'
 
 export default async function Me() {
   const session = await auth()
-  const userInfo = userService.getUserInfo(session!.user.id)
-  const userBoards = userService.getUserBoards(session!.user.id)
-  const userActionItems = userService.getUserActionItems(session!.user.id)
+
+  if (!session?.user) {
+    return (
+      <div className='max-h-[calc(100vh_-_--spacing(23))] min-h-[calc(100vh_-_--spacing(23))] text-slate-700 bg-page'>
+        <div className='flex items-center justify-center h-full'>
+          <p className='text-center text-text-secondary'>
+            Please log in to view your profile.
+          </p>
+        </div>
+      </div>
+    )
+  }
+
+  const userInfo = userService.getUserInfo(session.user.id)
+  const userBoards = userService.getUserBoards(session.user.id)
+  const userActionItems = userService.getUserActionItems(session.user.id)
+
   return (
-    <div className='max-h-[calc(100vh_-_--spacing(16))] text-slate-700 bg-page overflow-y-scroll'>
+    <div className='max-h-[calc(100vh_-_--spacing(23))] min-h-[calc(100vh_-_--spacing(23))] text-slate-700 bg-page overflow-y-auto'>
       <div className='relative max-w-2xl mx-auto px-4 py-14 flex flex-col gap-5'>
         <Suspense fallback={<Skeleton />}>
           <MyInfo myInfo={userInfo} />
         </Suspense>
-
         <Suspense fallback={<Skeleton />}>
           <MyBoards myBoards={userBoards} userInfo={userInfo} />
         </Suspense>
-
         <Suspense fallback={<Skeleton />}>
           <MyActionItems myActionItems={userActionItems} />
         </Suspense>

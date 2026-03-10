@@ -21,7 +21,7 @@ export async function MyBoards({
     <SectionCard
       label={
         <div className='flex items-center justify-between'>
-          My Boards ({boards.length}/{boardLimit})
+          My Boards ({ownedCount}/{boardLimit})
           <NewBoardButton boardLimit={boardLimit} ownedCount={ownedCount} />
         </div>
       }

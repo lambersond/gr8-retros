@@ -17,9 +17,7 @@ export function NewBoardButton({
   const isAtLimit = ownedCount >= boardLimit
 
   const handleClick = () => {
-    openModal('ConfirmModal', {
-      onSubmit: () => {},
-    })
+    openModal('CreateBoardModal', {})
   }
 
   return (
@@ -31,7 +29,7 @@ export function NewBoardButton({
       }
     >
       <button
-        className='hidden cursor-pointer flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-xs font-medium text-primary hover:bg-primary/10 transition-colors disabled:cursor-not-allowed disabled:opacity-50'
+        className='hidden cursor-pointer flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-xs font-medium text-white bg-primary-new/80 hover:not-disabled:bg-primary-new transition-colors disabled:cursor-not-allowed disabled:opacity-50 hover:not-disabled:shadow-sm'
         disabled={isAtLimit}
         onClick={handleClick}
       >

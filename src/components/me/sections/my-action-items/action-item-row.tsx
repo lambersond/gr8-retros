@@ -45,11 +45,6 @@ export function ActionItemRow({
         {item.card?.content && (
           <p className='text-[11px] text-slate-400 mt-0.5'>
             from &ldquo;{item.card.content}&rdquo;
-            {item.card.column && (
-              <span className='ml-1.5 text-[10px] uppercase tracking-wide'>
-                · {item.card.column}
-              </span>
-            )}
           </p>
         )}
       </div>
