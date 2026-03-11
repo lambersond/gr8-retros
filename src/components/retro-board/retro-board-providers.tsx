@@ -14,7 +14,11 @@ export function RetroBoardProviders({
   children: React.ReactNode
 }>) {
   return (
-    <BoardSettingsProvider settings={board.settings} boardId={board.id}>
+    <BoardSettingsProvider
+      settings={board.settings}
+      boardId={board.id}
+      boardName={board.name || board.id}
+    >
       <ViewingMembersProvider channelName={board.id}>
         <RetroBoardControlsProvider boardId={board.id}>
           <BoardCardsProvider board={board}>

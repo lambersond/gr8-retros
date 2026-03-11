@@ -4,6 +4,7 @@ export function useBoardSettings() {
   const ctx = useBoardSettingsState()
   return {
     boardId: ctx.settings.retroSessionId,
+    boardName: ctx.boardName,
     canClaimBoard: !ctx.settings.isPrivate && !ctx.settings.ownerId,
     isClaimed: !!ctx.settings.ownerId,
     id: ctx.settings.id,

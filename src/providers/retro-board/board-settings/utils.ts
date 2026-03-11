@@ -272,8 +272,15 @@ export function getUserLevels(userRole: BoardRole) {
   }
 }
 
-export function createInitialState(settings: BoardSettings) {
+export function createInitialState({
+  boardName,
+  settings,
+}: {
+  boardName: string
+  settings: BoardSettings
+}) {
   return {
+    boardName,
     settings: settings,
     sidebarOpen: false,
     boardSettingsWithPermissions: getSettingsWithPermissions(

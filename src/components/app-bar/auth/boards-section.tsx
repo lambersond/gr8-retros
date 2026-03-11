@@ -1,5 +1,6 @@
 'use client'
 
+import Link from 'next/link'
 import { BoardRoleBadge } from '@/components/badges'
 import { useBoardMemberships } from '@/providers/board-memberships'
 import type { BoardSectionProps } from './types'
@@ -16,15 +17,15 @@ export function BoardSection({ isAuthenticated }: Readonly<BoardSectionProps>) {
       </p>
       <span className='flex flex-col gap-2'>
         {boards.length > 0 ? (
-          boards.map(({ boardId, role }) => (
-            <a
+          boards.map(({ boardName, boardId, role }) => (
+            <Link
               key={boardId}
               className='p-3 bg-white/80 rounded-lg block hover:bg-white transition-colors border border-border-light  flex justify-between items-center hover:border-primary-new shadow-sm'
               href={`/retro/${boardId}`}
             >
-              <p className='font-semibold'>{boardId}</p>
+              <p className='font-semibold'>{boardName}</p>
               <BoardRoleBadge role={role} />
-            </a>
+            </Link>
           ))
         ) : (
           <p className='text-text-secondary'>

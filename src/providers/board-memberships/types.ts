@@ -2,6 +2,7 @@ import type { BoardRole } from '@/enums'
 
 export type BoardMembershipData = {
   boardId: string
+  boardName: string
   settingsId: string
   role: BoardRole
   permissionMask?: number

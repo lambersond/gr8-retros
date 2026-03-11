@@ -15,6 +15,7 @@ export async function GET() {
   const boards =
     user?.boards?.map(board => ({
       boardId: board.settings?.retroSessionId,
+      boardName: board.settings.retroSession.name,
       settingsId: board.settingsId,
       role: board.role,
     })) || []

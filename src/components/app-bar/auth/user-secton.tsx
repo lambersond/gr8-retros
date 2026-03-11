@@ -1,4 +1,5 @@
 import Image from 'next/image'
+import Link from 'next/link'
 import { Badge } from '@/components/common'
 import type { UserSectionProps } from './types'
 
@@ -17,7 +18,10 @@ export function UserSection({
   return (
     <section>
       <div className='flex flex-col gap-2'>
-        <div className='flex items-center gap-2 border-b border-border-light pb-2'>
+        <Link
+          href='/me'
+          className='group flex items-center gap-2 border-b border-border-light pb-2'
+        >
           <Image
             src={user?.image}
             alt={user?.name}
@@ -26,10 +30,12 @@ export function UserSection({
             className='rounded-full'
           />
           <div className='flex flex-col justify-center'>
-            <p className='font-bold text-lg'>{user.name}</p>
+            <p className='group-hover:underline font-bold text-lg'>
+              {user.name}
+            </p>
             <p className='text-sm text-text-secondary -mt-1'>{user.email}</p>
           </div>
-        </div>
+        </Link>
         <div className='flex justify-between items-center'>
           <p className='font-medium text-text-secondary text-sm'>
             Subscription

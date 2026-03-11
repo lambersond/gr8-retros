@@ -20,3 +20,7 @@ export interface MyBoardsProps {
     }[]
   } | null>
 }
+export interface NewBoardButtonProps {
+  boardLimit: number
+  ownedCount: number
+}

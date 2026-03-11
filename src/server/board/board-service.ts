@@ -2,10 +2,10 @@
 
 import * as repository from './board-repository'
 import { getSessionUserIdOrCookie } from '@/lib/auth-handlers'
+import type { CreateBoardProps } from './types'
 
 export async function getBoardById(id: string) {
   const userId = await getSessionUserIdOrCookie()
-
   const board = await repository.getOrCreateBoardById(id)
 
   const boardTier = board.settings?.members.find(
@@ -46,4 +46,13 @@ export async function getAllTempOrgBoards() {
 
 export async function deleteManyBoardsByIds(boardIds: string[]) {
   return repository.deleteManyBoardsByIds(boardIds)
+}
+
+export async function checkBoardAvailability(boardId: string) {
+  const existingBoard = await repository.getBoardByName(boardId)
+  return !existingBoard
+}
+
+export async function createBoard(data: CreateBoardProps) {
+  return repository.createBoard(data)
 }

@@ -50,7 +50,7 @@ export function Input({
         {...props}
       />
       {!!hint && (
-        <p className='text-secondary text-xs italic h-4 mb-2'>{hint}</p>
+        <span className='text-secondary text-xs italic h-4 mb-2'>{hint}</span>
       )}
       <p className='text-primary text-xs italic h-4 mb-2'>{error}</p>
     </div>

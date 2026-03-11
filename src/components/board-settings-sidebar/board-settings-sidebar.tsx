@@ -20,14 +20,14 @@ import {
 
 export function BoardSettingsSidebar() {
   const { closeSidebar } = useBoardSettingsActions()
-  const { boardId, sidebarOpen, boardTier } = useBoardSettings()
+  const { boardName, sidebarOpen, boardTier } = useBoardSettings()
 
   return (
     <Sidebar
       side='right'
       isOpen={sidebarOpen}
       onClose={closeSidebar}
-      className='w-full sm:w-sm shadow-xl'
+      className='w-full sm:w-sm shadow-xl overflow-x-hidden'
     >
       <div className='flex flex-col p-2 pt-0'>
         <section className='flex items-start justify-between sticky top-0 bg-appbar z-10 pb-4'>
@@ -35,7 +35,7 @@ export function BoardSettingsSidebar() {
             <p className='text-2xl font-bold'>Board Settings</p>
             <div className='flex gap-1'>
               <Badge text={boardTier || PaymentTier.FREE} />
-              <p className='text-text-secondary text-sm'>{boardId}</p>
+              <p className='text-text-secondary text-sm'>{boardName}</p>
             </div>
           </div>
           <SidebarItem>

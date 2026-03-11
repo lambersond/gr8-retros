@@ -1,3 +1,5 @@
 export type CreateBoardFormProps = {
-  onSubmit({ boardId, boardName }: { boardId: string; boardName: string }): void
+  onSubmit({ boardName }: { boardName: string }): void
 }
+
+export type Availability = 'available' | 'unavailable' | 'checking' | 'idle'

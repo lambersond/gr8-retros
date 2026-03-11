@@ -1,5 +1,6 @@
 'use server'
 
+import { CreateBoardProps } from './types'
 import prisma from '@/clients/prisma'
 
 export async function getOrCreateBoardById(id: string) {
@@ -106,6 +107,36 @@ export async function deleteManyBoardsByIds(boardIds: string[]) {
     where: {
       id: {
         in: boardIds,
+      },
+    },
+  })
+}
+
+export async function getBoardByName(id: string) {
+  return prisma.retroSession.findUnique({
+    where: {
+      id,
+    },
+  })
+}
+
+export async function createBoard(data: CreateBoardProps) {
+  const { boardName, ownerId } = data
+  const boardId = encodeURIComponent(boardName)
+  return prisma.retroSession.create({
+    data: {
+      id: boardId,
+      name: boardName,
+      settings: {
+        create: {
+          ownerId,
+          members: {
+            create: {
+              userId: ownerId,
+              role: 'OWNER',
+            },
+          },
+        },
       },
     },
   })

@@ -24,15 +24,21 @@ const BoardSettingsDispatchCtx = createContext<
 
 export function BoardSettingsProvider({
   boardId,
+  boardName,
   children,
   settings,
 }: Readonly<{
   boardId: string
+  boardName: string
   children: ReactNode
   settings: BoardSettings
 }>) {
   const { getRole } = useBoardMemberships()
-  const [state, dispatch] = useReducer(reducer, settings, createInitialState)
+  const [state, dispatch] = useReducer(
+    reducer,
+    { boardName, settings },
+    createInitialState,
+  )
 
   useEffect(() => {
     const userRole = getRole(boardId)

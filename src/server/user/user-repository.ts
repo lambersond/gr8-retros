@@ -30,7 +30,13 @@ export async function getUserById(userId: string) {
       boards: {
         select: {
           settings: {
-            select: { id: true, retroSessionId: true },
+            select: {
+              id: true,
+              retroSessionId: true,
+              retroSession: {
+                select: { name: true },
+              },
+            },
           },
           role: true,
           settingsId: true,
