@@ -2,8 +2,8 @@ import { PaymentTier } from '@/enums'
 
 export const MAX_BOARDS_PER_SUBSCRIPTION = {
   [PaymentTier.FREE]: 3,
-  [PaymentTier.SUPPORTER]: 10,
-  [PaymentTier.BELIEVER]: 50,
+  [PaymentTier.BELIEVER]: 10,
+  [PaymentTier.SUPPORTER]: 50,
   [PaymentTier.CHAMPION]: 50, // Unlimited boards within their organization
 }
 
