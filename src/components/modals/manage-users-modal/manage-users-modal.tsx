@@ -137,7 +137,7 @@ export function ManageUsersModal({
   )
 
   return (
-    <Modal title='Registered Users' isOpen={open} onClose={onClose}>
+    <Modal title='Board Members' isOpen={open} onClose={onClose}>
       {availableUsers.length > 0 && (
         <div className='mb-2'>
           <Dropdown

@@ -3,6 +3,7 @@
 import { PlusIcon } from 'lucide-react'
 import { Tooltip } from '@/components/common'
 import { useModals } from '@/hooks/use-modals'
+import { useBoardMemberships } from '@/providers/board-memberships'
 import type { NewBoardButtonProps } from './types'
 
 export function NewBoardButton({
@@ -11,9 +12,14 @@ export function NewBoardButton({
 }: Readonly<NewBoardButtonProps>) {
   const { openModal } = useModals()
   const isAtLimit = ownedCount >= boardLimit
+  const { ensureBoardInCache } = useBoardMemberships()
 
   const handleClick = () => {
-    openModal('CreateBoardModal', {})
+    openModal('CreateBoardModal', {
+      onSubmit: async ({ boardId }: { boardId: string }) => {
+        await ensureBoardInCache(boardId)
+      },
+    })
   }
 
   return (

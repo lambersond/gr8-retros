@@ -6,6 +6,7 @@ import type { CreateBoardModalProps } from './types'
 
 export function CreateBoardModal({
   open = true,
+  onSubmit,
 }: Readonly<CreateBoardModalProps>) {
   const { closeModal } = useModals()
   const router = useRouter()
@@ -21,6 +22,11 @@ export function CreateBoardModal({
     })
 
     const body = await resp.json()
+
+    if (onSubmit) {
+      await onSubmit({ boardId: body.id })
+    }
+
     router.push(`/retro/${body.id}`)
     onClose()
   }
