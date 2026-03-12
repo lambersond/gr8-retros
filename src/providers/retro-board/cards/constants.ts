@@ -5,5 +5,4 @@ export const DEFAULT_STATE: BoardCardsState = {
   sort: BoardCardsSortOptions.NONE,
   filter: BoardCardsFilterOptions.ALL,
   cards: {},
-  votingResults: {},
 }
