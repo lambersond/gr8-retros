@@ -1,3 +1,4 @@
+import { Info } from '@/components/common'
 import { useModals } from '@/hooks/use-modals'
 import { hasMinimumRole } from '@/lib/roles'
 import { useBoardSettings } from '@/providers/retro-board/board-settings'
@@ -83,14 +84,16 @@ export function ActiveVote() {
       <div className='flex items-start justify-around mt-1'>
         <div className='flex flex-col items-center'>
           <p className='text-3xl'>{votingMembers}</p>
-          <p className='text-sm italic text-text-secondary tracking-tight -mt-1'>
+          <span className='text-sm italic text-text-secondary tracking-tight -mt-1 flex items-center gap-1'>
             Voting
-          </p>
+            <Info info='Total amount of participants' />
+          </span>
         </div>
         <div className='flex flex-col items-center'>
           <p className='text-3xl'>{voted}</p>
-          <p className='text-sm italic text-text-secondary tracking-tight -mt-1'>
+          <p className='text-sm italic text-text-secondary tracking-tight -mt-1 flex items-center gap-1'>
             Voted
+            <Info info='Participants that have submitted their votes' />
           </p>
         </div>
       </div>
