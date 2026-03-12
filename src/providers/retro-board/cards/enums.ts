@@ -21,6 +21,7 @@ export enum BoardCardsInternalActionType {
 }
 
 export enum BoardCardsSortOptions {
+  BY_VOTES = 'BY_VOTES',
   BY_UPVOTES = 'BY_UPVOTES',
   BY_DISCUSSED = 'BY_DISCUSSED',
   BY_ACTION_ITEM_COUNT = 'BY_ACTION_ITEM_COUNT',

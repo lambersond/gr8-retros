@@ -94,6 +94,37 @@ export function RetroActions({ id }: Readonly<{ id: string }>) {
     return options
   }, [user, handleClearBoard, handleClearCompleted])
 
+  const sortOptions = useMemo(() => {
+    const options = [
+      {
+        label: 'Sort by Discussed Status',
+        onClick: () => handleSortCardsBy(BoardCardsSortOptions.BY_DISCUSSED),
+      },
+      {
+        label: 'Sort by Most Upvotes',
+        onClick: () => handleSortCardsBy(BoardCardsSortOptions.BY_UPVOTES),
+      },
+      {
+        label: 'Sort by Most Comments',
+        onClick: () =>
+          handleSortCardsBy(BoardCardsSortOptions.BY_COMMENT_COUNT),
+      },
+      {
+        label: 'Sort by Most Action Items',
+        onClick: () =>
+          handleSortCardsBy(BoardCardsSortOptions.BY_ACTION_ITEM_COUNT),
+      },
+    ]
+
+    if (showFilterButton) {
+      options.push({
+        label: 'Sort by Most Votes',
+        onClick: () => handleSortCardsBy(BoardCardsSortOptions.BY_VOTES),
+      })
+    }
+    return options
+  }, [handleSortCardsBy, showFilterButton])
+
   return (
     <div className='flex gap-2 z-10'>
       {showFilterButton && (
@@ -128,32 +159,7 @@ export function RetroActions({ id }: Readonly<{ id: string }>) {
       <Popover
         modal
         placement='bottom-start'
-        content={
-          <Menu
-            options={[
-              {
-                label: 'Sort by Discussed Status',
-                onClick: () =>
-                  handleSortCardsBy(BoardCardsSortOptions.BY_DISCUSSED),
-              },
-              {
-                label: 'Sort by Most Upvotes',
-                onClick: () =>
-                  handleSortCardsBy(BoardCardsSortOptions.BY_UPVOTES),
-              },
-              {
-                label: 'Sort by Most Comments',
-                onClick: () =>
-                  handleSortCardsBy(BoardCardsSortOptions.BY_COMMENT_COUNT),
-              },
-              {
-                label: 'Sort by Most Action Items',
-                onClick: () =>
-                  handleSortCardsBy(BoardCardsSortOptions.BY_ACTION_ITEM_COUNT),
-              },
-            ]}
-          />
-        }
+        content={<Menu options={sortOptions} />}
       >
         <IconButton icon={ArrowDownWideNarrow} intent='primary' size='lg' />
       </Popover>

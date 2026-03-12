@@ -12,7 +12,6 @@ export function createInitialState(
     cards: {},
     sort: defaultSort,
     filter: defaultFilter,
-    votingResults: {},
   }
 
   for (const card of board.cards) {
@@ -40,12 +39,8 @@ export function sortCardsBy(cards: Card[], sort: BoardCardsSortOptions) {
   return cardSortFunctions[sort]?.(cards) ?? cards
 }
 
-export function filterCardsBy(
-  cards: Card[],
-  filter: BoardCardsFilterOptions,
-  votedCards: Record<string, string[]> = {},
-) {
-  return cardFilterFunctions[filter]?.(cards, Object.keys(votedCards)) ?? cards
+export function filterCardsBy(cards: Card[], filter: BoardCardsFilterOptions) {
+  return cardFilterFunctions[filter]?.(cards) ?? cards
 }
 
 // -------------------------------------------------------------------------------
@@ -55,19 +50,12 @@ export function filterCardsBy(
 const getLengthOrZero = (arr: any[] | undefined) => arr?.length ?? 0
 
 const cardFilterFunctions = {
-  [BoardCardsFilterOptions.WITH_VOTES]: (
-    cards: Card[],
-    votedCardIds: string[],
-  ) => cards.filter(card => votedCardIds.includes(card.id)),
-  [BoardCardsFilterOptions.WITHOUT_VOTES]: (
-    cards: Card[],
-    votedCardIds: string[],
-  ) => cards.filter(card => !votedCardIds.includes(card.id)),
+  [BoardCardsFilterOptions.WITH_VOTES]: (cards: Card[]) =>
+    cards.filter(card => (card.votes ?? 0) > 0),
+  [BoardCardsFilterOptions.WITHOUT_VOTES]: (cards: Card[]) =>
+    cards.filter(card => !card.votes),
   [BoardCardsFilterOptions.ALL]: (cards: Card[]) => cards,
-} satisfies Record<
-  BoardCardsFilterOptions,
-  (cards: Card[], votedCardIds: string[]) => Card[]
->
+} satisfies Record<BoardCardsFilterOptions, (cards: Card[]) => Card[]>
 
 const cardSortFunctions = {
   [BoardCardsSortOptions.BY_UPVOTES]: (cards: Card[]) =>
@@ -92,4 +80,6 @@ const cardSortFunctions = {
   [BoardCardsSortOptions.BY_OLDEST]: (cards: Card[]) =>
     cards.toSorted((a, b) => a.createdAt.getTime() - b.createdAt.getTime()),
   [BoardCardsSortOptions.NONE]: (cards: Card[]) => cards,
+  [BoardCardsSortOptions.BY_VOTES]: (cards: Card[]) =>
+    cards.toSorted((a, b) => (b.votes ?? 0) - (a.votes ?? 0)),
 } satisfies Record<BoardCardsSortOptions, (cards: Card[]) => Card[]>

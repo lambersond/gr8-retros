@@ -3,6 +3,7 @@ import {
   BoardCardsMessageType,
   BoardCardsInternalActionType,
   BoardCardsFilterOptions,
+  BoardCardsSortOptions,
 } from './enums'
 import * as utils from './utils'
 import type { ActionHandler, BoardCardsReducerAction } from './types'
@@ -114,17 +115,30 @@ export const boardCardActionHandlers: {
     return { ...state, filter: action.filter }
   },
   [BoardCardsInternalActionType.CLOSE_VOTING_RESULTS]: (state, action) => {
+    const newStateCards = { ...state.cards }
+    for (const [cardId, votes] of Object.entries(action.votingResults)) {
+      const card = newStateCards[cardId]
+      if (card) {
+        newStateCards[cardId] = { ...card, votes: votes.length }
+      }
+    }
     return {
       ...state,
-      votingResults: action.votingResults,
+      cards: newStateCards,
       filter: BoardCardsFilterOptions.WITH_VOTES,
+      sort: BoardCardsSortOptions.BY_VOTES,
     }
   },
   [BoardCardsInternalActionType.RESET_VOTING_RESULTS]: state => {
+    const newStateCards = { ...state.cards }
+    for (const card of Object.values(newStateCards)) {
+      newStateCards[card.id] = { ...card, votes: 0 }
+    }
     return {
       ...state,
-      votingResults: {},
+      cards: newStateCards,
       filter: BoardCardsFilterOptions.ALL,
+      sort: BoardCardsSortOptions.NONE,
     }
   },
 }

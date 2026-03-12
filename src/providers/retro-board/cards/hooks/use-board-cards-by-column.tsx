@@ -7,10 +7,6 @@ export function useBoardCardsByColumn(column: string) {
     card => card.column === column,
   )
 
-  const filteredCards = filterCardsBy(
-    unsortedCards,
-    boardCards.filter,
-    boardCards.votingResults,
-  )
+  const filteredCards = filterCardsBy(unsortedCards, boardCards.filter)
   return sortCardsBy(filteredCards, boardCards.sort)
 }
