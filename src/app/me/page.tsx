@@ -1,6 +1,6 @@
 import { Suspense } from 'react'
 import { auth } from '@/auth'
-import { MyActionItems, MyBoards, MyInfo } from '@/components/me'
+import { MyActionItems, MyBoards, MyInfo } from '@/components/pages/me'
 import { userService } from '@/server/user'
 
 export default async function Me() {

@@ -41,8 +41,11 @@ model User {
   email           String    @unique
   emailVerified   DateTime?
   image           String?
-  isPatreonLinked Boolean   @default(false)
-  paymentTier     PaymentTier @default(FREE)
+
+  stripeCustomerId   String?
+  currentPeriodEnd   DateTime?
+  pendingPaymentTier PaymentTier?
+  paymentTier        PaymentTier @default(FREE)
 
   accounts        Account[]
   sessions        Session[]
