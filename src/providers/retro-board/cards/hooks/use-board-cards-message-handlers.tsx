@@ -67,6 +67,11 @@ export function useBoardCardsMessageHandlers() {
             actionItemId,
           })
         },
+        [BoardCardsMessageType.SORT_CARDS]: data =>
+          dispatch({
+            type: BoardCardsMessageType.SORT_CARDS,
+            sort: data.payload.sort,
+          }),
 
         [BoardCardsMessageType.DELETE_ALL_CARDS]: () =>
           dispatch({ type: BoardCardsMessageType.DELETE_ALL_CARDS }),

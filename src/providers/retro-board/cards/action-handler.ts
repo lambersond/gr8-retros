@@ -108,7 +108,7 @@ export const boardCardActionHandlers: {
       comments: card.comments.filter(comment => comment.id !== commentId),
     }))
   },
-  [BoardCardsInternalActionType.SORT_CARDS]: (state, action) => {
+  [BoardCardsMessageType.SORT_CARDS]: (state, action) => {
     return { ...state, sort: action.sort }
   },
   [BoardCardsInternalActionType.FILTER_CARDS]: (state, action) => {

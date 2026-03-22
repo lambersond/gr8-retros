@@ -68,7 +68,7 @@ export type BoardCardsReducerAction =
       commentId: string
     }
   | {
-      type: BoardCardsInternalActionType.SORT_CARDS
+      type: BoardCardsMessageType.SORT_CARDS
       sort: BoardCardsSortOptions
     }
   | {

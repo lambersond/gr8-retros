@@ -14,6 +14,7 @@ export const MAX_CARD_RETENTION: Record<PaymentTier, number> = {
   [PaymentTier.CHAMPION]: -1,
 }
 
+export const DEFAULT_BOARD_RETENTION_DAYS = 30
 export const DEFAULT_CARD_RETENTION_DAYS = 7
 
 export const RETENTION_POLICY = {
@@ -33,5 +34,8 @@ export const RETENTION_POLICY = {
     boardDays: Infinity,
     defaultCardDays: DEFAULT_CARD_RETENTION_DAYS,
   },
-  UNDEFINED: { boardDays: 30, defaultCardDays: DEFAULT_CARD_RETENTION_DAYS },
+  UNDEFINED: {
+    boardDays: DEFAULT_BOARD_RETENTION_DAYS,
+    defaultCardDays: DEFAULT_CARD_RETENTION_DAYS,
+  },
 } as const

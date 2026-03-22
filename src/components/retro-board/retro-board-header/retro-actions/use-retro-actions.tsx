@@ -16,12 +16,11 @@ export function useRetroActions(channelName: string) {
 
   const handleSortCardsBy = useCallback(
     (sort: BoardCardsSortOptions) => {
-      dispatch({
-        type: BoardCardsInternalActionType.SORT_CARDS,
-        sort,
+      publish({
+        data: { type: BoardCardsMessageType.SORT_CARDS, payload: { sort } },
       })
     },
-    [dispatch],
+    [publish],
   )
 
   const handleFilterCardsBy = useCallback(

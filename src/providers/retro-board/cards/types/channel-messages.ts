@@ -1,4 +1,4 @@
-import type { BoardCardsMessageType } from '../enums'
+import type { BoardCardsMessageType, BoardCardsSortOptions } from '../enums'
 import type { ActionItem, Card, Comment, MessageStruct } from '@/types'
 
 export type CardMessageData =
@@ -20,8 +20,12 @@ export type CardMessageData =
       BoardCardsMessageType.UPDATE_ACTION_ITEM,
       { cardId: string; actionItemId: string; patch: Partial<ActionItem> }
     >
-  | MessageStruct<BoardCardsMessageType.DELETE_ALL_CARDS, undefined>
-  | MessageStruct<BoardCardsMessageType.DELETE_COMPLETED_CARDS, undefined>
+  | MessageStruct<
+      BoardCardsMessageType.SORT_CARDS,
+      { sort: BoardCardsSortOptions }
+    >
+  | MessageStruct<BoardCardsMessageType.DELETE_ALL_CARDS>
+  | MessageStruct<BoardCardsMessageType.DELETE_COMPLETED_CARDS>
   | MessageStruct<
       BoardCardsMessageType.ADD_CARD_COMMENT,
       { cardId: string; newComment: Comment }
