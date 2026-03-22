@@ -6,6 +6,7 @@ import Objects from 'ably/objects'
 import { AblyProvider as AProvider } from 'ably/react'
 
 const RECOVERY_KEY = 'ably-recovery-key'
+export const ABLY_RECONNECTED_EVENT = 'ably:reconnected'
 
 function createClient() {
   const recoveryKey =
@@ -47,11 +48,24 @@ export function AblyProvider({
       if (key) sessionStorage.setItem(RECOVERY_KEY, key)
     }
 
+    const handleConnected = (stateChange: Ably.ConnectionStateChange) => {
+      const wasOffline =
+        stateChange.previous === 'disconnected' ||
+        stateChange.previous === 'suspended'
+
+      if (wasOffline) {
+        globalThis.dispatchEvent(new CustomEvent(ABLY_RECONNECTED_EVENT))
+        console.warn('Ably reconnected after being offline')
+      }
+    }
+
+    client.connection.on('connected', handleConnected)
     document.addEventListener('visibilitychange', handleVisibilityChange)
     globalThis.addEventListener('online', reconnectIfNeeded)
     window.addEventListener('beforeunload', handleBeforeUnload)
 
     return () => {
+      client.connection.off('connected', handleConnected)
       document.removeEventListener('visibilitychange', handleVisibilityChange)
       globalThis.removeEventListener('online', reconnectIfNeeded)
       window.removeEventListener('beforeunload', handleBeforeUnload)

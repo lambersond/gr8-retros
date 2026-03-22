@@ -5,7 +5,7 @@ import type {
   BoardCardsSortOptions,
 } from '../enums'
 import type { BoardCardsState } from './provider'
-import type { ActionItem, Card, Comment } from '@/types'
+import type { ActionItem, Board, Card, Comment } from '@/types'
 
 export type ActionHandler<
   A extends BoardCardsReducerAction = BoardCardsReducerAction,
@@ -81,4 +81,8 @@ export type BoardCardsReducerAction =
     }
   | {
       type: BoardCardsInternalActionType.RESET_VOTING_RESULTS
+    }
+  | {
+      type: BoardCardsInternalActionType.RESYNC_CARDS
+      board: Board
     }

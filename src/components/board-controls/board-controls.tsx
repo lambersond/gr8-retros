@@ -46,7 +46,7 @@ export function BoardControls() {
           asChild
           hidePopover={!showPopover}
           content={
-            <div className='min-w-44 bg-page rounded-xl flex flex-col border border-tertiary mt-2 shadow'>
+            <div className='min-w-44 bg-page rounded-xl flex flex-col border border-tertiary mt-2 shadow [&>*:last-child]:border-b-0'>
               <BoardControlItem>
                 <p className='font-bold tracking-tight text-primary'>
                   {getHeaderLabel(
@@ -72,9 +72,11 @@ export function BoardControls() {
                     <MusicControls />
                   </BoardControlItem>
                 )}
-              <BoardControlItem className='border-b-0'>
-                <Voting />
-              </BoardControlItem>
+              {settings.voting.enabled && (
+                <BoardControlItem>
+                  <Voting />
+                </BoardControlItem>
+              )}
             </div>
           }
         >

@@ -32,7 +32,8 @@ export const boardCardActionHandlers: {
   },
   [BoardCardsMessageType.DELETE_ALL_CARDS]: state => {
     return {
-      ...DEFAULT_STATE,
+      cards: {},
+      filter: state.filter,
       sort: state.sort,
     }
   },
@@ -140,5 +141,13 @@ export const boardCardActionHandlers: {
       filter: BoardCardsFilterOptions.ALL,
       sort: BoardCardsSortOptions.NONE,
     }
+  },
+  [BoardCardsInternalActionType.RESYNC_CARDS]: (state, action) => {
+    const newState = utils.createInitialState(
+      action.board,
+      state.sort,
+      state.filter,
+    )
+    return newState
   },
 }

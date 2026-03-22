@@ -18,6 +18,7 @@ export enum BoardCardsInternalActionType {
   FILTER_CARDS = 'FILTER_CARDS',
   CLOSE_VOTING_RESULTS = 'CLOSE_VOTING_RESULTS',
   RESET_VOTING_RESULTS = 'RESET_VOTING_RESULTS',
+  RESYNC_CARDS = 'RESYNC_CARDS',
 }
 
 export enum BoardCardsSortOptions {
