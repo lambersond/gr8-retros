@@ -4,6 +4,7 @@ import { useEffect } from 'react'
 import { VotingState } from '@/enums'
 import {
   BoardCardsInternalActionType,
+  BoardCardsMessageType,
   BoardCardsSortOptions,
   useBoardCardsDispatch,
 } from '@/providers/retro-board/cards'
@@ -32,7 +33,7 @@ export function SideEffectsHandler() {
       }
       case VotingState.OPEN: {
         cardDispatcher({
-          type: BoardCardsInternalActionType.SORT_CARDS,
+          type: BoardCardsMessageType.SORT_CARDS,
           sort: BoardCardsSortOptions.BY_UPVOTES,
         })
         break

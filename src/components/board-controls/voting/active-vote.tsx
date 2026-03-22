@@ -38,7 +38,7 @@ export function ActiveVote() {
     votingMembers > 0 ? Math.round((voted / votingMembers) * 100) : 0
 
   const handleCloseVotingClick = () => {
-    if (voted === votingMembers) {
+    if (voted >= votingMembers) {
       closeVoting()
     } else {
       openModal('ConfirmModal', {
@@ -56,8 +56,8 @@ export function ActiveVote() {
     <div className='flex flex-col gap-2'>
       <button
         onClick={handleCloseVotingClick}
-        style={{ ['--progress' as any]: `${percentage}%` }}
-        data-complete={percentage === 100 ? 'true' : undefined}
+        style={{ ['--progress' as any]: `${Math.min(percentage, 100)}%` }}
+        data-complete={percentage >= 100 ? 'true' : undefined}
         className="
           relative overflow-hidden text-sm italic tracking-tight text-center text-white
           py-2 bg-secondary/10 rounded-md cursor-pointer transition w-full
