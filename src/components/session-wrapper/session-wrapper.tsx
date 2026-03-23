@@ -19,7 +19,7 @@ export function SessionWrapper({
           {children}
           <footer className='text-sm text-text-tertiary bg-appbar/10'>
             <p className='p-1 text-center'>
-              Gr8 Retros © 2025 • A simple and effective retrospective tool for
+              Gr8 Retros © 2026 • A simple and effective retrospective tool for
               teams
             </p>
           </footer>

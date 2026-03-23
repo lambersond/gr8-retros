@@ -5,7 +5,7 @@ export function AppBar() {
   return (
     <div className='flex items-center justify-between max-w-screen bg-appbar px-3 py-1 min-h-16'>
       <div className='flex items-baseline gap-2'>
-        <span className='text-2xl font-extrabold tracking-tight text-slate-900'>
+        <span className='text-2xl font-extrabold tracking-tight text-text-primary'>
           <Image
             src='/logo.png'
             alt='Gr8 Retros Logo'
@@ -14,9 +14,6 @@ export function AppBar() {
             className='inline-block mr-2'
           />
           Gr8 Retros
-        </span>
-        <span className='text-sm text-slate-600 hidden md:inline'>
-          A simple and effective retrospective tool for teams
         </span>
       </div>
       <Auth />
