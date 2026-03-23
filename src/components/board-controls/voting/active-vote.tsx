@@ -31,7 +31,7 @@ export function ActiveVote() {
 
   const votingMembers =
     Object.values(viewingMembers).filter(
-      m => !membersOnly || hasMinimumRole(m.role, 'MEMBER'),
+      m => !membersOnly || hasMinimumRole('MEMBER', m.role),
     )?.length ?? 0
   const voted = Object.keys(membersVoted).length
   const percentage =
