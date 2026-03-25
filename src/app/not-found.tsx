@@ -4,7 +4,7 @@ import Link from 'next/link'
 
 export default function NotFound() {
   return (
-    <div className='text-black flex flex-col items-center justify-center h-screen gap-4 -mt-20'>
+    <div className='text-text-primary flex flex-col items-center justify-center h-screen gap-4 -mt-20'>
       <p className='text-2xl'>Page Not Found</p>
       <div className='relative'>
         <Image

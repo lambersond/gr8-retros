@@ -4,12 +4,12 @@ export function PlansHeader() {
       <p className='mb-1.5 text-xs font-semibold uppercase tracking-[0.3em] text-amber-500'>
         Pricing
       </p>
-      <h1 className='mb-2 text-5xl font-black leading-none tracking-tight text-slate-900'>
+      <h1 className='mb-2 text-5xl font-black leading-none tracking-tight text-text-primary'>
         Retros that fit
         <br />
         <span className='text-amber-500'>every team.</span>
       </h1>
-      <p className='text-base text-slate-500'>
+      <p className='text-base text-text-secondary'>
         Start free with no account. Scale only when you need to. Cancel anytime.
       </p>
     </div>

@@ -34,8 +34,8 @@ export function ActionItemRow({
             className={clsx(
               'text-sm font-medium leading-snug hover:underline',
               {
-                'line-through text-slate-400': isDone,
-                'text-slate-700': !isDone,
+                'line-through text-text-secondary': isDone,
+                'text-text-primary': !isDone,
               },
             )}
           >
@@ -43,7 +43,7 @@ export function ActionItemRow({
           </Link>
         </Tooltip>
         {item.card?.content && (
-          <p className='text-[11px] text-slate-400 mt-0.5'>
+          <p className='text-[11px] text-text-secondary mt-0.5'>
             from &ldquo;{item.card.content}&rdquo;
           </p>
         )}

@@ -22,7 +22,7 @@ export function PlansGrid() {
               'cursor-pointer rounded-full px-5 py-1.5 text-sm font-medium transition-all duration-200',
               {
                 'bg-amber-500 text-white shadow-sm': !isYearly,
-                'text-slate-500 hover:text-slate-700': isYearly,
+                'text-text-secondary hover:text-text-primary': isYearly,
               },
             )}
           >
@@ -34,7 +34,7 @@ export function PlansGrid() {
               'flex cursor-pointer items-center gap-2 rounded-full px-5 py-1.5 text-sm font-medium transition-all duration-200',
               {
                 'bg-amber-500 text-white shadow-sm': isYearly,
-                'text-slate-500 hover:text-slate-700': !isYearly,
+                'text-text-secondary hover:text-text-primary': !isYearly,
               },
             )}
           >

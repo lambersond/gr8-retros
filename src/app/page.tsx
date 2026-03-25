@@ -9,17 +9,17 @@ export default function HomePage() {
         <div className='max-w-5xl w-full flex flex-col-reverse md:flex-row items-center justify-center gap-8'>
           {/* Left: Text content */}
           <div className='flex-1 text-center md:text-left'>
-            <h1 className='text-4xl sm:text-5xl font-extrabold text-slate-900 mb-4'>
+            <h1 className='text-4xl sm:text-5xl font-extrabold text-text-primary mb-4'>
               Run better retros in seconds.
             </h1>
-            <p className='text-lg text-slate-600 mb-8'>
+            <p className='text-lg text-text-secondary mb-8'>
               Start a collaborative retrospective board with one click. Capture
               feedback, upvote ideas, and define action items — all in real
               time.
             </p>
             <div className='flex flex-col items-center gap-3'>
               <CreateRetroButton />
-              <p className='text-xs text-slate-500'>
+              <p className='text-xs text-text-secondary'>
                 Generates a unique board URL you can share instantly.
               </p>
             </div>
@@ -66,8 +66,8 @@ function FeatureItem({
 }>) {
   return (
     <div className='rounded-2xl bg-white/80 border border-slate-200 px-4 py-3 shadow-sm'>
-      <h3 className='text-sm font-semibold text-slate-900 mb-1'>{title}</h3>
-      <p className='text-xs text-slate-600 leading-relaxed'>{children}</p>
+      <h3 className='text-sm font-semibold text-text-primary mb-1'>{title}</h3>
+      <p className='text-xs text-text-secondary leading-relaxed'>{children}</p>
     </div>
   )
 }

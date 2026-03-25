@@ -8,7 +8,7 @@ export default async function Me() {
 
   if (!session?.user) {
     return (
-      <div className='max-h-[calc(100vh_-_--spacing(23))] min-h-[calc(100vh_-_--spacing(23))] text-slate-700 bg-page'>
+      <div className='max-h-[calc(100vh_-_--spacing(23))] min-h-[calc(100vh_-_--spacing(23))] text-text-primary bg-page'>
         <div className='flex items-center justify-center h-full'>
           <p className='text-center text-text-secondary'>
             Please log in to view your profile.
@@ -23,7 +23,7 @@ export default async function Me() {
   const userActionItems = userService.getUserActionItems(session.user.id)
 
   return (
-    <div className='max-h-[calc(100vh_-_--spacing(23))] min-h-[calc(100vh_-_--spacing(23))] text-slate-700 bg-page overflow-y-auto'>
+    <div className='max-h-[calc(100vh_-_--spacing(23))] min-h-[calc(100vh_-_--spacing(23))] text-text-primary bg-page overflow-y-auto'>
       <div className='relative max-w-2xl mx-auto px-4 py-14 flex flex-col gap-5'>
         <Suspense fallback={<Skeleton />}>
           <MyInfo myInfo={userInfo} />

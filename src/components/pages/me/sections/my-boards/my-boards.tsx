@@ -27,7 +27,7 @@ export async function MyBoards({
       }
     >
       {boards.length === 0 ? (
-        <p className='text-sm text-slate-400 text-center py-4'>
+        <p className='text-sm text-text-secondary text-center py-4'>
           No boards yet.
         </p>
       ) : (

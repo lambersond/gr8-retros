@@ -1,5 +1,6 @@
 import { SidebarCloseIcon } from 'lucide-react'
-import { Badge, Sidebar, SidebarItem } from '../common'
+import { PaymentTierBadge } from '../badges'
+import { Sidebar, SidebarItem } from '../common'
 import {
   ActionItemsSettings,
   BoardMembers,
@@ -12,7 +13,6 @@ import {
   UpvoteSettings,
   VotingSettings,
 } from './settings-sections'
-import { PaymentTier } from '@/enums'
 import {
   useBoardSettings,
   useBoardSettingsActions,
@@ -20,7 +20,7 @@ import {
 
 export function BoardSettingsSidebar() {
   const { closeSidebar } = useBoardSettingsActions()
-  const { boardName, sidebarOpen, boardTier } = useBoardSettings()
+  const { sidebarOpen, boardTier } = useBoardSettings()
 
   return (
     <Sidebar
@@ -34,8 +34,7 @@ export function BoardSettingsSidebar() {
           <div>
             <p className='text-2xl font-bold'>Board Settings</p>
             <div className='flex gap-1'>
-              <Badge text={boardTier || PaymentTier.FREE} />
-              <p className='text-text-secondary text-sm'>{boardName}</p>
+              <PaymentTierBadge tier={boardTier} />
             </div>
           </div>
           <SidebarItem>

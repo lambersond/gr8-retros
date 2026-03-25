@@ -92,7 +92,7 @@ export function ActionItemsList({
       className='flex flex-col gap-4'
     >
       {items.length === 0 ? (
-        <p className='text-sm text-slate-500 text-center py-4'>
+        <p className='text-sm text-text-secondary text-center py-4'>
           No action items assigned.
         </p>
       ) : (

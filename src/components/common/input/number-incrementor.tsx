@@ -36,11 +36,11 @@ export function NumberIncrementor({
       <button
         onClick={handleDecrement}
         className='size-8 flex items-center justify-center bg-gray-50 border-none
-          cursor-pointer text-gray-600 text-base font-medium transition-all
-          duration-200 select-none hover:bg-gray-200 hover:text-gray-700
+          cursor-pointer text-text-secondary text-base font-medium transition-all
+          duration-200 select-none hover:bg-gray-200 hover:text-text-primary
           active:bg-gray-300 active:scale-95
           disabled:opacity-40 disabled:cursor-not-allowed disabled:bg-gray-50
-          disabled:text-gray-600 disabled:hover:bg-gray-50 disabled:hover:text-gray-600'
+          disabled:text-text-secondary disabled:hover:bg-gray-50 disabled:hover:text-text-secondary'
       >
         -
       </button>
@@ -48,7 +48,7 @@ export function NumberIncrementor({
         type='number'
         value={value}
         className='
-          w-8 h-8 border-none text-center text-sm text-gray-700 bg-white
+          w-8 h-8 border-none text-center text-sm text-text-primary bg-white
           outline-none font-medium
           [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-outer-spin-button]:m-0
           [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-inner-spin-button]:m-0
@@ -59,11 +59,11 @@ export function NumberIncrementor({
       <button
         onClick={handleIncrement}
         className='size-8 flex items-center justify-center bg-gray-50 border-none
-          cursor-pointer text-gray-600 text-base font-medium transition-all
-          duration-200 select-none hover:bg-gray-200 hover:text-gray-700
+          cursor-pointer text-text-secondary text-base font-medium transition-all
+          duration-200 select-none hover:bg-gray-200 hover:text-text-primary
           active:bg-gray-300 active:scale-95
           disabled:opacity-40 disabled:cursor-not-allowed disabled:bg-gray-50
-          disabled:text-gray-600 disabled:hover:bg-gray-50 disabled:hover:text-gray-600'
+          disabled:text-text-secondary disabled:hover:bg-gray-50 disabled:hover:text-text-secondary'
       >
         +
       </button>

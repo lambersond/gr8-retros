@@ -83,11 +83,11 @@ export function PlanCard({ plan, isYearly }: Readonly<PlanCardProps>) {
         </span>
 
         <div className='flex items-end gap-1'>
-          <span className='text-4xl font-black tracking-tight text-slate-900'>
+          <span className='text-4xl font-black tracking-tight text-text-primary'>
             {displayPrice}
           </span>
           {displayNote && (
-            <span className='mb-1 text-sm text-slate-400'>{displayNote}</span>
+            <span className='mb-1 text-sm text-text-secondary'>{displayNote}</span>
           )}
         </div>
 
@@ -97,7 +97,7 @@ export function PlanCard({ plan, isYearly }: Readonly<PlanCardProps>) {
             {plan.yearlySavings}
           </p>
         ) : (
-          <p className='mt-1 h-5 text-sm text-slate-500'>{plan.tagline}</p>
+          <p className='mt-1 h-5 text-sm text-text-secondary'>{plan.tagline}</p>
         )}
       </div>
 
@@ -115,7 +115,7 @@ export function PlanCard({ plan, isYearly }: Readonly<PlanCardProps>) {
       <div className='mb-4 border-t border-slate-100' />
 
       {plan.inheritLabel && (
-        <p className='mb-3 text-xs font-semibold uppercase tracking-wide text-slate-400'>
+        <p className='mb-3 text-xs font-semibold uppercase tracking-wide text-text-secondary'>
           {plan.inheritLabel}
         </p>
       )}
@@ -132,10 +132,10 @@ export function PlanCard({ plan, isYearly }: Readonly<PlanCardProps>) {
             >
               <Check />
             </span>
-            <span className='text-sm leading-snug text-slate-600'>
+            <span className='text-sm leading-snug text-text-secondary'>
               {feature.label}
               {feature.soon && (
-                <span className='ml-1.5 rounded bg-slate-100 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-slate-400'>
+                <span className='ml-1.5 rounded bg-slate-100 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-text-secondary'>
                   Soon
                 </span>
               )}

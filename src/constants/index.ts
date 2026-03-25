@@ -2,5 +2,5 @@ export * from './music'
 export * from './tier-data-limits'
 export * from './sidebar'
 export * from './cookies'
-
+export * from './payment-tier-meta'
 export * from './columns/default-columns'
