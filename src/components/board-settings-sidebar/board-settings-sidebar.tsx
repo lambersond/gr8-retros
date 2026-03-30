@@ -3,6 +3,7 @@ import { PaymentTierBadge } from '../badges'
 import { Sidebar, SidebarItem } from '../common'
 import {
   ActionItemsSettings,
+  BoardCustomizationSettings,
   BoardMembers,
   ClaimBoard,
   CommentsSettings,
@@ -44,6 +45,7 @@ export function BoardSettingsSidebar() {
         <ClaimBoard />
         <section className='flex flex-col gap-4 pb-4'>
           <BoardMembers />
+          <BoardCustomizationSettings />
           <PrivateSettings />
           <TimerSettings />
           <MusicSettings />

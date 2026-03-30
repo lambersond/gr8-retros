@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import { Trash } from 'lucide-react'
+import { Trash2 } from 'lucide-react'
 import Image from 'next/image'
 import { ROLES } from './constants'
 import { Dropdown, IconButton, Modal } from '@/components/common'
@@ -97,7 +97,7 @@ export function ManageUsersModal({
               size='sm'
             />
             <IconButton
-              icon={Trash}
+              icon={Trash2}
               intent='danger'
               size='sm'
               onClick={handleRemoveUser(member.user.id)}

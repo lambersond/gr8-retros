@@ -1,27 +1,35 @@
-import { DEFAULT_COLUMN_SETTINGS } from '@/constants'
 import { BoardCardsState } from '@/providers/retro-board/cards/types'
+import { toColumnConfigMap } from '@/utils/column-utils'
 import type { ReportDetailsColumn } from './report-details'
-import type { ColumnType } from '@/types'
+import type { Column } from '@/types'
 
-export function formatColumnDataForPDF(data: BoardCardsState) {
-  const columnData = {} as Record<ColumnType, ReportDetailsColumn>
+export function formatColumnDataForPDF(
+  data: BoardCardsState,
+  columns: Column[],
+) {
+  const columnStyles = toColumnConfigMap(columns)
+  const columnData = {} as Record<string, ReportDetailsColumn>
 
   for (const card of Object.values(data.cards)) {
-    // only fixed column types are supported atm
-    const columnType = card.column as ColumnType
+    const columnType = card.column
+
+    if (!columnStyles[columnType]) {
+      continue
+    }
+
     if (!columnData[columnType]) {
-      const columnSettings = DEFAULT_COLUMN_SETTINGS[columnType]
+      const columnStyle = columnStyles[columnType]
       columnData[columnType] = {
         cards: [],
         settings: {
-          position: columnSettings.position,
-          emoji: columnSettings.emoji,
-          name: columnSettings.title,
+          position: columnStyle?.index || 0,
+          emoji: columnStyle?.emoji || '',
+          name: columnStyle?.label || '',
         },
         styles: {
-          bgColor: columnSettings.printColor,
-          borderColor: columnSettings.printBorderColor,
-          textColor: columnSettings.printTextColor,
+          bgColor: columnStyle.light.bg,
+          borderColor: columnStyle.light.border,
+          textColor: columnStyle.light.titleText,
         },
       }
     }

@@ -123,6 +123,7 @@ model RetroSession {
 */
 model BoardSettings {
   ownerId                  String?
+  columns                  BoardColumn[]
 
   isPrivate                Boolean    @default(false) // TIER = FREE
   privateOpenAccess        Boolean    @default(false)
@@ -174,6 +175,34 @@ model BoardSettings {
 
   createdAt             DateTime @default(now())
   updatedAt             DateTime @updatedAt
+}
+
+model BoardColumn {
+  id              String   @id @default(cuid())
+  index           Int      @default(0)
+  boardSettingsId String
+  settings        BoardSettings @relation(fields: [boardSettingsId], references: [id], onDelete: Cascade)
+
+  columnType      String   // e.g. "GOOD", "BAD", "MEH", "SHOUTOUT", or custom types
+  label           String
+  tagline         String?
+  placeholder     String?
+  emoji           String?
+
+  lightBg         String
+  lightBorder     String
+  lightTitleBg    String
+  lightTitleText  String
+
+  darkBg          String
+  darkBorder      String
+  darkTitleBg     String
+  darkTitleText   String
+
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@unique([boardSettingsId, columnType])
 }
 
 model BoardInvite {

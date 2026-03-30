@@ -57,7 +57,7 @@ export function CardDefault({
   const upvoteAction = canUpvote ? handleUpvote : undefined
 
   return (
-    <div className='relative group border border-slate-200 rounded-lg shadow-card flex flex-col bg-page/80 w-full hover:shadow-card-hover transition-shadow'>
+    <div className='relative group border border-slate-100 rounded-lg shadow-card flex flex-col bg-white w-full hover:shadow-card-hover transition-shadow'>
       <div className='flex items-start gap-2 p-2 pb-0'>
         <p className={itemClasses}>{content}</p>
         <div className='flex gap-1 items-center'>

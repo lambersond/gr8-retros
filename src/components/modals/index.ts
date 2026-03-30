@@ -1,5 +1,6 @@
 export { ConfirmModal } from './confirm-modal'
 export { CreateBoardModal } from './create-board-modal'
+export { CustomizeBoardColumnsModal } from './customize-board-columns-modal'
 export { ManageUsersModal } from './manage-users-modal'
 export { UpsertContentModal } from './upsert-content-modal'
 export { UpsertActionItemModal } from './upsert-action-item-modal'

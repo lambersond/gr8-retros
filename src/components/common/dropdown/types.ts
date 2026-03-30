@@ -21,4 +21,5 @@ export type DropdownProps<S = string, T = string | number> = {
   size?: 'sm' | 'md' | 'lg'
   multiselection?: boolean
   clearable?: boolean
+  clearAfterSelect?: boolean
 }

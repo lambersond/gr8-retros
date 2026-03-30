@@ -6,8 +6,7 @@ import { BoardSettingsSidebar } from '../board-settings-sidebar'
 import { CommentsSidebar } from '../comments-sidebar'
 import { SideEffectsHandler } from '../side-effects-handler'
 import { SignInGate } from '../signin-gate'
-import { BadColumn, GoodColumn, ShoutoutColumn, MehColumn } from './columns'
-import { COLUMN_CLASSES, COLUMN_CONTAINER_CLASSES } from './constants'
+import { RetroBoardColumns } from './retro-board-columns'
 import { RetroBoardHeader } from './retro-board-header'
 import { RetroBoardProviders } from './retro-board-providers'
 import { useAuth } from '@/hooks/use-auth'
@@ -41,20 +40,7 @@ export function RetroBoard({ board }: Readonly<{ board: Board }>) {
     <AblyChannelProvider channel={board.id}>
       <RetroBoardProviders board={board}>
         <RetroBoardHeader id={board.id} />
-        <div className={COLUMN_CONTAINER_CLASSES}>
-          <div className={COLUMN_CLASSES}>
-            <GoodColumn />
-          </div>
-          <div className={COLUMN_CLASSES}>
-            <MehColumn />
-          </div>
-          <div className={COLUMN_CLASSES}>
-            <BadColumn />
-          </div>
-          <div className={COLUMN_CLASSES}>
-            <ShoutoutColumn />
-          </div>
-        </div>
+        <RetroBoardColumns />
         <CommentsSidebar />
         <SideEffectsHandler />
         <BoardSettingsSidebar />

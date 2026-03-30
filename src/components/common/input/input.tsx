@@ -12,13 +12,14 @@ export function Input({
   registerOptions,
   containerClassName = '',
   hint,
+  hideError = false,
   ...props
 }: Readonly<InputProps>) {
   const classes = clsx(
-    'mt-1 block w-full appearance-none rounded-md bg-transparent border border-secondary focus:border-secondary px-3 py-2 outline-none placeholder:text-text-secondary',
+    'mt-1 block w-full appearance-none rounded-md bg-transparent border border-border-light focus:border-primary px-3 py-2 outline-none placeholder:text-text-secondary bg-white/70',
     {
       'border-error focus:border-error focus:ring-error': !!error,
-      'border-border focus:border-primary focus:ring-primary': !error,
+      'border-border-light focus:border-primary focus:ring-primary': !error,
       'cursor-not-allowed text-platinum': disabled,
     },
     className,
@@ -34,7 +35,7 @@ export function Input({
     >
       {!!label && (
         <label
-          className='text-sm text-text-secondary font-bold uppercase'
+          className='text-[10px] font-semibold text-text-secondary uppercase tracking-widest'
           htmlFor={name}
         >
           {label}
@@ -50,9 +51,13 @@ export function Input({
         {...props}
       />
       {!!hint && (
-        <span className='text-secondary text-xs italic h-4 mb-2'>{hint}</span>
+        <span className='text-text-secondary text-xs italic h-4 mb-2'>
+          {hint}
+        </span>
       )}
-      <p className='text-primary text-xs italic h-4 mb-2'>{error}</p>
+      {!hideError && (
+        <p className='text-danger text-xs italic h-4 mb-2'>{error}</p>
+      )}
     </div>
   )
 }

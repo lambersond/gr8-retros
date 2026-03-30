@@ -53,7 +53,7 @@ export function BoardMembers() {
     <button
       onClick={handleOpenManageUsersModal}
       disabled={members.length === 0}
-      className='w-full flex items-center justify-between px-4 py-3 bg-neutral-50 border border-border-light hover:border-primary-new rounded-lg hover:bg-white transition-colors cursor-pointer'
+      className='group w-full flex items-center justify-between px-4 py-3 bg-neutral-50 border border-border-light hover:border-primary-new rounded-lg hover:bg-white transition-colors cursor-pointer'
     >
       <div className='flex items-center gap-2'>
         <Users className='size-5 text-primary-new' />
@@ -62,7 +62,7 @@ export function BoardMembers() {
       <div className='flex items-center gap-2'>
         <span className='text-sm text-text-secondary'>{members.length}</span>
         {members.length > 0 && (
-          <ChevronRight className='w-4 h-4 text-text-tertiary' />
+          <ChevronRight className='size-4 text-text-tertiary ml-auto group-hover:text-primary-new' />
         )}
       </div>
     </button>

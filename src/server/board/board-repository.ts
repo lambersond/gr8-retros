@@ -2,19 +2,26 @@
 
 import { CreateBoardProps } from './types'
 import prisma from '@/clients/prisma'
+import { buildDefaultColumnData } from '@/utils/column-utils'
 
 export async function getOrCreateBoardById(id: string) {
-  return prisma.retroSession.upsert({
+  const board = await prisma.retroSession.upsert({
     where: { id },
     create: {
       id,
       name: id,
-      settings: { create: {} },
+      settings: {
+        create: {
+          columns: { createMany: { data: buildDefaultColumnData() } },
+        },
+      },
     },
     update: {
       settings: {
         upsert: {
-          create: {},
+          create: {
+            columns: { createMany: { data: buildDefaultColumnData() } },
+          },
           update: {},
         },
       },
@@ -23,6 +30,7 @@ export async function getOrCreateBoardById(id: string) {
     include: {
       settings: {
         include: {
+          columns: { orderBy: { index: 'asc' } },
           members: {
             select: {
               permissionMask: true,
@@ -64,6 +72,22 @@ export async function getOrCreateBoardById(id: string) {
       },
     },
   })
+
+  // Seed default columns for existing boards that have none
+  if (board.settings?.columns.length === 0) {
+    await prisma.boardColumn.createMany({
+      data: buildDefaultColumnData().map(col => ({
+        ...col,
+        boardSettingsId: board.settings!.id,
+      })),
+    })
+    board.settings.columns = await prisma.boardColumn.findMany({
+      where: { boardSettingsId: board.settings.id },
+      orderBy: { index: 'asc' },
+    })
+  }
+
+  return board
 }
 
 export async function deleteBoardsOlderThanDate(cutoffDate: Date) {
@@ -135,6 +159,9 @@ export async function createBoard(data: CreateBoardProps) {
               userId: ownerId,
               role: 'OWNER',
             },
+          },
+          columns: {
+            createMany: { data: buildDefaultColumnData() },
           },
         },
       },

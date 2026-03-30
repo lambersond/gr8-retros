@@ -12,7 +12,7 @@ const SIZE_VARIANTS = {
     icon: 'size-4',
     option: 'px-3 py-1.5 text-sm',
     searchInput: 'px-2 py-1.5 text-xs',
-    label: 'text-xs',
+    label: 'text-[10px] tracking-widest',
     checkbox: 'size-3.5',
     clearButton: 'right-8',
   },
@@ -50,6 +50,7 @@ export function Dropdown<S, T>({
   size = 'md',
   multiselection = false,
   clearable = false,
+  clearAfterSelect = false,
   defaultSelectedId,
   ...props
 }: Readonly<DropdownProps<S, T>>) {
@@ -146,6 +147,11 @@ export function Dropdown<S, T>({
     onSelect(option)
     setOpen(false)
     setSearchTerm('')
+
+    if (clearAfterSelect) {
+      const emptyOption = { id: 'default-empty', label: placeholder }
+      setChoice(emptyOption as DropdownOption<S, T>)
+    }
   }
 
   const handleMultiSelect = (option: DropdownOption<S, T>) => {
@@ -156,6 +162,10 @@ export function Dropdown<S, T>({
 
     setSelectedItems(newSelection)
     onSelect(newSelection as any)
+
+    if (clearAfterSelect) {
+      setSelectedItems([])
+    }
   }
 
   const handleSelectSingle = (option: DropdownOption<S, T>) => () => {
@@ -301,7 +311,7 @@ export function Dropdown<S, T>({
       {!!label && (
         <label
           className={clsx(
-            'text-text-secondary font-bold uppercase',
+            'text-text-secondary font-semibold uppercase tracking-widest',
             sizeClasses.label,
           )}
           htmlFor={name}
@@ -318,7 +328,7 @@ export function Dropdown<S, T>({
           data-testid='Dropdown__button'
           onClick={handleToggle}
           className={clsx(
-            'inline-flex items-center justify-between rounded-md border border-tertiary bg-page text-text-primary focus:outline-none cursor-pointer hover:bg-page/75 w-full',
+            'inline-flex items-center justify-between rounded-md border border-border-light bg-white/60 text-text-primary focus:outline-none cursor-pointer hover:bg-page/75 w-full',
             width,
             sizeClasses.button,
           )}
@@ -329,7 +339,7 @@ export function Dropdown<S, T>({
               : getSingleSelectionText()}
           </span>
           <ChevronDown
-            className={clsx('text-secondary/80 ml-auto', sizeClasses.icon)}
+            className={clsx('text-text-secondary ml-auto', sizeClasses.icon)}
           />
         </button>
 

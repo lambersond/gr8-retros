@@ -28,6 +28,7 @@ import {
   BoardCardsSortOptions,
   useBoardCards,
 } from '@/providers/retro-board/cards'
+import { useBoardColumns } from '@/providers/retro-board/columns'
 import { useBoardControlsState } from '@/providers/retro-board/controls'
 
 export function RetroActions({ id }: Readonly<{ id: string }>) {
@@ -46,7 +47,8 @@ export function RetroActions({ id }: Readonly<{ id: string }>) {
   const { openModal } = useModals()
   const data = useBoardCards()
   const stats = calculateStatsForPDF(data)
-  const formattedData = formatColumnDataForPDF(data)
+  const { columns } = useBoardColumns()
+  const formattedData = formatColumnDataForPDF(data, columns)
 
   const { user } = useBoardPermissions()
 

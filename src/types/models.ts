@@ -58,6 +58,26 @@ export type Board = {
         image: string | undefined
       }
     }[]
+    columns: {
+      id: string
+      index: number
+      boardSettingsId: string
+      tagline: string | undefined
+      placeholder: string | undefined
+      columnType: string
+      label: string
+      emoji: string | undefined
+      lightBg: string
+      lightBorder: string
+      lightTitleBg: string
+      lightTitleText: string
+      darkBg: string
+      darkBorder: string
+      darkTitleBg: string
+      darkTitleText: string
+      createdAt: Date
+      updatedAt: Date
+    }[]
   }
   cards: {
     id: string
@@ -109,3 +129,4 @@ export type Comment = Card['comments'][number]
 export type BoardSettings = Board['settings']
 export type BoardInvite = BoardSettings['invite']
 export type BoardMember = BoardSettings['members'][number]
+export type Column = BoardSettings['columns'][number]

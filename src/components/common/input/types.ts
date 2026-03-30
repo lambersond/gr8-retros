@@ -13,6 +13,7 @@ export interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
   name?: string
   width?: 'full' | 'auto'
   hint?: React.ReactNode
+  hideError?: boolean
   containerClassName?: string
   register?: UseFormRegister<FieldValue<any>>
   registerOptions?: RegisterOptions

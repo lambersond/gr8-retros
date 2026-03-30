@@ -11,6 +11,11 @@ export const MODALS = {
       default: module.CreateBoardModal,
     })),
   ),
+  CustomizeBoardColumnsModal: lazy(() =>
+    import('./components/modals').then(module => ({
+      default: module.CustomizeBoardColumnsModal,
+    })),
+  ),
   ManageUsersModal: lazy(() =>
     import('./components/modals').then(module => ({
       default: module.ManageUsersModal,

@@ -1,4 +1,5 @@
 export { ActionItemsSettings } from './action-items-settings'
+export { BoardCustomizationSettings } from './board-customization-settings'
 export { BoardMembers } from './board-members'
 export { ClaimBoard } from './claim-board'
 export { CommentsSettings } from './comments-settings'
