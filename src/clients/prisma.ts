@@ -1,11 +1,7 @@
 import { PrismaClient } from '@prisma/client'
-import { withAccelerate } from '@prisma/extension-accelerate'
 
 const prismaClientSingleton = () => {
   const client = new PrismaClient()
-  if (process.env.PRISMA_ACCELERATE_URL) {
-    return client.$extends(withAccelerate())
-  }
   return client
 }
 

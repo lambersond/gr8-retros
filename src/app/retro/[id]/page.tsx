@@ -1,6 +1,6 @@
 import { Suspense } from 'react'
 import { CircularLoader } from '@/components/common'
-import { RetroBoard } from '@/components/retro-board'
+import { RetroBoardContainer as RetroBoard } from '@/components/retro-board/retro-board-container'
 
 export default async function RetroPage({
   params,
