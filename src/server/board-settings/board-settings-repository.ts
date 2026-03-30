@@ -1,8 +1,8 @@
 /* eslint-disable camelcase */
 'use server'
 
-import { BoardRole } from '@prisma/client'
 import prisma from '@/clients/prisma'
+import { BoardRole } from '@/enums'
 
 export async function updateSettingById(
   settingId: string,

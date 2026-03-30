@@ -1,9 +1,9 @@
 /* eslint-disable unicorn/no-null */
 
-import { PaymentTier } from '@prisma/client'
 import Stripe from 'stripe'
 import { logger } from './logger'
 import prisma from '@/clients/prisma'
+import { PaymentTier } from '@/enums'
 
 export const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || '')
 
@@ -19,9 +19,7 @@ export async function getTierFromProduct(
 
   if (resolved.deleted) return undefined
 
-  return (resolved as Stripe.Product).metadata?.PAYMENT_TIER as
-    | PaymentTier
-    | undefined
+  return resolved.metadata?.PAYMENT_TIER as PaymentTier | undefined
 }
 
 export async function handleCheckoutSessionCompleted(

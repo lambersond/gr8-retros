@@ -83,7 +83,9 @@ export async function saveBoardColumns(
   const allColumns = await repository.findManyByBoardSettingsId(boardSettingsId)
 
   return {
-    columns: allColumns.toSorted((a, b) => a.index - b.index),
+    columns: allColumns.toSorted(
+      (a: { index: number }, b: { index: number }) => a.index - b.index,
+    ),
     cardColumnMigrations,
   }
 }
