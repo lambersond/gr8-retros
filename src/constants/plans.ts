@@ -101,7 +101,7 @@ export const PLANS = new Map<PlanId, Plan>([
       yearlyPrice: '$30',
       yearlyPriceNote: '/ yr',
       yearlySavings: 'Save $6',
-      tagline: 'AI-powered insights for teams that ship.',
+      tagline: 'For teams ready to level up.',
       cta: 'checkout',
       ctaLabel: 'Get started',
       stripeLinks: {
@@ -121,6 +121,7 @@ export const PLANS = new Map<PlanId, Plan>([
       checkColor: 'bg-violet-50 text-violet-500',
       features: [
         { label: 'Own up to 10 boards' },
+        { label: 'Custom board columns' },
         { label: 'Facilitator Mode', soon: true },
         { label: 'AI-generated grouped card names', soon: true },
         { label: 'Export board summary as PDF', soon: true },
@@ -139,7 +140,7 @@ export const PLANS = new Map<PlanId, Plan>([
       yearlyPrice: '$50',
       yearlyPriceNote: '/ yr',
       yearlySavings: 'Save $10',
-      tagline: 'For teams ready to level up.',
+      tagline: 'AI-powered insights for teams that ship.',
       cta: 'checkout',
       ctaLabel: 'Get started',
       stripeLinks: {
@@ -162,7 +163,6 @@ export const PLANS = new Map<PlanId, Plan>([
         { label: 'Own up to 50 boards' },
         { label: 'Assign admin roles', soon: true },
         { label: 'Board layout variants', soon: true },
-        { label: 'Custom column header text', soon: true },
         { label: 'Group cards via drag-and-drop', soon: true },
         { label: 'Boards retained for 365 days' },
         { label: 'Cards retained for 90 days' },

@@ -1,5 +1,8 @@
 import { useChannel } from 'ably/react'
-import { ChevronRight, Paintbrush } from 'lucide-react'
+import { ChevronRight, Lock, Paintbrush } from 'lucide-react'
+import { PaymentTierBadge } from '@/components/badges'
+import { Tooltip } from '@/components/common'
+import { PaymentTier } from '@/enums'
 import { useModals } from '@/hooks/use-modals'
 import {
   useBoardPermissions,
@@ -16,7 +19,7 @@ import type { UpdateBoardColumn } from '@/server/board-columns/types'
 export function BoardCustomizationSettings() {
   const { openModal } = useModals()
   const { columns } = useBoardColumns()
-  const { id, boardId } = useBoardSettings()
+  const { id, boardId, boardTier } = useBoardSettings()
   const { publish } = useChannel(boardId)
   const {
     user: { hasFacilitator },
@@ -52,6 +55,31 @@ export function BoardCustomizationSettings() {
   }
 
   if (!hasFacilitator) return
+
+  if (boardTier === PaymentTier.FREE) {
+    return (
+      <button
+        className='relative group w-full justify-start gap-2 rounded-lg border border-border-light bg-paper px-4 py-5 text-text-primary transition-all flex items-center max-h-12 cursor-not-allowed'
+        disabled
+      >
+        <Paintbrush className='size-5 text-text-secondary' />
+        <p className='opacity-50'>Customize your board</p>
+        <ChevronRight className='size-4 text-text-secondary ml-auto' />
+        <Tooltip
+          title={
+            <span className='text-sm text-text-primary flex items-center gap-1'>
+              This feature is available for{' '}
+              <PaymentTierBadge tier={PaymentTier.SUPPORTER} redirectToPlans />{' '}
+              plans and above.
+            </span>
+          }
+          asChild
+        >
+          <Lock className='size-10 text-primary-new absolute top-0.5 right-2.5 rounded-lg bg-paper p-2' />
+        </Tooltip>
+      </button>
+    )
+  }
 
   return (
     <button

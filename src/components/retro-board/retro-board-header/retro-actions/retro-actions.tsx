@@ -155,7 +155,7 @@ export function RetroActions({ id }: Readonly<{ id: string }>) {
             />
           }
         >
-          <IconButton icon={Funnel} intent='primary' size='lg' />
+          <IconButton icon={Funnel} intent='text-primary' size='lg' />
         </Popover>
       )}
       <Popover
@@ -163,7 +163,7 @@ export function RetroActions({ id }: Readonly<{ id: string }>) {
         placement='bottom-start'
         content={<Menu options={sortOptions} />}
       >
-        <IconButton icon={ArrowDownWideNarrow} intent='primary' size='lg' />
+        <IconButton icon={ArrowDownWideNarrow} intent='text-primary' size='lg' />
       </Popover>
       {showAdminActions && (
         <Popover
@@ -171,13 +171,13 @@ export function RetroActions({ id }: Readonly<{ id: string }>) {
           placement='bottom-start'
           content={<Menu options={hammerOptions} />}
         >
-          <IconButton icon={Hammer} intent='primary' size='lg' />
+          <IconButton icon={Hammer} intent='text-primary' size='lg' />
         </Popover>
       )}
       {showSettingsButton && (
         <IconButton
           icon={Settings}
-          intent='primary'
+          intent='text-primary'
           size='lg'
           onClick={openSidebar}
         />

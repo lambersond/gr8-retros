@@ -45,7 +45,7 @@ export function Checkbox({
       'size-8': isLargeSize(size),
       'opacity-50 cursor-not-allowed': disabled,
     },
-    'text-info peer-hover:text-info/80 duration-200 ease-in-out',
+    'text-primary-new peer-hover:text-primary-new/80 duration-200 ease-in-out',
   )
 
   const handleChange: React.ChangeEventHandler<HTMLInputElement> = event => {
@@ -87,9 +87,9 @@ export function Checkbox({
         disabled={disabled}
       />
       {iconChecked ? (
-        <CheckSquare className={`${classes} text-info`} />
+        <CheckSquare className={`${classes} text-primary-new`} />
       ) : (
-        <Square className={`${classes} text-secondary`} />
+        <Square className={`${classes} text-text-secondary`} />
       )}
       <p
         className={clsx(

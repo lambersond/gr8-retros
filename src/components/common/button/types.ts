@@ -12,5 +12,7 @@ export type IconButtonProps = {
     | 'success'
     | 'info'
     | 'custom'
+    | 'text-primary'
+    | 'text-secondary'
   className?: string
 }

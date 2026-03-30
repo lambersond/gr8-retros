@@ -35,7 +35,7 @@ export function BoardSettingsSidebar() {
           <div>
             <p className='text-2xl font-bold'>Board Settings</p>
             <div className='flex gap-1'>
-              <PaymentTierBadge tier={boardTier} />
+              <PaymentTierBadge tier={boardTier} redirectToPlans />
             </div>
           </div>
           <SidebarItem>

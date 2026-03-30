@@ -27,12 +27,15 @@ export function IconButton({
   })
 
   const intentClasses = clsx({
-    'text-primary hover:bg-primary/10': intent === 'primary',
+    'text-primary-new hover:bg-primary-new/10': intent === 'primary',
     'text-text-tertiary hover:bg-text-tertiary/10': intent === 'normal',
     'text-success hover:bg-success/10': intent === 'success',
     'text-warning hover:bg-warning/10': intent === 'warning',
     'text-danger hover:bg-danger/10': intent === 'danger',
     'text-info hover:bg-info/10': intent === 'info',
+    'text-text-primary hover:bg-text-primary/10': intent === 'text-primary',
+    'text-text-secondary hover:bg-text-secondary/10':
+      intent === 'text-secondary',
   })
 
   const buttonClasses = clsx(

@@ -87,7 +87,9 @@ export function PlanCard({ plan, isYearly }: Readonly<PlanCardProps>) {
             {displayPrice}
           </span>
           {displayNote && (
-            <span className='mb-1 text-sm text-text-secondary'>{displayNote}</span>
+            <span className='mb-1 text-sm text-text-secondary'>
+              {displayNote}
+            </span>
           )}
         </div>
 

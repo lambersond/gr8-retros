@@ -42,7 +42,7 @@ export function Column({ type, columnConfig }: Readonly<ColumnProps>) {
             icon={Plus}
             tooltip='Add Card'
             size='xl'
-            intent='primary'
+            intent='text-primary'
             onClick={handleAddCard}
           />
         </div>

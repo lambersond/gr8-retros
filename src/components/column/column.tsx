@@ -29,7 +29,7 @@ export function Column({
             icon={Plus}
             tooltip='Add Card'
             size='xl'
-            intent='primary'
+            intent='text-primary'
             onClick={onAdd}
           />
         </div>
