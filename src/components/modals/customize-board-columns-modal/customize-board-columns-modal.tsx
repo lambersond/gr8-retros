@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useCallback, useEffect, useMemo } from 'react'
+import { useState, useCallback, useMemo } from 'react'
 import { Plus, X } from 'lucide-react'
 import {
   ColorsSection,
@@ -49,8 +49,6 @@ export function CustomizeBoardColumnsModal({
       return reindex(next)
     })
   }
-
-  useEffect(() => {}, [columns])
 
   const columnErrors = useMemo(() => {
     const errors: Record<string, { columnType?: string; label?: string }> = {}

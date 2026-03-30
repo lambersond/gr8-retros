@@ -1,12 +1,14 @@
 'use server'
 
 import * as repository from './board-columns-repository'
+import * as cardRepository from '@/server/card/card-repository'
 import type { UpdateBoardColumn } from './types'
 
 export async function saveBoardColumns(
   inputColumns: UpdateBoardColumn[],
   originalColumns: UpdateBoardColumn[],
   boardSettingsId: string,
+  boardId: string,
 ) {
   const updatedColumnIds = new Set(
     inputColumns
@@ -62,12 +64,26 @@ export async function saveBoardColumns(
       },
     }))
 
+  const originalColumnTypeById = new Map(
+    originalColumns.map(col => [String(col.id), col.columnType]),
+  )
+  const cardColumnMigrations = updateOperations
+    .filter(op => originalColumnTypeById.get(op.id) !== op.data.columnType)
+    .map(op => ({
+      from: originalColumnTypeById.get(op.id)!,
+      to: op.data.columnType,
+    }))
+
   await Promise.all([
     repository.deleteManyByIds(deleteOperations),
     repository.createMany(createOperations),
     repository.updateMany(updateOperations),
+    cardRepository.updateManyCardColumnTypes(boardId, cardColumnMigrations),
   ])
   const allColumns = await repository.findManyByBoardSettingsId(boardSettingsId)
 
-  return allColumns.toSorted((a, b) => a.index - b.index)
+  return {
+    columns: allColumns.toSorted((a, b) => a.index - b.index),
+    cardColumnMigrations,
+  }
 }

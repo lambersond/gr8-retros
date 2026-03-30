@@ -47,6 +47,19 @@ export const boardCardActionHandlers: {
     }
     return newState
   },
+  [BoardCardsMessageType.UPDATE_CARDS_COLUMN]: (state, action) => {
+    const { columnCorrections } = action
+
+    const newCards = { ...state.cards }
+    for (const card of Object.values(newCards)) {
+      for (const { from, to } of columnCorrections) {
+        if (card.column === from) {
+          newCards[card.id] = { ...card, column: to }
+        }
+      }
+    }
+    return { ...state, cards: newCards }
+  },
   [BoardCardsMessageType.TOGGLE_UPVOTE]: (state, action) => {
     const { cardId, userId } = action
 

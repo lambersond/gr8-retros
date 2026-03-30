@@ -32,6 +32,10 @@ export type BoardCardsReducerAction =
       type: BoardCardsMessageType.DELETE_COMPLETED_CARDS
     }
   | {
+      type: BoardCardsMessageType.UPDATE_CARDS_COLUMN
+      columnCorrections: { from: string; to: string }[]
+    }
+  | {
       type: BoardCardsMessageType.TOGGLE_UPVOTE
       cardId: string
       userId: string

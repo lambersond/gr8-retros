@@ -5,6 +5,7 @@ import {
   useBoardPermissions,
   useBoardSettings,
 } from '@/providers/retro-board/board-settings'
+import { BoardCardsMessageType } from '@/providers/retro-board/cards'
 import {
   BoardColumnsMessageType,
   useBoardColumns,
@@ -29,12 +30,21 @@ export function BoardCustomizationSettings() {
           updatedColumns as unknown as UpdateBoardColumn[],
           originalColumns as unknown as UpdateBoardColumn[],
           id,
+          boardId,
         )
+        if (data.cardColumnMigrations.length > 0) {
+          publish({
+            data: {
+              type: BoardCardsMessageType.UPDATE_CARDS_COLUMN,
+              payload: { columnCorrections: data.cardColumnMigrations },
+            },
+          })
+        }
 
         publish({
           data: {
             type: BoardColumnsMessageType.UPDATE_COLUMNS,
-            payload: data,
+            payload: data.columns,
           },
         })
       },

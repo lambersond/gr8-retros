@@ -82,6 +82,21 @@ export async function upvoteCard(params: UpvoteCardParams) {
   })
 }
 
+export async function updateManyCardColumnTypes(
+  boardId: string,
+  migrations: { from: string; to: string }[],
+) {
+  if (migrations.length === 0) return
+  return Promise.all(
+    migrations.map(({ from, to }) =>
+      prisma.card.updateMany({
+        where: { retroSessionId: boardId, column: from },
+        data: { column: to },
+      }),
+    ),
+  )
+}
+
 export async function deleteCardsByBoardId(boardId: string) {
   return prisma.card.deleteMany({
     where: { retroSessionId: boardId },

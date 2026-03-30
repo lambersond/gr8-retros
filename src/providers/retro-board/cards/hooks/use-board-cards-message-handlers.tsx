@@ -31,6 +31,15 @@ export function useBoardCardsMessageHandlers() {
           })
         },
 
+        [BoardCardsMessageType.UPDATE_CARDS_COLUMN]: data => {
+          const { columnCorrections } = data.payload
+
+          dispatch({
+            type: BoardCardsMessageType.UPDATE_CARDS_COLUMN,
+            columnCorrections,
+          })
+        },
+
         [BoardCardsMessageType.TOGGLE_UPVOTE]: data => {
           const { cardId, userId } = data.payload
           dispatch({

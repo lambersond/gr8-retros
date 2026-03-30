@@ -7,6 +7,10 @@ export type CardMessageData =
       BoardCardsMessageType.UPDATE_CARD,
       { cardId: string; patch: Partial<Card> }
     >
+  | MessageStruct<
+      BoardCardsMessageType.UPDATE_CARDS_COLUMN,
+      { columnCorrections: { from: string; to: string }[] }
+    >
   | MessageStruct<BoardCardsMessageType.DELETE_CARD, { cardId: string }>
   | MessageStruct<
       BoardCardsMessageType.TOGGLE_UPVOTE,

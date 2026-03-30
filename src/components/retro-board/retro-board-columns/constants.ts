@@ -3,11 +3,14 @@ import clsx from 'classnames'
 export const COLUMN_CONTAINER_CLASSES = clsx(
   'flex-1 min-h-0 overflow-hidden',
   'flex gap-3 sm:gap-0 overflow-x-auto overflow-y-hidden snap-x snap-mandatory scroll-smooth py-3 [-webkit-overflow-scrolling:touch]',
-  'lg:grid lg:grid-cols-4 lg:gap-3 lg:p-3 lg:overflow-hidden lg:px-3',
+  // 'lg:grid lg:grid-cols-4 lg:gap-3 lg:p-3 lg:px-3',
 )
 
 export const COLUMN_CLASSES = clsx(
-  'snap-start w-full px-3 shrink-0 min-h-0',
-  'sm:w-1/2 sm:px-2',
-  'lg:snap-none lg:w-auto lg:px-0 lg:shrink lg:min-h-full',
+  'snap-start shrink-0 min-h-0',
+  'px-3 sm:px-2',
+  'w-full min-w-[320px]', // < md: 1 column at a time
+  'md:w-1/2', // md: 2 columns
+  'lg:w-1/3', // lg: 3 columns
+  'xl:flex-1 xl:max-w-[420px]', // xl+: equal flex from basis-0, cap at 420px
 )
