@@ -38,7 +38,7 @@ export function Comment({ comment, hasEdit = true }: Readonly<CommentProps>) {
   }
 
   return (
-    <div className='relative bg-page border border-tertiary rounded-lg p-2 flex flex-col gap-1'>
+    <div className='relative bg-paper border border-tertiary rounded-lg p-2 flex flex-col gap-1'>
       <div className='text-text-secondary flex justify-between align-center'>
         <p>{comment.createdBy}</p>
         {hasEdit && (

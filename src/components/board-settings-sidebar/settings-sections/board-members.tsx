@@ -53,7 +53,7 @@ export function BoardMembers() {
     <button
       onClick={handleOpenManageUsersModal}
       disabled={members.length === 0}
-      className='group w-full flex items-center justify-between px-4 py-3 bg-neutral-50 border border-border-light hover:border-primary-new rounded-lg hover:bg-white transition-colors cursor-pointer'
+      className='group w-full flex items-center justify-between px-4 py-3 bg-paper border border-border-light hover:border-primary-new rounded-lg transition-colors cursor-pointer'
     >
       <div className='flex items-center gap-2'>
         <Users className='size-5 text-primary-new' />

@@ -46,7 +46,6 @@ export function LoadingButton({
     <button
       {...props}
       onClick={handleClick}
-      // disabled={loadingState !== 'idle' || props.disabled}
       className={clsx(
         'flex gap-2 items-center transition-all duration-200 ease-in-out',
         {

@@ -59,7 +59,7 @@ export function PlanCard({ plan, isYearly }: Readonly<PlanCardProps>) {
   return (
     <div
       className={clsx(
-        'relative flex flex-col rounded-2xl border-2 bg-white p-6 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-lg',
+        'relative flex flex-col rounded-2xl border-2 bg-card p-6 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-lg',
         plan.accentColor,
       )}
     >

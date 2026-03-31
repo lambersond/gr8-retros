@@ -1,4 +1,5 @@
 export { ColorField } from './color-field'
+export { ColorModeToggle } from './color-mode-toggle'
 export { ColumnListItem } from './column-list-item'
 export { ColumnPreview } from './color-preview'
 export { ColorsSection } from './colors-section'

@@ -9,7 +9,7 @@ export function SectionCard({
   return (
     <div
       className={clsx(
-        'rounded-2xl py-6 px-8 bg-white shadow-sm border border-black/[0.06]',
+        'rounded-2xl py-6 px-8 bg-paper shadow-sm border border-border-light',
         className,
       )}
     >

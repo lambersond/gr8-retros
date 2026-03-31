@@ -6,37 +6,37 @@
     preferredStrategy: 'pseudoelements';
 }
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 @theme {
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 
   /* Background colors  */
-  --color-page: oklch(98.4% 0.003 247.858);
-  --color-paper: oklch(96.8% 0.007 247.896);
-  --color-card: oklch(26.2% 0.033 256.848);
-  --color-appbar: oklch(86.9% 0.022 252.894);
+  --color-page: #ffffff;
+  --color-paper: #f9f9f9;
+  --color-card: #ffffff;
+  --color-appbar: #f0f0f0;
 
   /* Primary colors */
-  --color-primary-new: oklch(48.8% 0.243 264.376);
-  --color-secondary-new: oklch(64.5% 0.246 16.439);
-  --color-primary: oklch(12.9% 0.042 264.695);
-  --color-secondary: oklch(44.6% 0.043 257.281);
-  --color-tertiary: oklch(92.9% 0.013 255.508);
-  --color-border-light: oklch(80.5% 0.015 286.067); /* custom from zinc-400 */
-  --color-border-dark: oklch(34.3% 0.03 256.848); /* custom from zinc-700 */
+  --color-primary-new: #3e79ff;
+  --color-secondary-new: #ffb347;
+  --color-tertiary: #f0f0f0;
+  --color-border-light: #e4e4e7;
+  --color-border-dark: #a1a1aa;
   
   --color-hover: #0000003F;
   
   /* Status colors */
-  --color-info: oklch(58.8% 0.158 241.966);
-  --color-success: oklch(72.3% 0.219 149.579);
-  --color-warning: oklch(66.6% 0.179 58.318);
-  --color-danger: oklch(63.7% 0.237 25.331);
+  --color-info: #0084d1;
+  --color-success: #00c950;
+  --color-warning: #e17100;
+  --color-danger: #fb2c36;
   
   /* Text colors */
-  --color-text-primary: oklch(14.5% 0 0);
-  --color-text-secondary: oklch(60.6% 0 0);
-  --color-text-tertiary: oklch(70.8% 0 0);
+  --color-text-primary: #000000;
+  --color-text-secondary: #949494;
+  --color-text-tertiary: #a1a1a1;
 
   --color-ai-bg: #fffbeb;
   --color-ai-border: #fde68a;
@@ -45,6 +45,45 @@
 
   --shadow-card: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
   --shadow-card-hover: 0 8px 24px rgba(0,0,0,0.10), 0 2px 6px rgba(0,0,0,0.06);
+}
+
+
+.dark {
+  /* Background colors */
+  --color-page:   #0b1120;   /* near-black with cool tint   */
+  --color-paper:  #0e1418;   /* slightly lifted surface     */
+  --color-card:   #1a2535;   /* card surface                */
+  --color-appbar: #0f172a;   /* dark top bar                */
+
+  /* Primary colors */
+  --color-primary-new:   oklch(62%  0.220 264);   /* vivid blue, lightened for contrast  */
+  --color-secondary-new: oklch(68%  0.220  16);   /* vivid orange, lightened             */
+  --color-tertiary:      oklch(22%  0.015 255);   /* inverted (was very light)           */
+  --color-border-light:  oklch(30%  0.015 286);   /* subtle border on dark bg            */
+  --color-border-dark:   oklch(46%  0.025 256);   /* stronger border                     */
+
+  --color-hover: rgba(255, 255, 255, 0.08);
+
+  /* Status colors — already mid-tone, slight tweak for dark-bg legibility */
+  --color-info:    oklch(62%  0.155 242);
+  --color-success: oklch(74%  0.215 150);
+  --color-warning: oklch(70%  0.172  58);
+  --color-danger:  oklch(65.771% 0.22859 24.798 / 0.735);
+
+  /* Text colors */
+  --color-text-primary:   oklch(94% 0 0);   /* near-white                  */
+  --color-text-secondary: oklch(64% 0 0);   /* mid-gray, readable on dark  */
+  --color-text-tertiary:  oklch(52% 0 0);   /* muted                       */
+
+  /* AI highlight — warm amber shifted to dark */
+  --color-ai-bg: hsla(43, 96%, 56%, 0.06);
+  --color-ai-border: rgba(251,191,36,0.18);
+  --color-ai-label: #fbbf24;
+  --color-ai-check-border: #d97706;
+
+  /* Shadows — more prominent on dark backgrounds */
+  --shadow-card:       0 1px 3px rgba(0, 0, 0, 0.30), 0 1px 2px rgba(0, 0, 0, 0.20);
+  --shadow-card-hover: 0 8px 24px rgba(0, 0, 0, 0.50), 0 2px 6px rgba(0, 0, 0, 0.30);
 }
 
 :root {

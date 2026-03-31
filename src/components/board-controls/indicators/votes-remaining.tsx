@@ -79,7 +79,7 @@ export function VotesRemaining() {
         </>
       )}
       {isVotingClosed && (
-        <div className='flex items-center gap-1 text-sm italic tracking-tight text-center text-secondary'>
+        <div className='flex items-center gap-1 text-sm italic tracking-tight text-center text-text-secondary'>
           <Tooltip title={tooltipTitle} asChild>
             <Vote />
           </Tooltip>

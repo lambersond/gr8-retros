@@ -16,10 +16,11 @@ export function Input({
   ...props
 }: Readonly<InputProps>) {
   const classes = clsx(
-    'mt-1 block w-full appearance-none rounded-md bg-transparent border border-border-light focus:border-primary px-3 py-2 outline-none placeholder:text-text-secondary bg-white/70',
+    'mt-1 block w-full appearance-none rounded-md bg-transparent border border-border-light focus:border-primary-new px-3 py-2 outline-none placeholder:text-text-secondary bg-paper',
     {
       'border-error focus:border-error focus:ring-error': !!error,
-      'border-border-light focus:border-primary focus:ring-primary': !error,
+      'border-border-light focus:border-primary-new focus:ring-primary-new':
+        !error,
       'cursor-not-allowed text-platinum': disabled,
     },
     className,

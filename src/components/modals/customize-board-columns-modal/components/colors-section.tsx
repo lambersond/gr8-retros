@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { ColorField } from './color-field'
+import { ColorModeToggle } from './color-mode-toggle'
 import type { ColorMode } from '../types'
 import type { ColorsSectionProps } from './types'
 
@@ -28,24 +29,7 @@ export function ColorsSection({
     <div>
       <div className='mb-3 flex items-center justify-between'>
         <p className='text-sm font-semibold text-text-primary'>Colors</p>
-        {/* TODO enable dark/light mode toggle once dark mode is supported */}
-        <div className='hidden flex items-center gap-1 rounded-lg bg-gray-100 p-1 dark:bg-gray-800'>
-          {(['light', 'dark'] as ColorMode[]).map(m => (
-            <button
-              key={m}
-              type='button'
-              onClick={() => setMode(m)}
-              className={[
-                'rounded-md px-2.5 py-1 text-xs font-medium capitalize transition-all',
-                mode === m
-                  ? 'bg-white text-gray-900 shadow-sm dark:bg-gray-700 dark:text-white'
-                  : 'text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200',
-              ].join(' ')}
-            >
-              {m === 'light' ? '☀️' : '🌙'} {m}
-            </button>
-          ))}
-        </div>
+        <ColorModeToggle compact onChange={setMode} />
       </div>
 
       <div className='grid grid-cols-2 gap-3'>

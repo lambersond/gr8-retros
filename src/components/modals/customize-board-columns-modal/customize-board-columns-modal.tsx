@@ -3,6 +3,7 @@
 import { useState, useCallback, useMemo } from 'react'
 import { Plus, X } from 'lucide-react'
 import {
+  ColorModeToggle,
   ColorsSection,
   ColumnListItem,
   ColumnPreview,
@@ -286,28 +287,16 @@ export function CustomizeBoardColumnsModal({
                   Preview
                 </p>
 
-                {/* TODO: unhide once dark mode is implemented */}
-                <div className='hidden flex items-center gap-1 rounded-lg bg-gray-100 p-0.5 dark:bg-gray-800'>
-                  {(['light', 'dark'] as ColorMode[]).map(m => (
-                    <button
-                      key={m}
-                      type='button'
-                      onClick={() => setPreviewMode(m)}
-                      className={[
-                        'rounded-md px-2 py-0.5 text-xs font-medium transition-all',
-                        previewMode === m
-                          ? 'bg-white shadow-sm dark:bg-gray-700 dark:text-white'
-                          : 'text-gray-400 hover:text-gray-600 dark:hover:text-gray-300',
-                      ].join(' ')}
-                    >
-                      {m === 'light' ? '☀️' : '🌙'}
-                    </button>
-                  ))}
-                </div>
+                <ColorModeToggle compact onChange={setPreviewMode} />
               </div>
-              <div className='flex-1 space-y-2 overflow-y-auto p-4 bg-page'>
+              <div
+                className='flex-1 space-y-2 overflow-y-auto p-4'
+                style={{
+                  background: previewMode === 'light' ? '#fff' : '#000',
+                }}
+              >
                 {columns.length === 0 ? (
-                  <p className='py-8 text-center text-xs text-gray-400'>
+                  <p className='py-8 text-center text-xs text-text-secondary'>
                     No columns to preview
                   </p>
                 ) : (

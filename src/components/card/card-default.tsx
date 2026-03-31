@@ -57,7 +57,7 @@ export function CardDefault({
   const upvoteAction = canUpvote ? handleUpvote : undefined
 
   return (
-    <div className='relative group border border-slate-100 rounded-lg shadow-card flex flex-col bg-white w-full hover:shadow-card-hover transition-shadow'>
+    <div className='relative group border border-border-light rounded-lg shadow-card flex flex-col bg-card w-full hover:shadow-card-hover transition-shadow'>
       <div className='flex items-start gap-2 p-2 pb-0'>
         <p className={itemClasses}>{content}</p>
         <div className='flex gap-1 items-center'>
@@ -82,7 +82,7 @@ export function CardDefault({
             icon={<DiscussedIcon className='size-4 text-text-secondary' />}
             text='Discussed'
             onClick={handleDiscussed(!isDiscussed)}
-            buttonClasses='bg-secondary/8 cursor-pointer'
+            buttonClasses='bg-text-secondary/10 cursor-pointer'
             textClasses='text-text-secondary'
           />
         )}
@@ -94,10 +94,8 @@ export function CardDefault({
                 className={clsx(
                   {
                     'text-success group-hover/action:text-warning': isUpvoted,
-                    'text-text-tertiary group-hover/action:text-primary':
-                      !isUpvoted && upvotes === 0,
-                    'text-text-secondary group-hover/action:text-primary':
-                      !isUpvoted && upvotes > 0,
+                    'text-text-secondary group-hover/action:text-text-primary':
+                      !isUpvoted,
                   },
                   'size-4 transition-colors',
                 )}
@@ -109,7 +107,8 @@ export function CardDefault({
               'bg-transparent cursor-not-allowed': !canUpvote,
               'bg-success/10 hover:bg-success/20 cursor-pointer':
                 canUpvote && isUpvoted,
-              'bg-neutral-100 cursor-pointer': canUpvote && !isUpvoted,
+              'bg-text-secondary/10 hover:bg-text-secondary/20 cursor-pointer':
+                canUpvote && !isUpvoted,
             })}
           />
         )}
@@ -137,7 +136,7 @@ export function CardDefault({
             text={`Comment${comments.length === 1 ? '' : 's'}`}
             amount={comments.length > 0 ? comments.length : undefined}
             onClick={openCommentsSidebar}
-            buttonClasses='bg-secondary/8 cursor-pointer'
+            buttonClasses='bg-text-secondary/10 cursor-pointer'
             textClasses='text-text-secondary'
           />
         )}
@@ -145,13 +144,14 @@ export function CardDefault({
       <ActionItems actionItems={actionItems} cardId={id} />
       <div
         id='footer'
-        className='flex items-center gap-2 justify-between p-2 border-t border-slate-200'
+        className='flex items-center gap-2 justify-between p-2 border-t border-tertiary'
       >
         <div className='flex items-center gap-1'>
           {canEdit && (
             <>
               <IconButton
                 icon={Pencil}
+                intent='text-secondary'
                 tooltip='Edit'
                 onClick={handleEdit(content)}
                 size='sm'
@@ -166,7 +166,7 @@ export function CardDefault({
             </>
           )}
         </div>
-        <span className='text-xs text-text-tertiary italic'>{createdBy}</span>
+        <span className='text-xs text-text-secondary italic'>{createdBy}</span>
       </div>
     </div>
   )

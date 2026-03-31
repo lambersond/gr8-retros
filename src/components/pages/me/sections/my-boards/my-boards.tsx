@@ -37,7 +37,7 @@ export async function MyBoards({
             return (
               <Link
                 key={retroSession.id}
-                className='flex items-center justify-between gap-3 rounded-xl px-4 py-3 hover:bg-slate-50 transition-colors cursor-pointer group border border-primary/10'
+                className='flex items-center justify-between gap-3 rounded-xl px-4 py-3 bg-card transition-colors cursor-pointer group border border-border-light hover:border-primary-new'
                 href={`/retro/${retroSession.id}`}
               >
                 <span className='text-sm text-text-primary/90 font-bold truncate group-hover:text-text-primary transition-all'>

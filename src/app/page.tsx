@@ -3,7 +3,7 @@ import { CreateRetroButton } from '@/components/create-retro-button'
 
 export default function HomePage() {
   return (
-    <div className='bg-slate-100 h-full overflow-y-scroll'>
+    <div className='bg-page h-full overflow-y-scroll'>
       {/* Hero Section */}
       <section className='flex-1 flex flex-col items-center justify-center px-4 py-10 sm:py-16'>
         <div className='max-w-5xl w-full flex flex-col-reverse md:flex-row items-center justify-center gap-8'>
@@ -40,7 +40,7 @@ export default function HomePage() {
       </section>
 
       {/* Feature Section */}
-      <section className='bg-white py-10 border-t border-slate-200'>
+      <section className='bg-paper py-10 border-t border-border-light'>
         <div className='max-w-5xl mx-auto px-4 grid gap-6 sm:grid-cols-3'>
           <FeatureItem title='Fast & lightweight'>
             Create and share a retro in seconds. No bloated UI, no setup.
@@ -65,7 +65,7 @@ function FeatureItem({
   children: React.ReactNode
 }>) {
   return (
-    <div className='rounded-2xl bg-white/80 border border-slate-200 px-4 py-3 shadow-sm'>
+    <div className='rounded-2xl bg-card border border-border-light px-4 py-3 shadow-sm'>
       <h3 className='text-sm font-semibold text-text-primary mb-1'>{title}</h3>
       <p className='text-xs text-text-secondary leading-relaxed'>{children}</p>
     </div>

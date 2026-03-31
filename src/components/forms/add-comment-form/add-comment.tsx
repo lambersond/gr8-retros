@@ -40,7 +40,7 @@ export function AddCommentForm({ onSubmit }: Readonly<AddCommentFormProps>) {
         onKeyDown={handleKeyDown}
         {...register('content')}
       />
-      <IconButton icon={SendHorizonal} intent='text-primary' />
+      <IconButton icon={SendHorizonal} intent='text-secondary' />
     </form>
   )
 }

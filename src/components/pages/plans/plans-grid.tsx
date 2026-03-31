@@ -15,7 +15,7 @@ export function PlansGrid() {
     <div>
       {/* Billing toggle */}
       <div className='mb-4 flex justify-center'>
-        <div className='inline-flex items-center gap-3 rounded-full border border-slate-200 bg-white p-1 shadow-sm'>
+        <div className='inline-flex items-center gap-3 rounded-full border border-border-light bg-card p-1 shadow-sm'>
           <button
             onClick={() => setBilling('monthly')}
             className={clsx(

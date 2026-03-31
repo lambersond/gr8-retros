@@ -7,7 +7,7 @@ export function BoardControlItem({
 }>) {
   return (
     <span
-      className={`border border-x-0 border-t-0 border-b-0.5 border-secondary/30 px-4 py-3 ${className}`}
+      className={`border border-x-0 border-t-0 border-b-0.5 border-border-light px-4 py-3 ${className}`}
     >
       {children}
     </span>

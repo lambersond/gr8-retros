@@ -81,9 +81,7 @@ export function ManageUsersModal({
   const renderUserActions = useCallback(
     (member: any) => {
       if (member.role === 'OWNER') {
-        return (
-          <span className='px-2 py-1 text-sm bg-gray-200 rounded'>Owner</span>
-        )
+        return <span className='px-2 py-1 text-sm bg-paper rounded'>Owner</span>
       }
 
       if (hasEdit) {
@@ -107,7 +105,7 @@ export function ManageUsersModal({
       }
 
       return (
-        <span className='px-2 py-1 text-sm bg-gray-200 rounded'>
+        <span className='px-2 py-1 text-sm bg-paper rounded'>
           {ROLES[member.role].label}
         </span>
       )
@@ -152,12 +150,12 @@ export function ManageUsersModal({
       {membersList.map(member => (
         <div
           key={member.user.id}
-          className='p-2 border-b first:border-t flex justify-between items-center border-neutral-300'
+          className='p-2 not-last:border-b first:border-t flex justify-between items-center border-border-light'
         >
           <span className='flex gap-1 items-center'>
             <p className='text-lg'>{member.user.name}</p>
             {member.user.id === currentUserId && (
-              <p className='text-sm text-primary-new/60 px-1 bg-info/10 rounded'>
+              <p className='text-sm text-primary-new px-1 bg-info/10 rounded'>
                 You
               </p>
             )}

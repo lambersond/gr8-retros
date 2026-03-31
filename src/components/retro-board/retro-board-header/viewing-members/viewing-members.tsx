@@ -18,7 +18,7 @@ export function ViewingMembers() {
               alt={member.name}
               width={32}
               height={32}
-              className='w-8 h-8 rounded-full border-2 border-white shadow-sm'
+              className='w-8 h-8 rounded-full border-2 border-paper shadow-sm'
             />
           </Tooltip>
         </div>

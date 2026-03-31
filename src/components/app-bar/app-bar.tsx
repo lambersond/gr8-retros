@@ -1,5 +1,6 @@
 import Image from 'next/image'
 import { Auth } from './auth'
+import ColorModeToggle from './color-mode-toggle'
 
 export function AppBar() {
   return (
@@ -15,6 +16,10 @@ export function AppBar() {
           />
           Gr8 Retros
         </span>
+      </div>
+      <div className='ml-auto mr-3'>
+        {' '}
+        <ColorModeToggle />
       </div>
       <Auth />
     </div>

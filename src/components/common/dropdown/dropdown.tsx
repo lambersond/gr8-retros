@@ -235,7 +235,7 @@ export function Dropdown<S, T>({
   const dropdownList = open && (
     <div
       ref={dropdownRef}
-      className='fixed bg-page shadow-2xl rounded-lg overflow-hidden z-[9999] max-h-66 mt-1'
+      className='fixed bg-paper shadow-2xl rounded-lg overflow-hidden z-[9999] max-h-66 mt-1'
       style={{
         top: `${dropdownPosition.top}px`,
         left: `${dropdownPosition.left}px`,
@@ -243,7 +243,7 @@ export function Dropdown<S, T>({
       }}
     >
       {searchable && (
-        <div className='p-2 border-b border-border'>
+        <div className='p-2 border-b border-border-light'>
           <input
             ref={searchInputRef}
             type='text'
@@ -252,7 +252,7 @@ export function Dropdown<S, T>({
             onKeyDown={handleSearchKeyDown}
             placeholder={searchPlaceholder}
             className={clsx(
-              'w-full bg-page border border-border rounded focus:outline-none focus:ring-1 focus:ring-primary text-text-primary placeholder-text-secondary',
+              'w-full bg-paper border border-border-light rounded focus:outline-none focus:ring-1 focus:ring-primary text-text-primary placeholder-text-secondary',
               sizeClasses.searchInput,
             )}
           />
@@ -328,7 +328,7 @@ export function Dropdown<S, T>({
           data-testid='Dropdown__button'
           onClick={handleToggle}
           className={clsx(
-            'inline-flex items-center justify-between rounded-md border border-border-light bg-white/60 text-text-primary focus:outline-none cursor-pointer hover:bg-page/75 w-full',
+            'inline-flex items-center justify-between rounded-md border border-border-light bg-paper/60 text-text-primary focus:outline-none cursor-pointer hover:bg-paper/75 w-full',
             width,
             sizeClasses.button,
           )}

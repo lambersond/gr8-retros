@@ -1,4 +1,5 @@
 import { Plus } from 'lucide-react'
+import { useTheme } from 'next-themes'
 import { IconButton } from '../../../common'
 import { useColumn } from '../../hooks/use-column'
 import {
@@ -20,9 +21,8 @@ export function Column({ type, columnConfig }: Readonly<ColumnProps>) {
     columnConfig?.tagline ?? 'Add Card Content',
     columnConfig?.placeholder ?? 'Enter card content...',
   )
-
-  const isDark = false // TODO: get from theme context or similar
-
+  const { resolvedTheme } = useTheme()
+  const isDark = resolvedTheme === 'dark'
   const activeStyle = columnConfig ?? PRESET_COLUMNS[type]
   const colors = isDark ? activeStyle.dark : activeStyle.light
   const label = [activeStyle.emoji, activeStyle.label].filter(Boolean).join(' ')

@@ -33,7 +33,7 @@ export function ColorField({
             setText(e.target.value)
             onChange(e.target.value)
           }}
-          className='size-8 flex-shrink-0 cursor-pointer rounded-md border border-border-light bg-bg-white/60 p-0.5'
+          className='size-8 flex-shrink-0 cursor-pointer rounded-md border border-border-light bg-paper p-0.5'
         />
         <input
           value={text}
@@ -42,7 +42,7 @@ export function ColorField({
           onChange={e => setText(e.target.value)}
           onBlur={e => commit(e.target.value)}
           onKeyDown={e => e.key === 'Enter' && commit(text)}
-          className='h-8 w-full rounded-md border border-border-light bg-white/60 px-2 font-mono text-sm text-text-primary focus:outline-none'
+          className='h-8 w-full rounded-md border border-border-light bg-paper px-2 font-mono text-sm text-text-primary focus:outline-none'
         />
       </div>
     </div>

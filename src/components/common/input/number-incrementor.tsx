@@ -30,17 +30,17 @@ export function NumberIncrementor({
 
   return (
     <div
-      className=' w-fit flex items-center border border-gray-300 rounded-md overflow-hidden bg-white
-        focus-within:border-blue-500 focus-within:ring-2 focus-within:ring-blue-500/10'
+      className=' w-fit flex items-center border border-border-light rounded-md overflow-hidden bg-white
+        focus-within:border-primary-new focus-within:ring-2 focus-within:ring-primary-new/10'
     >
       <button
         onClick={handleDecrement}
-        className='size-8 flex items-center justify-center bg-gray-50 border-none
+        className='size-8 flex items-center justify-center bg-tertiary border-none
           cursor-pointer text-text-secondary text-base font-medium transition-all
-          duration-200 select-none hover:bg-gray-200 hover:text-text-primary
-          active:bg-gray-300 active:scale-95
-          disabled:opacity-40 disabled:cursor-not-allowed disabled:bg-gray-50
-          disabled:text-text-secondary disabled:hover:bg-gray-50 disabled:hover:text-text-secondary'
+          duration-200 select-none hover:bg-paper hover:text-text-primary
+          active:bg-text-secondary active:scale-95
+          disabled:opacity-40 disabled:cursor-not-allowed disabled:bg-tertiary
+          disabled:text-text-secondary disabled:hover:bg-tertiary disabled:hover:text-text-secondary'
       >
         -
       </button>
@@ -48,7 +48,7 @@ export function NumberIncrementor({
         type='number'
         value={value}
         className='
-          w-8 h-8 border-none text-center text-sm text-text-primary bg-white
+          w-8 h-8 border-none text-center text-sm text-text-primary bg-paper
           outline-none font-medium
           [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-outer-spin-button]:m-0
           [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-inner-spin-button]:m-0
@@ -58,12 +58,12 @@ export function NumberIncrementor({
       />
       <button
         onClick={handleIncrement}
-        className='size-8 flex items-center justify-center bg-gray-50 border-none
+        className='size-8 flex items-center justify-center bg-tertiary border-none
           cursor-pointer text-text-secondary text-base font-medium transition-all
-          duration-200 select-none hover:bg-gray-200 hover:text-text-primary
-          active:bg-gray-300 active:scale-95
-          disabled:opacity-40 disabled:cursor-not-allowed disabled:bg-gray-50
-          disabled:text-text-secondary disabled:hover:bg-gray-50 disabled:hover:text-text-secondary'
+          duration-200 select-none hover:bg-paper hover:text-text-primary
+          active:bg-text-secondary active:scale-95
+          disabled:opacity-40 disabled:cursor-not-allowed disabled:bg-tertiary
+          disabled:text-text-secondary disabled:hover:bg-tertiary disabled:hover:text-text-secondary'
       >
         +
       </button>

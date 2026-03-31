@@ -14,10 +14,10 @@ export function ActionItemRow({
   return (
     <li
       className={clsx(
-        'flex items-center gap-3 rounded-xl border border-[#f0f0f0] px-4 py-3 transition-colors',
+        'flex items-center gap-3 rounded-xl border border-border-light px-4 py-3 transition-colors',
         {
-          'opacity-50': isDone,
-          'bg-slate-50': !isDone,
+          'opacity-40': isDone,
+          'bg-card': !isDone,
         },
       )}
     >

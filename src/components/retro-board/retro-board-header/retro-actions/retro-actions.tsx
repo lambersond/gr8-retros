@@ -163,7 +163,11 @@ export function RetroActions({ id }: Readonly<{ id: string }>) {
         placement='bottom-start'
         content={<Menu options={sortOptions} />}
       >
-        <IconButton icon={ArrowDownWideNarrow} intent='text-primary' size='lg' />
+        <IconButton
+          icon={ArrowDownWideNarrow}
+          intent='text-primary'
+          size='lg'
+        />
       </Popover>
       {showAdminActions && (
         <Popover
