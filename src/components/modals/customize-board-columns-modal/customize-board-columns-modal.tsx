@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useCallback, useMemo } from 'react'
+import { useState, useCallback, useMemo, useEffect } from 'react'
 import { Plus, X } from 'lucide-react'
 import {
   ColorModeToggle,
@@ -119,6 +119,13 @@ export function CustomizeBoardColumnsModal({
     )
   }
 
+  useEffect(() => {
+    if (!open) return
+    setColumns(initialColumns?.map((c, i) => ({ ...c, index: i })) ?? [])
+    setSelectedId(initialColumns?.[0]?.id ?? '')
+    setPreviewMode('light')
+  }, [open, initialColumns])
+
   return (
     <Modal
       title={title}
@@ -127,8 +134,8 @@ export function CustomizeBoardColumnsModal({
       fullScreen
       disableContainerStyles
     >
-      <div className='fixed inset-0 flex items-center justify-center bg-black/40 p-4 backdrop-blur-sm'>
-        <div className='flex h-[92vh] w-full flex-col overflow-hidden rounded-2xl bg-paper shadow-2xl'>
+      <div className='fixed inset-0 flex items-center justify-center bg-black/40 backdrop-blur-sm'>
+        <div className='flex h-[100vh] w-full flex-col overflow-hidden bg-paper shadow-2xl'>
           <header className='flex flex-shrink-0 items-center justify-between border-b border-border-light px-6 py-4'>
             <div>
               <p className='text-base font-semibold text-text-primary'>
@@ -196,7 +203,7 @@ export function CustomizeBoardColumnsModal({
                     <button
                       type='button'
                       onClick={addColumn}
-                      className='mt-1 text-primary-new text-md cursor-pointer underline-offset-2 hover:underline'
+                      className='mt-1 text-primary text-md cursor-pointer underline-offset-2 hover:underline'
                     >
                       Add one
                     </button>

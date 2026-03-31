@@ -19,8 +19,8 @@
   --color-appbar: #f0f0f0;
 
   /* Primary colors */
-  --color-primary-new: #3e79ff;
-  --color-secondary-new: #ffb347;
+  --color-primary: #3e79ff;
+  --color-secondary: #ffb347;
   --color-tertiary: #f0f0f0;
   --color-border-light: #e4e4e7;
   --color-border-dark: #a1a1aa;
@@ -56,8 +56,8 @@
   --color-appbar: #0f172a;   /* dark top bar                */
 
   /* Primary colors */
-  --color-primary-new:   oklch(62%  0.220 264);   /* vivid blue, lightened for contrast  */
-  --color-secondary-new: oklch(68%  0.220  16);   /* vivid orange, lightened             */
+  --color-primary:   oklch(62%  0.220 264);   /* vivid blue, lightened for contrast  */
+  --color-secondary: oklch(68%  0.220  16);   /* vivid orange, lightened             */
   --color-tertiary:      oklch(22%  0.015 255);   /* inverted (was very light)           */
   --color-border-light:  oklch(30%  0.015 286);   /* subtle border on dark bg            */
   --color-border-dark:   oklch(46%  0.025 256);   /* stronger border                     */

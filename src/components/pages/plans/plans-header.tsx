@@ -4,7 +4,7 @@ export function PlansHeader() {
       <h1 className='mb-2 text-5xl font-black leading-none tracking-tight text-text-primary'>
         Retros that fit
         <br />
-        <span className='text-primary-new'>every team.</span>
+        <span className='text-primary'>every team.</span>
       </h1>
       <p className='text-base text-text-secondary'>
         Start free with no account. Scale only when you need to. Cancel anytime.

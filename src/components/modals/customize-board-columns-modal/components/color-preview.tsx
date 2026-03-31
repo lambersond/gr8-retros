@@ -22,7 +22,7 @@ export function ColumnPreview({
       className={clsx(
         'overflow-hidden rounded-xl border-2 transition-all cursor-pointer w-full',
         {
-          'ring-2 ring-primary-new ring-offset-1': isSelected,
+          'ring-2 ring-primary ring-offset-1': isSelected,
         },
       )}
       style={{ backgroundColor: bg, borderColor: border }}

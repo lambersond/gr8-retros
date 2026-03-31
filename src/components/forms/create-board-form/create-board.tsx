@@ -60,7 +60,7 @@ export function CreateBoardForm({ onSubmit }: Readonly<CreateBoardFormProps>) {
 
       <div className='flex justify-end'>
         <button
-          className='not-disabled:cursor-pointer rounded-lg bg-primary-new/90 px-4 py-2 text-sm font-medium text-white transition-colors hover:not-disabled:bg-primary-new disabled:cursor-not-allowed disabled:opacity-50'
+          className='not-disabled:cursor-pointer rounded-lg bg-primary/90 px-4 py-2 text-sm font-medium text-white transition-colors hover:not-disabled:bg-primary disabled:cursor-not-allowed disabled:opacity-50'
           disabled={isSubmitDisabled}
           type='submit'
         >

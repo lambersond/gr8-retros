@@ -27,7 +27,7 @@ export function IconButton({
   })
 
   const intentClasses = clsx({
-    'text-primary-new hover:bg-primary-new/10': intent === 'primary',
+    'text-primary hover:bg-primary/10': intent === 'primary',
     'text-text-tertiary hover:bg-text-tertiary/10': intent === 'normal',
     'text-success hover:bg-success/10': intent === 'success',
     'text-warning hover:bg-warning/10': intent === 'warning',

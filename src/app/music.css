@@ -6,7 +6,7 @@
 
 .bar {
     width: 2px;
-    background-color: var(--color-primary-new);
+    background-color: var(--color-primary);
     border-radius: 1px;
     animation-duration: 0.8s;
     animation-iteration-count: infinite;

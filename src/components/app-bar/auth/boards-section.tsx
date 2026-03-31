@@ -20,7 +20,7 @@ export function BoardSection({ isAuthenticated }: Readonly<BoardSectionProps>) {
           boards.map(({ boardName, boardId, role }) => (
             <Link
               key={boardId}
-              className='p-3 bg-card rounded-lg block hover:bg-paper transition-colors border border-transparent flex justify-between items-center hover:border-primary-new shadow-sm'
+              className='p-3 bg-card rounded-lg block hover:bg-paper transition-colors border border-transparent flex justify-between items-center hover:border-primary shadow-sm'
               href={`/retro/${boardId}`}
             >
               <p className='font-semibold'>{boardName}</p>

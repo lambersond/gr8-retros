@@ -31,7 +31,7 @@ export function NumberIncrementor({
   return (
     <div
       className=' w-fit flex items-center border border-border-light rounded-md overflow-hidden bg-white
-        focus-within:border-primary-new focus-within:ring-2 focus-within:ring-primary-new/10'
+        focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/10'
     >
       <button
         onClick={handleDecrement}

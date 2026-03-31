@@ -48,7 +48,7 @@ export function Switch({
     'flex items-center flex-shrink-0 rounded-full duration-300 ease-in-out',
     'after:rounded-full after:shadow-md after:duration-300 group-hover:after:translate-x-1',
     SIZE_CLASSES[size],
-    'bg-secondary/15 after:bg-secondary/80 peer-checked:bg-primary-new peer-checked:after:bg-white',
+    'bg-secondary/15 after:bg-secondary/80 peer-checked:bg-primary peer-checked:after:bg-white',
     disabled && 'opacity-50 cursor-not-allowed',
   )
 
@@ -56,7 +56,7 @@ export function Switch({
     clsx(
       'select-none font-normal',
       TEXT_SIZE_CLASSES[size],
-      side === 'left' ? 'text-text-primary-new' : 'text-text-primary',
+      side === 'left' ? 'text-text-primary' : 'text-text-primary',
     )
 
   return (

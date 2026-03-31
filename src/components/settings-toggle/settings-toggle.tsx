@@ -19,7 +19,7 @@ export function SettingsToggle({
         <Icon
           className={clsx(
             'size-4 flex-shrink-0 transition-colors duration-200',
-            isEnabled ? 'text-primary-new' : 'text-text-tertiary',
+            isEnabled ? 'text-primary' : 'text-text-tertiary',
           )}
         />
         {isUnlocked ? (

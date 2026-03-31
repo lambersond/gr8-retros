@@ -49,7 +49,7 @@ export function CardVoting({
       className={clsx(
         'relative p-2 rounded flex flex-col gap-2 w-full transition-all select-none bg-page',
         {
-          'border-primary-new shadow-primary/30 shadow-md ring-1.5 ring-primary/50':
+          'border-primary shadow-primary/30 shadow-md ring-1.5 ring-primary/50':
             hasVoted,
           'border-slate-200 hover:shadow-md hover:border-primary/50':
             !hasVoted && hasVotingPermissions,
@@ -59,7 +59,7 @@ export function CardVoting({
       )}
     >
       {hasVoted && (
-        <div className='absolute -top-2.5 -right-2.5 flex items-center gap-1 bg-primary-new text-white text-xs font-semibold rounded-full px-2 py-0.5 shadow'>
+        <div className='absolute -top-2.5 -right-2.5 flex items-center gap-1 bg-primary text-white text-xs font-semibold rounded-full px-2 py-0.5 shadow'>
           Voted
           {votes.map((voteId, index) => (
             <Vote className='size-3.5' key={`${voteId}-${index}`} />

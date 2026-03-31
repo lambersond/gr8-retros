@@ -35,7 +35,7 @@ export function SaveButton({
       type='button'
       onClick={handleSave}
       disabled={saveState !== 'idle' || disabled}
-      className='flex min-w-36 items-center justify-center gap-1.5 rounded-lg bg-primary-new px-4 py-1.5 text-sm font-medium text-white transition-colors enabled:hover:bg-primary-new/90 cursor-pointer disabled:cursor-not-allowed disabled:opacity-20'
+      className='flex min-w-36 items-center justify-center gap-1.5 rounded-lg bg-primary px-4 py-1.5 text-sm font-medium text-white transition-colors enabled:hover:bg-primary/90 cursor-pointer disabled:cursor-not-allowed disabled:opacity-20'
     >
       {saveState === 'loading' && (
         <CircularLoader size='sm' color='text-white' label='' />

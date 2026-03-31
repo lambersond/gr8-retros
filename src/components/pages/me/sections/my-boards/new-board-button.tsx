@@ -31,7 +31,7 @@ export function NewBoardButton({
       }
     >
       <button
-        className='cursor-pointer flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-xs font-medium text-white bg-primary-new/80 hover:not-disabled:bg-primary-new transition-colors disabled:cursor-not-allowed disabled:opacity-50 hover:not-disabled:shadow-sm'
+        className='cursor-pointer flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-xs font-medium text-white bg-primary/80 hover:not-disabled:bg-primary transition-colors disabled:cursor-not-allowed disabled:opacity-50 hover:not-disabled:shadow-sm'
         disabled={isAtLimit}
         onClick={handleClick}
       >

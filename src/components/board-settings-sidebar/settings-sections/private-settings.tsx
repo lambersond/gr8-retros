@@ -90,7 +90,7 @@ export function PrivateSettings() {
           </div>
         ) : (
           <LoadingButton
-            className='flex items-center bg-primary-new/80 hover:bg-secondary-new rounded-lg hover:shadow-lg py-2 px-3 text-lg w-fit text-white w-full justify-center'
+            className='flex items-center bg-primary/80 hover:bg-secondary rounded-lg hover:shadow-lg py-2 px-3 text-lg w-fit text-white w-full justify-center'
             Icon={<Link />}
             loadedText='Link copied'
             loadedTextDurationMs={2000}

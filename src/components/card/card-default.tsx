@@ -114,11 +114,11 @@ export function CardDefault({
         )}
         {!!votes && (
           <CardAction
-            icon={<Vote className='size-4 text-primary-new' />}
+            icon={<Vote className='size-4 text-primary' />}
             text={`Vote${votes === 1 ? '' : 's'}`}
             amount={votes}
-            buttonClasses='bg-primary-new/20'
-            textClasses='text-primary-new'
+            buttonClasses='bg-primary/20'
+            textClasses='text-primary'
           />
         )}
         {settings.actionItems.enabled && canAddActionItem && (

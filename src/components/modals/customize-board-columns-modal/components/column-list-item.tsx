@@ -26,9 +26,9 @@ export function ColumnListItem({
         'group flex items-center gap-2 rounded-lg px-3 py-2.5 transition-colors',
         {
           'opacity-40': isDragging,
-          'ring-2 ring-primary-new ring-inset': isDragOver,
-          'bg-primary-new/20 text-primary-new': isSelected,
-          'text-text-primary hover:bg-primary-new/10': !isSelected,
+          'ring-2 ring-primary ring-inset': isDragOver,
+          'bg-primary/20 text-primary': isSelected,
+          'text-text-primary hover:bg-primary/10': !isSelected,
         },
       )}
     >
@@ -42,7 +42,7 @@ export function ColumnListItem({
           <p className='truncate text-sm font-medium'>{column.label}</p>
           <p
             className={clsx('text-[10px] font-medium uppercase tracking-wide', {
-              'text-primary-new dark:text-primary-new': isSelected,
+              'text-primary dark:text-primary': isSelected,
               'text-text-secondary': !isSelected,
             })}
           >

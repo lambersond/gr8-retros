@@ -155,7 +155,7 @@ export function ManageUsersModal({
           <span className='flex gap-1 items-center'>
             <p className='text-lg'>{member.user.name}</p>
             {member.user.id === currentUserId && (
-              <p className='text-sm text-primary-new px-1 bg-info/10 rounded'>
+              <p className='text-sm text-primary px-1 bg-info/10 rounded'>
                 You
               </p>
             )}

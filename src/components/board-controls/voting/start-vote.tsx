@@ -47,7 +47,7 @@ export function StartVote() {
       </div>
       <button
         onClick={openVoting}
-        className='px-4 py-2 bg-primary-new text-white rounded-md hover:bg-primary-new/90 active:bg-primary-new/80 transition tracking-wide text-sm cursor-pointer'
+        className='px-4 py-2 bg-primary text-white rounded-md hover:bg-primary/90 active:bg-primary/80 transition tracking-wide text-sm cursor-pointer'
       >
         Start Voting
       </button>

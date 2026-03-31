@@ -75,7 +75,7 @@ export function BoardCustomizationSettings() {
           }
           asChild
         >
-          <Lock className='size-10 text-primary-new absolute top-0.5 right-2.5 rounded-lg bg-paper p-2' />
+          <Lock className='size-10 text-primary absolute top-0.5 right-2.5 rounded-lg bg-paper p-2' />
         </Tooltip>
       </button>
     )
@@ -83,12 +83,12 @@ export function BoardCustomizationSettings() {
 
   return (
     <button
-      className='group w-full justify-start gap-2 rounded-lg border border-border-light bg-paper px-4 py-5 text-text-primary transition-all flex items-center max-h-12 hover:border-primary-new cursor-pointer'
+      className='group w-full justify-start gap-2 rounded-lg border border-border-light bg-paper px-4 py-5 text-text-primary transition-all flex items-center max-h-12 hover:border-primary cursor-pointer'
       onClick={onClick}
     >
-      <Paintbrush className='size-5 text-primary-new' />
+      <Paintbrush className='size-5 text-primary' />
       Customize your board
-      <ChevronRight className='size-4 text-text-secondary ml-auto group-hover:text-primary-new' />
+      <ChevronRight className='size-4 text-text-secondary ml-auto group-hover:text-primary' />
     </button>
   )
 }
