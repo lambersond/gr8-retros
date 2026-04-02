@@ -10,7 +10,7 @@ import {
   getWrapperClasses,
   getWrapperStyles,
 } from './utils'
-import { Card, CardGroup } from '@/components/card'
+import { Card, CardGroup, CardGroupVoting } from '@/components/card'
 import { PRESET_COLUMNS } from '@/constants'
 import { VotingState } from '@/enums'
 import { useBoardControlsState } from '@/providers/retro-board/controls'
@@ -28,8 +28,9 @@ export function Column({ type, columnConfig }: Readonly<ColumnProps>) {
   const colors = isDark ? activeStyle.dark : activeStyle.light
   const label = [activeStyle.emoji, activeStyle.label].filter(Boolean).join(' ')
 
-  const { isVoteOpen } = useBoardControlsState(s => ({
+  const { isVoteOpen, votingResults } = useBoardControlsState(s => ({
     isVoteOpen: s.boardControls.voting.state === VotingState.OPEN,
+    votingResults: s.boardControls.voting.results,
   }))
 
   const {
@@ -76,7 +77,7 @@ export function Column({ type, columnConfig }: Readonly<ColumnProps>) {
 
         {items.map((item, i: number) => (
           <div key={`${item.kind}-${item.data.id}`}>
-            {item.kind === 'card' ? (
+            {item.kind === 'card' && (
               <Card
                 canEdit={item.data.creatorId === user?.id}
                 upvotes={item.data.upvotedBy.length}
@@ -94,7 +95,11 @@ export function Column({ type, columnConfig }: Readonly<ColumnProps>) {
                   dropState.targetId === item.data.id
                 }
               />
-            ) : (
+            )}
+            {item.kind === 'group' && isVoteOpen && (
+              <CardGroupVoting group={item.data} />
+            )}
+            {item.kind === 'group' && !isVoteOpen && (
               <CardGroup
                 group={item.data}
                 currentUserId={user?.id}
@@ -103,6 +108,7 @@ export function Column({ type, columnConfig }: Readonly<ColumnProps>) {
                   dropState.targetId === item.data.id
                 }
                 onRemoveCard={handleRemoveFromGroup}
+                votes={votingResults[item.data.id]?.length}
               />
             )}
             {isOverInsert && dropState.index === i + 1 && <InsertionLine />}

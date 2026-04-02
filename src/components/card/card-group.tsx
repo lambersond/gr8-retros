@@ -12,6 +12,7 @@ import {
   GripVertical,
   MessageSquareIcon,
   Pencil,
+  Vote,
   X,
 } from 'lucide-react'
 import { useParams } from 'next/navigation'
@@ -34,13 +35,14 @@ import {
   useBoardCardsDispatch,
 } from '@/providers/retro-board/cards'
 import { editCardGroup } from '@/server/card-group/card-group-service'
-import type { ActionItem, Card as CardType } from '@/types'
+import type { ActionItem } from '@/types'
 
 export interface CardGroupProps {
   group: CardGroupState
   currentUserId?: string
   isMergeTarget?: boolean
   onRemoveCard?: (groupId: string, cardId: string) => void
+  votes?: number
 }
 
 export function CardGroup({
@@ -48,6 +50,7 @@ export function CardGroup({
   currentUserId,
   isMergeTarget = false,
   onRemoveCard,
+  votes,
 }: Readonly<CardGroupProps>) {
   const [expanded, setExpanded] = useState(false)
   const { cards: allCards } = useBoardCards()
@@ -83,9 +86,7 @@ export function CardGroup({
     target.style.opacity = ''
   }, [])
 
-  const memberCards = group.cardIds
-    .map(id => allCards[id])
-    .filter(Boolean) as CardType[]
+  const memberCards = group.cardIds.map(id => allCards[id]).filter(Boolean)
 
   const aggregates = useMemo(() => {
     const totalUpvotes = memberCards.reduce(
@@ -183,7 +184,7 @@ export function CardGroup({
   }, [dispatch, group.id, group.label, openModal, publish])
 
   return (
-    <div
+    <summary
       draggable={isDragEnabled}
       data-id={group.id}
       data-kind='group'
@@ -199,7 +200,7 @@ export function CardGroup({
       style={{
         boxShadow: isMergeTarget
           ? undefined
-          : '3px 3px 0 0 var(--color-card), 3px 3px 0 1px var(--color-border-light), 6px 6px 0 0 var(--color-card), 6px 6px 0 1px var(--color-border-light)',
+          : '3px 3px 0 0 color-mix(in srgb, var(--color-card) 92%, black), 3px 3px 0 1px var(--color-border-light), 6px 6px 0 0 color-mix(in srgb, var(--color-card) 84%, black), 6px 6px 0 1px var(--color-border-light)',
       }}
       onMouseDown={e => {
         if ((e.target as HTMLElement).closest('[data-no-drag]')) {
@@ -213,7 +214,7 @@ export function CardGroup({
             <GripVertical className='size-4' />
           </div>
         )}
-        <span className='text-sm font-semibold text-text-primary flex-1 truncate'>
+        <span className='lg:text-lg xl:text-xl font-bold text-text-primary flex-1 truncate'>
           {group.label}
         </span>
         <div className='flex items-center gap-2 shrink-0'>
@@ -284,6 +285,15 @@ export function CardGroup({
               })}
             />
           )}
+          {!!votes && (
+            <CardAction
+              icon={<Vote className='size-4 text-primary' />}
+              text={`Vote${votes === 1 ? '' : 's'}`}
+              amount={votes}
+              buttonClasses='bg-primary/10'
+              textClasses='text-primary'
+            />
+          )}
           {settings.comments.enabled && (
             <CardAction
               amount={aggregates.totalComments}
@@ -312,7 +322,7 @@ export function CardGroup({
       {expanded && (
         <div className='mt-3 border-t border-border-light pt-3 px-3 pb-3 flex flex-col gap-1'>
           {memberCards.map(card => (
-            <div
+            <summary
               key={card.id}
               draggable={isDragEnabled}
               onDragStart={
@@ -375,7 +385,7 @@ export function CardGroup({
                   <X className='size-4' />
                 </button>
               )}
-            </div>
+            </summary>
           ))}
         </div>
       )}
@@ -396,7 +406,7 @@ export function CardGroup({
           + Stack
         </div>
       )}
-    </div>
+    </summary>
   )
 }
 

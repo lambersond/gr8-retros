@@ -9,7 +9,7 @@ const groupInclude = { cards: { include: cardInclude } } as const
 
 export async function createCardGroup(params: CreateCardGroupParams) {
   return prisma.$transaction(async tx => {
-    let groupPosition = params.position
+    let groupPosition = params.position ?? undefined
 
     if (groupPosition === undefined) {
       const [cardMaxResult, groupMaxResult] = await Promise.all([

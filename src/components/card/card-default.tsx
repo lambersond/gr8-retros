@@ -80,7 +80,7 @@ export function CardDefault({
   const upvoteAction = canUpvote ? handleUpvote : undefined
 
   return (
-    <div
+    <summary
       draggable={isDragEnabled}
       data-id={id}
       data-kind='card'
@@ -158,7 +158,7 @@ export function CardDefault({
             icon={<Vote className='size-4 text-primary' />}
             text={`Vote${votes === 1 ? '' : 's'}`}
             amount={votes}
-            buttonClasses='bg-primary/20'
+            buttonClasses='bg-primary/10'
             textClasses='text-primary'
           />
         )}
@@ -214,6 +214,6 @@ export function CardDefault({
           + Stack
         </div>
       )}
-    </div>
+    </summary>
   )
 }
