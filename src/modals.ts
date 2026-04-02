@@ -11,9 +11,19 @@ export const MODALS = {
       default: module.CreateBoardModal,
     })),
   ),
+  CreateCardGroupModal: lazy(() =>
+    import('./components/modals').then(module => ({
+      default: module.CreateCardGroupModal,
+    })),
+  ),
   CustomizeBoardColumnsModal: lazy(() =>
     import('./components/modals').then(module => ({
       default: module.CustomizeBoardColumnsModal,
+    })),
+  ),
+  EditCardGroupModal: lazy(() =>
+    import('./components/modals').then(module => ({
+      default: module.EditCardGroupModal,
     })),
   ),
   ManageUsersModal: lazy(() =>

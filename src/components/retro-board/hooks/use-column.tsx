@@ -1,8 +1,8 @@
 import { useChannel } from 'ably/react'
 import { useParams } from 'next/navigation'
-import { useCards } from './use-cards'
 import { useAuth } from '@/hooks/use-auth'
 import { useModals } from '@/hooks/use-modals'
+import { useColumnItems } from '@/providers/retro-board/cards'
 
 export function useColumn(
   columnType: string,
@@ -11,8 +11,7 @@ export function useColumn(
 ) {
   const { id } = useParams()
   const { user } = useAuth()
-  const cards = useCards(columnType)
-  // const cards = useColumnItems(columnType) // TODO: switch to this once for grouping logic
+  const items = useColumnItems(columnType)
   const { openModal } = useModals()
   const { publish } = useChannel(id as string)
 
@@ -42,5 +41,5 @@ export function useColumn(
     })
   }
 
-  return { cards, handleAddCard, user }
+  return { items, handleAddCard, user }
 }

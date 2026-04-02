@@ -189,7 +189,7 @@ export async function deleteCompletedCardsOlderThanNDaysByBoardId(
 export async function updateCardPosition(params: UpdateCardPositionParams) {
   return prisma.card.update({
     where: { id: params.cardId },
-    data: { position: params.position },
+    data: { position: params.position, column: params.column },
     include: { actionItems: true },
   })
 }

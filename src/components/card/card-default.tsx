@@ -1,10 +1,12 @@
 'use client'
 
+import { useCallback } from 'react'
 import clsx from 'classnames'
 import {
   ArrowBigUp,
   CircleAlert,
   CircleCheckBig,
+  GripVertical,
   MessageSquareIcon,
   MessageSquareWarning,
   Pencil,
@@ -35,6 +37,7 @@ export function CardDefault({
   currentUserId = 'temp-user-id',
   comments = [],
   votes,
+  isMergeTarget = false,
 }: Readonly<CardProps>) {
   const {
     handleAddActionItem,
@@ -49,6 +52,26 @@ export function CardDefault({
 
   const canUpvote = userPermissions['upvoting.restricted.canUpvote']
   const canAddActionItem = userPermissions['actionItems.restricted.canAdd']
+  const isDragEnabled = settings.dragAndDrop.enabled
+
+  const onDragStart = useCallback(
+    (e: React.DragEvent) => {
+      const target = e.currentTarget as HTMLElement
+      e.dataTransfer.effectAllowed = 'move'
+      e.dataTransfer.setData('text/plain', JSON.stringify({ id, kind: 'card' }))
+      requestAnimationFrame(() => {
+        target.classList.add('dragging')
+        target.style.opacity = '0.25'
+      })
+    },
+    [id],
+  )
+
+  const onDragEnd = useCallback((e: React.DragEvent) => {
+    const target = e.currentTarget as HTMLElement
+    target.classList.remove('dragging')
+    target.style.opacity = ''
+  }, [])
 
   const itemClasses = cardUtils.itemClasses(isDiscussed)
   const actionsItemsExist = actionItems.length > 0
@@ -57,8 +80,26 @@ export function CardDefault({
   const upvoteAction = canUpvote ? handleUpvote : undefined
 
   return (
-    <div className='relative group border border-border-light rounded-lg shadow-card flex flex-col bg-card w-full hover:shadow-card-hover transition-shadow'>
+    <div
+      draggable={isDragEnabled}
+      data-id={id}
+      data-kind='card'
+      onDragStart={isDragEnabled ? onDragStart : undefined}
+      onDragEnd={isDragEnabled ? onDragEnd : undefined}
+      className={clsx(
+        'relative group border rounded-lg shadow-card flex flex-col bg-card w-full hover:shadow-card-hover transition-all select-none',
+        isDragEnabled && 'cursor-grab',
+        isMergeTarget
+          ? 'ring-2 ring-warning border-warning scale-[1.02]'
+          : 'border-border-light',
+      )}
+    >
       <div className='flex items-start gap-2 p-2 pb-0'>
+        {isDragEnabled && (
+          <div className='shrink-0 mt-0.5 text-text-secondary/40 hover:text-text-secondary'>
+            <GripVertical className='size-4' />
+          </div>
+        )}
         <p className={itemClasses}>{content}</p>
         <div className='flex gap-1 items-center'>
           {actionsItemsExist && (
@@ -168,6 +209,11 @@ export function CardDefault({
         </div>
         <span className='text-xs text-text-secondary italic'>{createdBy}</span>
       </div>
+      {isMergeTarget && (
+        <div className='px-2 pb-1 text-xs font-semibold text-warning tracking-wide'>
+          + Stack
+        </div>
+      )}
     </div>
   )
 }

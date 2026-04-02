@@ -45,6 +45,7 @@ export interface MarkDoneActionItemParams {
 export interface UpdateCardPositionParams {
   cardId: string
   position: number
+  column?: string
 }
 
 export interface AddCardToGroupParams {
@@ -54,7 +55,7 @@ export interface AddCardToGroupParams {
 
 export interface RemoveCardFromGroupParams {
   cardId: string
-  position?: number
+  position?: number | null
   column?: string
 }
 
@@ -64,7 +65,7 @@ export interface CreateCardGroupParams {
   label: string
   cardId1: string
   cardId2: string
-  position?: number
+  position?: number | null
 }
 
 export interface EditCardGroupParams {

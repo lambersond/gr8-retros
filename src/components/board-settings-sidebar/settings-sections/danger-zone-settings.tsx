@@ -20,7 +20,7 @@ export function DangerZoneSettings() {
     openModal('ConfirmModal', {
       title: 'Delete Board',
       message: (
-        <div className='flex flex-col gap-2 text-red-950'>
+        <div className='flex flex-col gap-2 text-danger'>
           <p>
             Deleting this board will remove all cards, comments, and action
             items.
@@ -42,7 +42,7 @@ export function DangerZoneSettings() {
   }
 
   return (
-    <div className='p-4 border-2 border-danger/45 rounded-lg bg-red-100/30 text-red-900 flex flex-col gap-2'>
+    <div className='p-4 border-2 border-danger/45 rounded-lg bg-danger/20 text-danger flex flex-col gap-2'>
       <div className='flex gap-2'>
         <TriangleAlert className='size-6 text-danger' />
         <p className='font-bold text-lg'>Danger Zone</p>

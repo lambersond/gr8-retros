@@ -151,18 +151,17 @@ model BoardSettings {
   actionItemsAnytime       Boolean    @default(true)
   actionItemsRestricted    Boolean    @default(false)
 
-  isVotingEnabled         Boolean    @default(false) // TIER = FREE
-  votingMode              VotingMode @default(MULTI)
-  votingLimit             Int        @default(3)
-  votingRestricted        Boolean    @default(false)
+  isVotingEnabled          Boolean    @default(false) // TIER = FREE
+  votingMode               VotingMode @default(MULTI)
+  votingLimit              Int        @default(3)
+  votingRestricted         Boolean    @default(false)
+
+  isDragAndDropEnabled     Boolean    @default(true) // TIER = FREE
+  cardGroupingEnabled      Boolean    @default(false) // TIER = BELIEVER
+  aiCardGroupNamingEnabled Boolean    @default(false) // TIER = SUPPORTER
 
   // Not implemented yet
-  isFacilitatorModeEnabled Boolean    @default(false) // TIER = FREE
-
-  isCardGroupingEnabled    Boolean    @default(false) // TIER = BELIEVER
-  cardGroupingAnytime      Boolean    @default(false)
-
-  isAiNamingEnabled        Boolean    @default(false) // TIER = SUPPORTER
+  isFacilitatorModeEnabled Boolean    @default(false) // TIER = BELIEVER
   isAiSummaryEnabled       Boolean    @default(false) // TIER = SUPPORTER
 
   // Default columns and relations

@@ -8,6 +8,7 @@ import {
   ClaimBoard,
   CommentsSettings,
   DangerZoneSettings,
+  DragAndDropSettings,
   MusicSettings,
   PrivateSettings,
   TimerSettings,
@@ -53,6 +54,7 @@ export function BoardSettingsSidebar() {
           <ActionItemsSettings />
           <CommentsSettings />
           <VotingSettings />
+          <DragAndDropSettings />
           <DangerZoneSettings />
         </section>
       </div>

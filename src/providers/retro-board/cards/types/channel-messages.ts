@@ -1,4 +1,5 @@
 import type { BoardCardsMessageType, BoardCardsSortOptions } from '../enums'
+import type { CardGroupState } from '../types'
 import type { ActionItem, Card, Comment, MessageStruct } from '@/types'
 
 export type CardMessageData =
@@ -45,6 +46,34 @@ export type CardMessageData =
   | MessageStruct<
       BoardCardsMessageType.DELETE_ACTION_ITEM,
       { cardId: string; actionItemId: string }
+    >
+  | MessageStruct<
+      BoardCardsMessageType.CREATE_CARD_GROUP,
+      { group: CardGroupState; cardIds: [string, string] }
+    >
+  | MessageStruct<
+      BoardCardsMessageType.ADD_CARD_TO_GROUP,
+      { cardId: string; groupId: string }
+    >
+  | MessageStruct<
+      BoardCardsMessageType.REMOVE_CARD_FROM_GROUP,
+      { cardId: string; groupId: string; position: number }
+    >
+  | MessageStruct<
+      BoardCardsMessageType.DELETE_CARD_GROUP,
+      { groupId: string; restoredCards: { cardId: string; position: number }[] }
+    >
+  | MessageStruct<
+      BoardCardsMessageType.UPDATE_CARD_GROUP,
+      { groupId: string; patch: { label?: string } }
+    >
+  | MessageStruct<
+      BoardCardsMessageType.UPDATE_CARD_POSITION,
+      { cardId: string; position: number; column: string }
+    >
+  | MessageStruct<
+      BoardCardsMessageType.UPDATE_GROUP_POSITION,
+      { groupId: string; position: number; column: string }
     >
 
 export type CardMessage = { data: CardMessageData }

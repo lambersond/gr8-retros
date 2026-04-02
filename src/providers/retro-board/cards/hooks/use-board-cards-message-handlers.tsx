@@ -110,6 +110,72 @@ export function useBoardCardsMessageHandlers() {
             commentId,
           })
         },
+
+        [BoardCardsMessageType.CREATE_CARD_GROUP]: data => {
+          const { group, cardIds } = data.payload
+          dispatch({
+            type: BoardCardsMessageType.CREATE_CARD_GROUP,
+            group,
+            cardIds,
+          })
+        },
+
+        [BoardCardsMessageType.ADD_CARD_TO_GROUP]: data => {
+          const { cardId, groupId } = data.payload
+          dispatch({
+            type: BoardCardsMessageType.ADD_CARD_TO_GROUP,
+            cardId,
+            groupId,
+          })
+        },
+
+        [BoardCardsMessageType.REMOVE_CARD_FROM_GROUP]: data => {
+          const { cardId, groupId, position } = data.payload
+          dispatch({
+            type: BoardCardsMessageType.REMOVE_CARD_FROM_GROUP,
+            cardId,
+            groupId,
+            position,
+          })
+        },
+
+        [BoardCardsMessageType.DELETE_CARD_GROUP]: data => {
+          const { groupId, restoredCards } = data.payload
+          dispatch({
+            type: BoardCardsMessageType.DELETE_CARD_GROUP,
+            groupId,
+            restoredCards,
+          })
+        },
+
+        [BoardCardsMessageType.UPDATE_CARD_GROUP]: data => {
+          const { groupId, patch } = data.payload
+          dispatch({
+            type: BoardCardsMessageType.UPDATE_CARD_GROUP,
+            groupId,
+            patch,
+          })
+        },
+
+        [BoardCardsMessageType.UPDATE_CARD_POSITION]: data => {
+          const { cardId, position, column } = data.payload
+          dispatch({
+            type: BoardCardsMessageType.UPDATE_CARD_POSITION,
+            cardId,
+            position,
+            column,
+          })
+        },
+
+        [BoardCardsMessageType.UPDATE_GROUP_POSITION]: data => {
+          const { groupId, position, column } = data.payload
+          dispatch({
+            type: BoardCardsMessageType.UPDATE_GROUP_POSITION,
+            groupId,
+            position,
+            column,
+          })
+        },
       }
 
     return h

@@ -19,9 +19,6 @@ export async function createCardGroup(params: CreateCardGroupParams) {
   ) {
     throw new Error('Cards must belong to the same board')
   }
-  if (card1.column !== params.column || card2.column !== params.column) {
-    throw new Error('Cards must be in the same column as the group')
-  }
   if (card1.cardGroupId ?? card2.cardGroupId) {
     throw new Error('Cards must not already be in a group')
   }

@@ -28,6 +28,9 @@ export type PermissionKey =
   | 'voting.mode'
   | 'voting.restricted'
   | 'voting'
+  | 'dragAndDrop'
+  | 'dragAndDrop.grouping'
+  | 'dragAndDrop.grouping.aiNaming'
 
 export type DynamcicPermissionKey =
   | 'actionItems.restricted.canAdd'
@@ -65,6 +68,9 @@ export const SETTINGS_ROLE_MAP: Record<string, PermissionKey> = {
   votingMode: 'voting.mode',
   votingLimit: 'voting.limit',
   votingRestricted: 'voting.restricted',
+  isDragAndDropEnabled: 'dragAndDrop',
+  cardGroupingEnabled: 'dragAndDrop.grouping',
+  aiCardGroupNamingEnabled: 'dragAndDrop.grouping.aiNaming',
 }
 
 export const ROLE_HIERARCHY: Record<BoardRole, number> = {
@@ -111,6 +117,9 @@ const PERMISSIONS_MAP: Record<PermissionKey, BoardRole> &
   'voting.limit': BoardRole.FACILITATOR,
   'voting.restricted': BoardRole.FACILITATOR,
   'voting.restricted.canVote': [BoardRole.VIEWER, BoardRole.MEMBER],
+  dragAndDrop: BoardRole.ADMIN,
+  'dragAndDrop.grouping': BoardRole.ADMIN,
+  'dragAndDrop.grouping.aiNaming': BoardRole.ADMIN,
 } as const
 
 export function userHasPermission(

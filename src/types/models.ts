@@ -13,10 +13,10 @@ export type Board = {
     id: string
     boardTier: PaymentTier
     isActionItemsEnabled: boolean
-    isAiNamingEnabled: boolean
     isAiSummaryEnabled: boolean
-    isCardGroupingEnabled: boolean
     isCommentsEnabled: boolean
+    isDragAndDropEnabled: boolean
+    isFacilitatorModeEnabled: boolean
     isMusicEnabled: boolean
     isPrivate: boolean
     isTimerEnabled: boolean
@@ -24,7 +24,8 @@ export type Board = {
     isVotingEnabled: boolean
     actionItemsAnytime: boolean
     actionItemsRestricted: boolean
-    cardGroupingAnytime: boolean
+    aiCardGroupNamingEnabled: boolean
+    cardGroupingEnabled: boolean
     commentsAnytime: boolean
     commentsRestricted: boolean
     musicAnytime: boolean
@@ -90,7 +91,7 @@ export type Board = {
     isDiscussed: boolean
     upvotedBy: string[]
     votes: number
-    position: number | null
+    position: number | null | undefined
     createdBy: string
     cardGroupId: string | null
     comments: {

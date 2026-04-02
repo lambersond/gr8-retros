@@ -3,6 +3,7 @@ import {
   Clock,
   MessageSquare,
   MessageSquareWarning,
+  Move,
   Music,
   UserLock,
   Vote,
@@ -30,6 +31,7 @@ const getBaseSettings = (): BoardSettingsWithPermissions => {
   baseSettings.upvoting.icon = ArrowBigUp
   baseSettings.actionItems.icon = MessageSquareWarning
   baseSettings.voting.icon = Vote
+  baseSettings.dragAndDrop.icon = Move
 
   return baseSettings
 }
@@ -154,6 +156,22 @@ export function getSettingsWithPermissions(
     userRole,
   )
 
+  // Drag and Drop Settings
+  baseSettings.dragAndDrop.enabled = settings.isDragAndDropEnabled
+  baseSettings.dragAndDrop.canEdit = userHasPermission('dragAndDrop', userRole)
+  baseSettings.dragAndDrop.subsettings.grouping.enabled =
+    settings.cardGroupingEnabled
+  baseSettings.dragAndDrop.subsettings.grouping.canEdit = userHasPermission(
+    'dragAndDrop.grouping',
+    userRole,
+  )
+  baseSettings.dragAndDrop.subsettings.aiNaming.enabled =
+    settings.aiCardGroupNamingEnabled
+  baseSettings.dragAndDrop.subsettings.aiNaming.canEdit = userHasPermission(
+    'dragAndDrop.grouping.aiNaming',
+    userRole,
+  )
+
   return baseSettings
 }
 
@@ -216,6 +234,12 @@ function getStaticBoardPermissions(userRole: BoardRole) {
     'voting.mode': userHasPermission('voting.mode', userRole),
     'voting.limit': userHasPermission('voting.limit', userRole),
     'voting.restricted': userHasPermission('voting.restricted', userRole),
+    dragAndDrop: userHasPermission('dragAndDrop', userRole),
+    'dragAndDrop.grouping': userHasPermission('dragAndDrop.grouping', userRole),
+    'dragAndDrop.grouping.aiNaming': userHasPermission(
+      'dragAndDrop.grouping.aiNaming',
+      userRole,
+    ),
   } satisfies Record<PermissionKey, boolean>
 }
 

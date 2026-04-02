@@ -189,4 +189,28 @@ export const BASE_SETTINGS: BoardSettingsWithPermissionsNoIcons = {
       },
     },
   },
+  dragAndDrop: {
+    render: true,
+    canEdit: false,
+    enabled: false,
+    isUnlocked: true,
+    key: 'isDragAndDropEnabled',
+    title: 'Drag and Drop',
+    subsettings: {
+      grouping: {
+        canEdit: false,
+        enabled: false,
+        key: 'cardGroupingEnabled',
+        kind: 'toggle',
+        title: 'Enable Card Grouping',
+      },
+      aiNaming: {
+        canEdit: false,
+        enabled: false,
+        key: 'aiCardGroupNamingEnabled',
+        kind: 'toggle',
+        title: 'AI-Powered Group Naming',
+      },
+    },
+  },
 }

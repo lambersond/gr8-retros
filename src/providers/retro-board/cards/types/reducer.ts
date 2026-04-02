@@ -4,7 +4,7 @@ import type {
   BoardCardsMessageType,
   BoardCardsSortOptions,
 } from '../enums'
-import type { BoardCardsState } from './provider'
+import type { BoardCardsState, CardGroupState } from './provider'
 import type { ActionItem, Board, Card, Comment } from '@/types'
 
 export type ActionHandler<
@@ -74,6 +74,44 @@ export type BoardCardsReducerAction =
   | {
       type: BoardCardsMessageType.SORT_CARDS
       sort: BoardCardsSortOptions
+    }
+  | {
+      type: BoardCardsMessageType.CREATE_CARD_GROUP
+      group: CardGroupState
+      cardIds: [string, string]
+    }
+  | {
+      type: BoardCardsMessageType.ADD_CARD_TO_GROUP
+      cardId: string
+      groupId: string
+    }
+  | {
+      type: BoardCardsMessageType.REMOVE_CARD_FROM_GROUP
+      cardId: string
+      groupId: string
+      position: number
+    }
+  | {
+      type: BoardCardsMessageType.DELETE_CARD_GROUP
+      groupId: string
+      restoredCards: { cardId: string; position: number }[]
+    }
+  | {
+      type: BoardCardsMessageType.UPDATE_CARD_POSITION
+      cardId: string
+      position: number
+      column: string
+    }
+  | {
+      type: BoardCardsMessageType.UPDATE_CARD_GROUP
+      groupId: string
+      patch: { label?: string }
+    }
+  | {
+      type: BoardCardsMessageType.UPDATE_GROUP_POSITION
+      groupId: string
+      position: number
+      column: string
     }
   | {
       type: BoardCardsInternalActionType.FILTER_CARDS

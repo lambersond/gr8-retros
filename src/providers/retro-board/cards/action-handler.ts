@@ -1,3 +1,4 @@
+/* eslint-disable unicorn/no-null */
 import { DEFAULT_STATE } from './constants'
 import {
   BoardCardsMessageType,
@@ -33,6 +34,7 @@ export const boardCardActionHandlers: {
   [BoardCardsMessageType.DELETE_ALL_CARDS]: state => {
     return {
       cards: {},
+      groups: {},
       filter: state.filter,
       sort: state.sort,
     }
@@ -153,6 +155,138 @@ export const boardCardActionHandlers: {
       cards: newStateCards,
       filter: BoardCardsFilterOptions.ALL,
       sort: BoardCardsSortOptions.NONE,
+    }
+  },
+  [BoardCardsMessageType.CREATE_CARD_GROUP]: (state, action) => {
+    const { group, cardIds } = action
+    const newCards = { ...state.cards }
+    for (const cardId of cardIds) {
+      if (newCards[cardId]) {
+        newCards[cardId] = {
+          ...newCards[cardId],
+          cardGroupId: group.id,
+          position: undefined,
+        }
+      }
+    }
+    return {
+      ...state,
+      cards: newCards,
+      groups: { ...state.groups, [group.id]: group },
+    }
+  },
+  [BoardCardsMessageType.ADD_CARD_TO_GROUP]: (state, action) => {
+    const { cardId, groupId } = action
+    const group = state.groups[groupId]
+    if (!group || !state.cards[cardId]) return state
+    if (group.cardIds.includes(cardId)) return state
+
+    const newCards = {
+      ...state.cards,
+      [cardId]: {
+        ...state.cards[cardId],
+        cardGroupId: groupId,
+        position: undefined,
+      },
+    }
+    const newGroups = {
+      ...state.groups,
+      [groupId]: { ...group, cardIds: [...group.cardIds, cardId] },
+    }
+    return { ...state, cards: newCards, groups: newGroups }
+  },
+  [BoardCardsMessageType.REMOVE_CARD_FROM_GROUP]: (state, action) => {
+    const { cardId, groupId, position } = action
+    const group = state.groups[groupId]
+    if (!group || !state.cards[cardId]) return state
+
+    const newCardIds = group.cardIds.filter(id => id !== cardId)
+    const newCards = {
+      ...state.cards,
+      [cardId]: {
+        ...state.cards[cardId],
+        cardGroupId: null,
+        position,
+      },
+    }
+
+    // Dissolve group if only 1 card remains
+    if (newCardIds.length <= 1) {
+      const newGroups = { ...state.groups }
+      delete newGroups[groupId]
+      // Restore remaining card to standalone
+      const remainingId = newCardIds[0]
+      if (remainingId && newCards[remainingId]) {
+        newCards[remainingId] = {
+          ...newCards[remainingId],
+          cardGroupId: null,
+          position: group.position ?? 0,
+        }
+      }
+      return { ...state, cards: newCards, groups: newGroups }
+    }
+
+    return {
+      ...state,
+      cards: newCards,
+      groups: {
+        ...state.groups,
+        [groupId]: { ...group, cardIds: newCardIds },
+      },
+    }
+  },
+  [BoardCardsMessageType.DELETE_CARD_GROUP]: (state, action) => {
+    const { groupId, restoredCards } = action
+    const newGroups = { ...state.groups }
+    delete newGroups[groupId]
+
+    const newCards = { ...state.cards }
+    for (const { cardId, position } of restoredCards) {
+      if (newCards[cardId]) {
+        newCards[cardId] = {
+          ...newCards[cardId],
+          cardGroupId: null,
+          position,
+        }
+      }
+    }
+    return { ...state, cards: newCards, groups: newGroups }
+  },
+  [BoardCardsMessageType.UPDATE_CARD_GROUP]: (state, action) => {
+    const { groupId, patch } = action
+    const group = state.groups[groupId]
+    if (!group) return state
+    return {
+      ...state,
+      groups: { ...state.groups, [groupId]: { ...group, ...patch } },
+    }
+  },
+  [BoardCardsMessageType.UPDATE_CARD_POSITION]: (state, action) => {
+    const { cardId, position, column } = action
+    return utils.updateCard(state, cardId, card => ({
+      ...card,
+      position,
+      column,
+    }))
+  },
+  [BoardCardsMessageType.UPDATE_GROUP_POSITION]: (state, action) => {
+    const { groupId, position, column } = action
+    const group = state.groups[groupId]
+    if (!group) return state
+
+    const newCards = { ...state.cards }
+    if (column !== group.column) {
+      for (const cardId of group.cardIds) {
+        if (newCards[cardId]) {
+          newCards[cardId] = { ...newCards[cardId], column }
+        }
+      }
+    }
+
+    return {
+      ...state,
+      cards: newCards,
+      groups: { ...state.groups, [groupId]: { ...group, position, column } },
     }
   },
   [BoardCardsInternalActionType.RESYNC_CARDS]: (state, action) => {

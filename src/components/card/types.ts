@@ -13,6 +13,7 @@ export interface CardProps {
   actionItems?: ActionItem[]
   comments?: Comment[]
   votes?: number
+  isMergeTarget?: boolean
 }
 
 export type CardVotingProps = Pick<CardProps, 'id' | 'content' | 'upvotes'>

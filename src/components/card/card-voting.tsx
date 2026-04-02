@@ -49,9 +49,9 @@ export function CardVoting({
       className={clsx(
         'relative p-2 rounded flex flex-col gap-2 w-full transition-all select-none bg-page',
         {
-          'border-primary shadow-primary/30 shadow-md ring-1.5 ring-primary/50':
+          'border-border-dark shadow-primary/30 shadow-md ring-1.5 ring-primary/50':
             hasVoted,
-          'border-slate-200 hover:shadow-md hover:border-primary/50':
+          'border-border-light hover:shadow-md hover:border-primary':
             !hasVoted && hasVotingPermissions,
           'cursor-pointer border rounded shadow': hasVotingPermissions,
           'cursor-not-allowed': !hasVotingPermissions,
@@ -59,7 +59,7 @@ export function CardVoting({
       )}
     >
       {hasVoted && (
-        <div className='absolute -top-2.5 -right-2.5 flex items-center gap-1 bg-primary text-white text-xs font-semibold rounded-full px-2 py-0.5 shadow'>
+        <div className='absolute -top-2.5 -right-2.5 flex items-center gap-1 bg-primary text-text-primary text-xs font-semibold rounded-full px-2 py-0.5 shadow'>
           Voted
           {votes.map((voteId, index) => (
             <Vote className='size-3.5' key={`${voteId}-${index}`} />
@@ -74,7 +74,7 @@ export function CardVoting({
           {
             'border-t': upvotes > 0 || hasVoted,
           },
-          'flex items-center justify-between pt-1 border-slate-200',
+          'flex items-center justify-between pt-1 border-border-light',
         )}
       >
         {upvotes > 0 && (
@@ -86,7 +86,7 @@ export function CardVoting({
         {hasVoted && (
           <button
             onClick={handleRemoveVote}
-            className='ml-auto text-xs text-danger hover:text-danger/80 transition-all hover:font-semibold px-1.5 py-0.5 rounded bg-danger/10 hover:bg-danger/20 active:bg-danger/30 flex items-center gap-0.5 cursor-pointer'
+            className='ml-auto text-xs text-danger hover:text-danger/80 transition-all font-semibold px-1.5 py-0.5 rounded bg-danger/10 hover:bg-danger/20 active:bg-danger/30 flex items-center gap-0.5 cursor-pointer'
           >
             Clear <X className='size-3.5' />
           </button>

@@ -86,6 +86,13 @@ interface VotingSetting extends Setting {
   }
 }
 
+interface DragAndDropSetting extends Setting {
+  subsettings: {
+    grouping: ToggleSubsetting
+    aiNaming: ToggleSubsetting
+  }
+}
+
 export type BoardSettingsWithPermissions = {
   private: PrivateSetting
   comments: CommentSetting
@@ -94,6 +101,7 @@ export type BoardSettingsWithPermissions = {
   actionItems: ActionItemsSetting
   upvoting: UpvotingSetting
   voting: VotingSetting
+  dragAndDrop: DragAndDropSetting
 }
 
 export type BoardSettingsWithPermissionsNoIcons = Omit<
@@ -105,6 +113,7 @@ export type BoardSettingsWithPermissionsNoIcons = Omit<
   | 'actionItems'
   | 'upvoting'
   | 'voting'
+  | 'dragAndDrop'
 > & {
   private: Omit<PrivateSetting, 'icon'>
   comments: Omit<CommentSetting, 'icon'>
@@ -113,4 +122,5 @@ export type BoardSettingsWithPermissionsNoIcons = Omit<
   actionItems: Omit<ActionItemsSetting, 'icon'>
   upvoting: Omit<UpvotingSetting, 'icon'>
   voting: Omit<VotingSetting, 'icon'>
+  dragAndDrop: Omit<DragAndDropSetting, 'icon'>
 }

@@ -32,7 +32,7 @@ export function ClosedVote() {
         {canReset && (
           <button
             onClick={resetVoting}
-            className='px-4 py-2 bg-secondary/10 text-text-secondary rounded-md hover:bg-secondary/20 active:bg-secondary/30 transition tracking-wide text-sm cursor-pointer'
+            className='border border-border-light px-4 py-2 bg-tertiary/80 text-text-secondary rounded-md hover:bg-tertiary transition tracking-wide text-sm cursor-pointer'
           >
             Reset Votes
           </button>
