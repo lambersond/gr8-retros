@@ -11,7 +11,7 @@ export function TextArea({
   ...props
 }: Readonly<TextAreaProps>) {
   const classes = clsx(
-    'mt-1 block w-full appearance-none rounded-md bg-transparent border border-border focus:border-secondary px-3 py-2 outline-none placeholder:text-text-secondary',
+    'mt-1 block w-full appearance-none rounded-md bg-transparent border border-border-light focus:border-primary px-3 py-2 outline-none placeholder:text-text-secondary',
     className,
   )
 

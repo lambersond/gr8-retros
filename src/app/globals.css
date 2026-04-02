@@ -14,13 +14,13 @@
 
   /* Background colors  */
   --color-page: #ffffff;
-  --color-paper: #f9f9f9;
-  --color-card: #ffffff;
-  --color-appbar: #f0f0f0;
+  --color-paper: #ffffff;
+  --color-card: #f5f5f5;
+  --color-appbar: #fffff8;
 
   /* Primary colors */
   --color-primary: #3e79ff;
-  --color-secondary: #ffb347;
+  --color-secondary: #ff4968;
   --color-tertiary: #f0f0f0;
   --color-border-light: #e4e4e7;
   --color-border-dark: #a1a1aa;
@@ -52,7 +52,7 @@
   /* Background colors */
   --color-page:   #0b1120;   /* near-black with cool tint   */
   --color-paper:  #0e1418;   /* slightly lifted surface     */
-  --color-card:   #1a2535;   /* card surface                */
+  --color-card:   #16202e;   /* card surface                */
   --color-appbar: #0f172a;   /* dark top bar                */
 
   /* Primary colors */

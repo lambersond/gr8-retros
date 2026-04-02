@@ -51,7 +51,7 @@ export function Modal({
   return (
     <div className='fixed inset-0 flex items-center justify-center z-1200'>
       <summary
-        className='absolute inset-0 bg-primary opacity-75'
+        className='absolute inset-0 bg-black opacity-75'
         data-testid='modal__backdrop'
         onClick={onClose}
       />

@@ -96,9 +96,9 @@ export function NumberInput({
       <p className='mb-1 text-sm font-medium'>{title}</p>
       <div
         className={clsx(
-          'flex min-w-32 max-w-56 w-fit rounded border transition-all border-border-light bg-paper/50 rounded-md items-center overflow-hidden',
+          'flex min-w-32 max-w-56 w-fit rounded border transition-all border-border-light bg-card rounded-lg items-center overflow-hidden focus-within:ring-2 focus-within:ring-primary ',
           {
-            'hover:shadow-md hover:border-border-dark': !disabled,
+            'hover:shadow-md': !disabled,
             'cursor-not-allowed': disabled,
           },
         )}
@@ -116,13 +116,13 @@ export function NumberInput({
           onChange={handleChange}
           onBlur={handleBlur}
         />
-        <p className='h-10 flex items-center justify-center px-3 bg-tertiary/10'>
+        <p className='h-10 flex items-center justify-center px-3 bg-card'>
           {label}
         </p>
       </div>
       {showRangeHint && (
         <p className='text-xs text-text-secondary mt-1'>
-          Range: {min} - {max}
+          Range: {min} - {max === -1 ? '∞' : max}
         </p>
       )}
     </div>
