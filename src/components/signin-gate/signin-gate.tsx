@@ -26,7 +26,7 @@ export function SignInGate({
           <GoogleButton redirectTo={globalThis.location.href} />
           <button
             type='button'
-            className='inline-flex items-center cursor-pointer justify-center rounded-md border border-zinc-700 bg-zinc-600 px-4 py-2.5 text-base font-medium text-zinc-100 hover:bg-zinc-700 focus:outline-none focus:ring-2 focus:ring-zinc-400/50'
+            className='inline-flex items-center cursor-pointer justify-center rounded-md border border-border-light bg-tertiary px-4 py-2.5 text-base font-medium text-text-primary hover:bg-zinc-300 dark:hover:bg-primary focus:outline-none'
             onClick={onContinueAsGuest}
           >
             Continue as guest

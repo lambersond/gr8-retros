@@ -8,7 +8,7 @@ export function GoogleButton({ redirectTo }: Readonly<GoogleButtonProps>) {
   return (
     <button
       type='button'
-      className='inline-flex items-center cursor-pointer justify-center gap-3 rounded-md bg-white/80 px-4 py-2.5 text-base font-medium text-text-primary hover:bg-white focus:outline-none focus:ring-2 focus:ring-white/60'
+      className='inline-flex items-center cursor-pointer justify-center gap-3 rounded-md bg-black/80 px-4 py-2.5 text-base font-medium text-white dark:text-white dark:hover:text-black hover:bg-black dark:hover:bg-white focus:outline-none focus:ring-2 focus:ring-white/60'
       onClick={() =>
         signIn(
           'google',

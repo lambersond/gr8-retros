@@ -45,7 +45,7 @@ export function Column({ type, columnConfig }: Readonly<ColumnProps>) {
   const isOverInsert = dropState?.type === 'insert' && dropState.colId === type
 
   return (
-    <div
+    <summary
       className={clsx(
         getWrapperClasses(),
         isOverInsert && 'ring-2 ring-primary',
@@ -115,7 +115,7 @@ export function Column({ type, columnConfig }: Readonly<ColumnProps>) {
           </div>
         ))}
       </div>
-    </div>
+    </summary>
   )
 }
 
