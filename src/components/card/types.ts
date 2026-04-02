@@ -1,8 +1,8 @@
-import type { ActionItem, ColumnType, Comment } from '@/types'
+import type { ActionItem, Comment } from '@/types'
 
 export interface CardProps {
   canEdit?: boolean
-  column: ColumnType
+  column: string
   content: string
   createdBy?: string
   currentUserId?: string

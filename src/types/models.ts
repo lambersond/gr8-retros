@@ -90,8 +90,9 @@ export type Board = {
     isDiscussed: boolean
     upvotedBy: string[]
     votes: number
-    position: number
+    position: number | null
     createdBy: string
+    cardGroupId: string | null
     comments: {
       id: string
       cardId: string
@@ -121,6 +122,15 @@ export type Board = {
   users: {
     userId: string
   }[]
+  cardGroups: {
+    id: string
+    label: string
+    column: string
+    position: number
+    retroSessionId: string
+    createdAt: Date
+    updatedAt: Date
+  }[]
 }
 
 export type Card = Board['cards'][number]
@@ -130,3 +140,8 @@ export type BoardSettings = Board['settings']
 export type BoardInvite = BoardSettings['invite']
 export type BoardMember = BoardSettings['members'][number]
 export type Column = BoardSettings['columns'][number]
+export type CardGroup = Board['cardGroups'][number]
+
+export type ColumnItem =
+  | { kind: 'card'; data: Card }
+  | { kind: 'group'; data: CardGroup }

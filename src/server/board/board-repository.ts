@@ -70,6 +70,9 @@ export async function getOrCreateBoardById(id: string) {
           comments: true,
         },
       },
+      cardGroups: {
+        orderBy: { position: 'asc' },
+      },
     },
   })
 

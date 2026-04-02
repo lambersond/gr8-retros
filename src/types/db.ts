@@ -1,12 +1,10 @@
-import type { ColumnType } from './models'
-
 interface CardId {
   cardId: string
 }
 
 export type CreateCardParams = {
   boardId: string
-  column: ColumnType
+  column: string
   content: string
   creatorId: string
   creatorName?: string
@@ -42,4 +40,36 @@ export interface CreateActionItemParams {
 export interface MarkDoneActionItemParams {
   actionItemId: string
   isDone: boolean
+}
+
+export interface UpdateCardPositionParams {
+  cardId: string
+  position: number
+}
+
+export interface AddCardToGroupParams {
+  cardId: string
+  cardGroupId: string
+}
+
+export interface RemoveCardFromGroupParams {
+  cardId: string
+  position?: number
+  column?: string
+}
+
+export interface CreateCardGroupParams {
+  boardId: string
+  column: string
+  label: string
+  cardId1: string
+  cardId2: string
+  position?: number
+}
+
+export interface EditCardGroupParams {
+  cardGroupId: string
+  label?: string
+  position?: number
+  column?: string
 }

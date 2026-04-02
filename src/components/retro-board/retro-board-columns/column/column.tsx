@@ -13,11 +13,10 @@ import { PRESET_COLUMNS } from '@/constants'
 import { VotingState } from '@/enums'
 import { useBoardControlsState } from '@/providers/retro-board/controls'
 import type { ColumnProps } from './types'
-import type { ColumnType } from '@/types'
 
 export function Column({ type, columnConfig }: Readonly<ColumnProps>) {
   const { cards, handleAddCard, user } = useColumn(
-    type as ColumnType,
+    type,
     columnConfig?.tagline ?? 'Add Card Content',
     columnConfig?.placeholder ?? 'Enter card content...',
   )
@@ -54,7 +53,7 @@ export function Column({ type, columnConfig }: Readonly<ColumnProps>) {
             canEdit={card.creatorId === user?.id}
             upvotes={card.upvotedBy.length}
             isUpvoted={card.upvotedBy.includes(user?.id ?? '')}
-            column={card.column as ColumnType}
+            column={card.column}
             id={card.id}
             currentUserId={user?.id}
             isDiscussed={card.isDiscussed}

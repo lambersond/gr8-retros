@@ -1,10 +1,14 @@
+/* eslint-disable unicorn/no-null */
 'use server'
 
 import prisma from '@/clients/prisma'
 import type {
+  AddCardToGroupParams,
   CreateCardParams,
   EditCardContentParams,
   MarkCardDiscussedParams,
+  RemoveCardFromGroupParams,
+  UpdateCardPositionParams,
   UpvoteCardParams,
 } from '@/types'
 
@@ -17,6 +21,26 @@ export async function getCardById(cardId: string) {
 
 export async function createCard(params: CreateCardParams) {
   return prisma.$transaction(async tx => {
+    const [cardMaxResult, groupMaxResult] = await Promise.all([
+      tx.card.aggregate({
+        where: {
+          retroSessionId: params.boardId,
+          column: params.column,
+          cardGroupId: null,
+        },
+        _max: { position: true },
+      }),
+      tx.cardGroup.aggregate({
+        where: { retroSessionId: params.boardId, column: params.column },
+        _max: { position: true },
+      }),
+    ])
+    const maxPosition = Math.max(
+      cardMaxResult._max.position ?? 0,
+      groupMaxResult._max.position ?? 0,
+    )
+    const nextPosition = Math.ceil(maxPosition) + 1
+
     const card = await tx.card.create({
       data: {
         retroSessionId: params.boardId,
@@ -24,6 +48,7 @@ export async function createCard(params: CreateCardParams) {
         content: params.content,
         creatorId: params.creatorId,
         createdBy: params.creatorName,
+        position: nextPosition,
       },
       include: { actionItems: true },
     })
@@ -158,5 +183,69 @@ export async function deleteCompletedCardsOlderThanNDaysByBoardId(
         every: { isDone: true },
       },
     },
+  })
+}
+
+export async function updateCardPosition(params: UpdateCardPositionParams) {
+  return prisma.card.update({
+    where: { id: params.cardId },
+    data: { position: params.position },
+    include: { actionItems: true },
+  })
+}
+
+export async function addCardToGroup(params: AddCardToGroupParams) {
+  return prisma.card.update({
+    where: { id: params.cardId },
+    data: { cardGroupId: params.cardGroupId, position: null },
+    include: { actionItems: true },
+  })
+}
+
+export async function removeCardFromGroup(params: RemoveCardFromGroupParams) {
+  return prisma.$transaction(async tx => {
+    let position = params.position
+
+    if (position === undefined) {
+      const card = await tx.card.findUnique({
+        where: { id: params.cardId },
+        select: { retroSessionId: true, column: true },
+      })
+      if (card) {
+        const targetColumn = params.column ?? card.column
+        const [cardMaxResult, groupMaxResult] = await Promise.all([
+          tx.card.aggregate({
+            where: {
+              retroSessionId: card.retroSessionId,
+              column: targetColumn,
+              cardGroupId: null,
+            },
+            _max: { position: true },
+          }),
+          tx.cardGroup.aggregate({
+            where: {
+              retroSessionId: card.retroSessionId,
+              column: targetColumn,
+            },
+            _max: { position: true },
+          }),
+        ])
+        const maxPosition = Math.max(
+          cardMaxResult._max.position ?? 0,
+          groupMaxResult._max.position ?? 0,
+        )
+        position = Math.ceil(maxPosition) + 1
+      }
+    }
+
+    return tx.card.update({
+      where: { id: params.cardId },
+      data: {
+        cardGroupId: null,
+        position,
+        ...(params.column && { column: params.column }),
+      },
+      include: { actionItems: true },
+    })
   })
 }

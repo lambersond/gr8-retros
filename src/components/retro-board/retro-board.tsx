@@ -15,7 +15,6 @@ import type { Board } from '@/types'
 
 export function RetroBoard({ board }: Readonly<{ board: Board }>) {
   const { status, isAuthenticated } = useAuth()
-
   const searchParams = useSearchParams()
   const isGuest = searchParams.get('guest') === 'true'
   const [continueAnyway, setContinueAnyway] = useState(isGuest)

@@ -2,9 +2,12 @@
 
 import * as repository from './card-repository'
 import type {
+  AddCardToGroupParams,
   CreateCardParams,
   EditCardContentParams,
   MarkCardDiscussedParams,
+  RemoveCardFromGroupParams,
+  UpdateCardPositionParams,
 } from '@/types'
 
 export async function deleteCardById(cardId: string) {
@@ -57,4 +60,22 @@ export async function deleteCompletedCardsOlderThanNDaysByBoardId(
   days = 7,
 ) {
   return repository.deleteCompletedCardsOlderThanNDaysByBoardId(boardId, days)
+}
+
+export async function updateCardPosition(params: UpdateCardPositionParams) {
+  return repository.updateCardPosition(params)
+}
+
+export async function addCardToGroup(params: AddCardToGroupParams) {
+  const card = await repository.getCardById(params.cardId)
+  if (!card) throw new Error('Card not found')
+  if (card.cardGroupId === params.cardGroupId) return card
+  return repository.addCardToGroup(params)
+}
+
+export async function removeCardFromGroup(params: RemoveCardFromGroupParams) {
+  const card = await repository.getCardById(params.cardId)
+  if (!card) throw new Error('Card not found')
+  if (!card.cardGroupId) return card
+  return repository.removeCardFromGroup(params)
 }

@@ -109,6 +109,7 @@ model RetroSession {
   org          String? @default("Temporary")
 
   cards        Card[]
+  cardGroups   CardGroup[]
   settings     BoardSettings?
 
   createdAt    DateTime      @default(now())
@@ -241,7 +242,7 @@ model Card {
   isDiscussed Boolean  @default(false)
   upvotedBy   String[] @default([])
   votes       Int      @default(0)
-  position    Int      @default(0)
+  position    Float?   @default(0)
   createdBy   String   @default("Anonymous")
 
   retroSessionId String
@@ -249,11 +250,33 @@ model Card {
   actionItems    ActionItem[]
   comments       Comment[]
 
+  cardGroupId String?
+  cardGroup   CardGroup? @relation(fields: [cardGroupId], references: [id], onDelete: SetNull)
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   @@index([retroSessionId])
+  @@index([retroSessionId, column])
+  @@index([cardGroupId])
   @@index([createdAt])
+}
+
+model CardGroup {
+  id             String       @id @default(cuid())
+  label          String
+  column         String       
+  position       Float        @default(0)
+
+  retroSessionId String
+  retroSession   RetroSession @relation(fields: [retroSessionId], references: [id], onDelete: Cascade)
+  cards          Card[]
+
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+
+  @@index([retroSessionId])
+  @@index([retroSessionId, column])
 }
 
 model Comment {

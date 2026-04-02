@@ -10,12 +10,22 @@ export function createInitialState(
 ) {
   const base: BoardCardsState = {
     cards: {},
+    groups: {},
     sort: defaultSort,
     filter: defaultFilter,
   }
 
   for (const card of board.cards) {
     base.cards[card.id] = card
+  }
+
+  for (const group of board.cardGroups) {
+    base.groups[group.id] = {
+      ...group,
+      cardIds: board.cards
+        .filter(card => card.cardGroupId === group.id)
+        .map(card => card.id),
+    }
   }
 
   return base
