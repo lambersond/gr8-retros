@@ -1,4 +1,4 @@
-import clsx from 'classnames'
+import clsx from 'clsx'
 import type { TextAreaProps } from './types'
 
 export function TextArea({

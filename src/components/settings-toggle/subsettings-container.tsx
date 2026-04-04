@@ -1,4 +1,4 @@
-import clsx from 'classnames'
+import clsx from 'clsx'
 
 export function SubsettingsContainer({
   children,

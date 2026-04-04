@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import clsx from 'classnames'
+import clsx from 'clsx'
 import { PlanCard } from './plans-card'
 import { PLANS } from '@/constants/plans'
 
@@ -21,7 +21,7 @@ export function PlansGrid() {
             className={clsx(
               'cursor-pointer rounded-full px-5 py-1.5 text-sm font-medium transition-all duration-200',
               {
-                'bg-amber-500 text-white shadow-sm': !isYearly,
+                'bg-primary text-white shadow-sm': !isYearly,
                 'text-text-secondary hover:text-text-primary': isYearly,
               },
             )}
@@ -33,7 +33,7 @@ export function PlansGrid() {
             className={clsx(
               'flex cursor-pointer items-center gap-2 rounded-full px-5 py-1.5 text-sm font-medium transition-all duration-200',
               {
-                'bg-amber-500 text-white shadow-sm': isYearly,
+                'bg-primary text-white shadow-sm': isYearly,
                 'text-text-secondary hover:text-text-primary': !isYearly,
               },
             )}
@@ -44,7 +44,7 @@ export function PlansGrid() {
                 'rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide transition-colors duration-200',
                 {
                   'bg-white/20 text-white': isYearly,
-                  'bg-amber-100 text-amber-600': !isYearly,
+                  'bg-primary text-white': !isYearly,
                 },
               )}
             >

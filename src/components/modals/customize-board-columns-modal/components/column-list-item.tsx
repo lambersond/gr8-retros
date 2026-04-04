@@ -1,4 +1,4 @@
-import clsx from 'classnames'
+import clsx from 'clsx'
 import { GripVertical, Trash2 } from 'lucide-react'
 import { IconButton } from '@/components/common'
 import type { ColumnListItemProps } from './types'

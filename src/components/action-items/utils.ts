@@ -1,4 +1,4 @@
-import clsx from 'classnames'
+import clsx from 'clsx'
 import { Square, SquareCheckBig } from 'lucide-react'
 import type { IconButtonProps } from '../common/button/types'
 

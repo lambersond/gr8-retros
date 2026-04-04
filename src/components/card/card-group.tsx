@@ -2,7 +2,7 @@
 
 import { useCallback, useMemo, useState } from 'react'
 import { useChannel } from 'ably/react'
-import clsx from 'classnames'
+import clsx from 'clsx'
 import {
   ArrowBigUp,
   ChevronDown,

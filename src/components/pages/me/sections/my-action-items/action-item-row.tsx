@@ -1,4 +1,4 @@
-import clsx from 'classnames'
+import clsx from 'clsx'
 import { Square, SquareCheckBig } from 'lucide-react'
 import Link from 'next/link'
 import { IconButton, Tooltip } from '@/components/common'

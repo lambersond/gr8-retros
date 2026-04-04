@@ -1,6 +1,6 @@
 'use client'
 
-import clsx from 'classnames'
+import clsx from 'clsx'
 import { ArrowBigUp, MessageSquareIcon, Pencil, Vote } from 'lucide-react'
 import { IconButton } from '../common'
 import { DiscussedIcon } from '../common/icons'

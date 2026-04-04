@@ -1,6 +1,6 @@
 'use client'
 
-import clsx from 'classnames'
+import clsx from 'clsx'
 import { ArrowBigUp, Vote, X } from 'lucide-react'
 import { useBoardPermissions } from '@/providers/retro-board/board-settings'
 import {

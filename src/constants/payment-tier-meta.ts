@@ -15,9 +15,9 @@ export const PAYMENT_TIER_META = {
   },
   BELIEVER: {
     label: 'Believer',
-    bg: 'bg-pink-100 dark:bg-pink-700/30',
-    text: 'text-pink-700 dark:text-pink-300',
-    border: 'border-pink-200 dark:border-pink-600',
+    bg: 'bg-amber-100 dark:bg-amber-700/30',
+    text: 'text-amber-700 dark:text-amber-300',
+    border: 'border-amber-200 dark:border-amber-600',
   },
   CHAMPION: {
     label: 'Champion',

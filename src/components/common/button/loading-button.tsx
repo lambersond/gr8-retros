@@ -1,7 +1,7 @@
 'use client'
 
 import { useRef, useState, type ReactNode } from 'react'
-import clsx from 'classnames'
+import clsx from 'clsx'
 
 export function LoadingButton({
   Icon,

@@ -1,7 +1,7 @@
 'use client'
 
 import { useCallback } from 'react'
-import clsx from 'classnames'
+import clsx from 'clsx'
 import {
   ArrowBigUp,
   CircleAlert,

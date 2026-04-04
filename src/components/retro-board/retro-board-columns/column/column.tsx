@@ -1,4 +1,4 @@
-import clsx from 'classnames'
+import clsx from 'clsx'
 import { Plus } from 'lucide-react'
 import { useTheme } from 'next-themes'
 import { IconButton } from '../../../common'

@@ -1,4 +1,4 @@
-import clsx from 'classnames'
+import clsx from 'clsx'
 import type { SwitchProps } from './types'
 
 const SIZE_CLASSES = {

@@ -1,4 +1,4 @@
-import clsx from 'classnames'
+import clsx from 'clsx'
 import { Lock } from 'lucide-react'
 import { Switch, Tooltip } from '../common'
 import type { SettingsToggleProps } from './types'

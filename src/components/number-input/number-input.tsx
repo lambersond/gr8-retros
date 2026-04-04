@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
-import clsx from 'classnames'
+import clsx from 'clsx'
 import { NumberInputProps } from './types'
 
 export function NumberInput({

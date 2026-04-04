@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useRef, useEffect } from 'react'
-import clsx from 'classnames'
+import clsx from 'clsx'
 import { ChevronDown, X, Check } from 'lucide-react'
 import { createPortal } from 'react-dom'
 import type { DropdownOption, DropdownProps } from './types'

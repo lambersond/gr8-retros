@@ -1,7 +1,7 @@
 'use client'
 
 import { useRef, useState } from 'react'
-import clsx from 'classnames'
+import clsx from 'clsx'
 import { Tooltip } from '../tooltip'
 import type { IconButtonProps } from './types'
 

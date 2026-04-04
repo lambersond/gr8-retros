@@ -1,6 +1,6 @@
 'use client'
 
-import clsx from 'classnames'
+import clsx from 'clsx'
 import { Check } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { useSession, signIn } from 'next-auth/react'
@@ -114,7 +114,7 @@ export function PlanCard({ plan, isYearly }: Readonly<PlanCardProps>) {
         {plan.ctaLabel}
       </button>
 
-      <div className='mb-4 border-t border-slate-100' />
+      <div className='mb-4 border-t border-border-light' />
 
       {plan.inheritLabel && (
         <p className='mb-3 text-xs font-semibold uppercase tracking-wide text-text-secondary'>
@@ -137,7 +137,7 @@ export function PlanCard({ plan, isYearly }: Readonly<PlanCardProps>) {
             <span className='text-sm leading-snug text-text-secondary'>
               {feature.label}
               {feature.soon && (
-                <span className='ml-1.5 rounded bg-slate-100 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-text-secondary'>
+                <span className='ml-1.5 rounded dark:bg-slate-600/30 bg-slate-200 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-text-secondary'>
                   Soon
                 </span>
               )}

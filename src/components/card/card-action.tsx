@@ -1,6 +1,6 @@
 'use client'
 
-import clsx from 'classnames'
+import clsx from 'clsx'
 import type { CardActionProps } from './types'
 
 export function CardAction({

@@ -1,7 +1,7 @@
 'use client'
 
 import { useRef, useEffect, useState } from 'react'
-import clsx from 'classnames'
+import clsx from 'clsx'
 import { X } from 'lucide-react'
 import { IconButton } from '../button'
 import type { ModalProps } from './types'

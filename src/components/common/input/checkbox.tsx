@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useId, useState } from 'react'
-import clsx from 'classnames'
+import clsx from 'clsx'
 import { CheckSquare, Square } from 'lucide-react'
 import { Info } from '../info'
 import { isLargeSize, isMediumSize, isSmallSize } from '../utils'

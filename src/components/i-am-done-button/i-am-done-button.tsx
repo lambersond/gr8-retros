@@ -1,6 +1,6 @@
 'use client'
 
-import clsx from 'classnames'
+import clsx from 'clsx'
 import { Check } from 'lucide-react'
 import {
   useBoardControlsActions,

@@ -1,4 +1,4 @@
-import clsx from 'classnames'
+import clsx from 'clsx'
 import { Vote } from 'lucide-react'
 import { Tooltip } from '@/components/common'
 import { IAmDoneButton } from '@/components/i-am-done-button'

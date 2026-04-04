@@ -1,4 +1,4 @@
-import clsx from 'classnames'
+import clsx from 'clsx'
 import { PAYMENT_TIER_META } from '@/constants'
 import { PaymentTier as PaymentTierEnum } from '@/enums'
 

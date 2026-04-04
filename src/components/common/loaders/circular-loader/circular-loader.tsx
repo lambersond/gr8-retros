@@ -1,4 +1,4 @@
-import clsx from 'classnames'
+import clsx from 'clsx'
 import { SIZE_CLASSES } from './constants'
 import type { CircularLoaderProps } from './types'
 

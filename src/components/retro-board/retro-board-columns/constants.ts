@@ -1,4 +1,4 @@
-import clsx from 'classnames'
+import clsx from 'clsx'
 
 export const COLUMN_CONTAINER_CLASSES = clsx(
   'flex-1 min-h-0 overflow-hidden',
