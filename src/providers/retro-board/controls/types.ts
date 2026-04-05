@@ -20,6 +20,9 @@ export type RetroBoardControls = {
     results: Record<string, string[]>
     collectedVotes: Record<string, string[]>
   }
+  facilitatorMode: {
+    isActive: boolean
+  }
 }
 
 export type RetroBoardControlsState = {
@@ -60,6 +63,9 @@ export type RetroBoardControlsActions = {
   resetVoting: () => void
   setVotingMode: (mode: VotingMode) => void
   setVotingLimit: (limit: number) => void
+
+  // Facilitator mode
+  toggleFacilitatorMode: () => void
 
   updateBoardControls: (updates: Partial<RetroBoardControls>) => void
 }

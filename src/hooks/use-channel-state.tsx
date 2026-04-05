@@ -3,7 +3,7 @@ import * as Ably from 'ably'
 import { useAbly } from 'ably/react'
 import { VotingMode, VotingState } from '@/enums'
 
-const BOARD_CONTROLS_KEY = 'boardControlsV3'
+const BOARD_CONTROLS_KEY = 'boardControlsV4'
 type BoardControlsKey = typeof BOARD_CONTROLS_KEY
 
 type BoardControls = {
@@ -24,6 +24,9 @@ type BoardControls = {
     limit: number
     collectedVotes: Record<string, string[]>
     results: Record<string, string[]>
+  }
+  facilitatorMode: {
+    isActive: boolean
   }
 }
 
@@ -50,6 +53,9 @@ const DEFAULT_BOARD_CONTROLS: BoardControlsMap = {
       limit: 0,
       collectedVotes: {},
       results: {},
+    },
+    facilitatorMode: {
+      isActive: false,
     },
   },
 }
@@ -109,6 +115,9 @@ export function useBoardControlsLiveMap({
               limit: defaultVotingLimit,
               collectedVotes: {},
               results: {},
+            },
+            facilitatorMode: {
+              isActive: false,
             },
           }
           boardControlsMap = await channel.objects.createMap<BoardControlsMap>({

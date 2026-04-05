@@ -1,15 +1,21 @@
 'use client'
 
-import { Popover } from '../common'
+import { Presentation } from 'lucide-react'
+import { Popover, usePopoverContext } from '../common'
 import { BoardControlItem } from './board-control-item'
 import { MusicStatus, TimeRemaining, VotesRemaining } from './indicators'
 import { AudioRefs, MusicControls, VolumeControl } from './music'
 import { TimerInputs } from './timer'
 import { Voting } from './voting'
+import { VotingState } from '@/enums'
 import {
   useBoardPermissions,
   useBoardSettings,
 } from '@/providers/retro-board/board-settings'
+import {
+  useBoardControlsActions,
+  useBoardControlsState,
+} from '@/providers/retro-board/controls'
 
 const getHeaderLabel = (
   timerEnabled: boolean,
@@ -27,14 +33,54 @@ const getHeaderLabel = (
   return `${parts.slice(0, -1).join(', ')}, and ${parts.at(-1)}`
 }
 
+function FacilitateSessionButton({
+  isFacilitatorMode,
+  onToggle,
+}: {
+  isFacilitatorMode: boolean
+  onToggle: () => void
+}) {
+  const popover = usePopoverContext()
+  const handleClick = () => {
+    onToggle()
+    popover.setOpen(false)
+  }
+
+  return (
+    <button
+      onClick={handleClick}
+      className='flex items-center gap-2 w-full text-sm font-semibold cursor-pointer rounded-md px-2 py-1.5 transition-colors hover:bg-primary/10'
+    >
+      <Presentation className='size-4' />
+      {isFacilitatorMode ? 'End Session' : 'Facilitate Session'}
+    </button>
+  )
+}
+
 export function BoardControls() {
-  const { userPermissions } = useBoardPermissions()
+  const { user, userPermissions } = useBoardPermissions()
   const { settings } = useBoardSettings()
+  const { isFacilitatorMode, votingState } = useBoardControlsState(s => ({
+    isFacilitatorMode: s.boardControls.facilitatorMode.isActive,
+    votingState: s.boardControls.voting.state,
+  }))
+  const toggleFacilitatorMode = useBoardControlsActions(
+    a => a.toggleFacilitatorMode,
+  )
+  const canFacilitate = user.hasFacilitator
+  const isVotingOpen = votingState === VotingState.OPEN
+  const showVoting = settings.voting.enabled && !isFacilitatorMode
+  const showFacilitate = canFacilitate && !isVotingOpen
   const shouldRender =
-    settings.timer.enabled || settings.music.enabled || settings.voting.enabled
+    settings.timer.enabled ||
+    settings.music.enabled ||
+    showVoting ||
+    showFacilitate
   const showPopover =
     settings.music.enabled ||
-    (settings.timer.enabled && userPermissions['timer.restricted.canControl'])
+    (settings.timer.enabled &&
+      userPermissions['timer.restricted.canControl']) ||
+    showFacilitate
   const canVote = userPermissions['voting.restricted.canVote']
 
   if (!shouldRender) return
@@ -52,7 +98,7 @@ export function BoardControls() {
                   {getHeaderLabel(
                     settings.timer.enabled,
                     settings.music.enabled,
-                    settings.voting.enabled,
+                    showVoting,
                   )}
                 </p>
               </BoardControlItem>
@@ -73,16 +119,24 @@ export function BoardControls() {
                     <MusicControls />
                   </BoardControlItem>
                 )}
-              {settings.voting.enabled && (
+              {showVoting && (
                 <BoardControlItem>
                   <Voting />
+                </BoardControlItem>
+              )}
+              {showFacilitate && (
+                <BoardControlItem className='flex items-center gap-2'>
+                  <FacilitateSessionButton
+                    isFacilitatorMode={isFacilitatorMode}
+                    onToggle={toggleFacilitatorMode}
+                  />
                 </BoardControlItem>
               )}
             </div>
           }
         >
           <div className='text-xl font-mono text-center select-none z-10 flex items-center gap-2'>
-            {settings.voting.enabled && canVote && <VotesRemaining />}
+            {showVoting && canVote && <VotesRemaining />}
             {settings.timer.enabled && <TimeRemaining />}
             {settings.music.enabled && <MusicStatus />}
           </div>

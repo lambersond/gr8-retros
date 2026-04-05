@@ -1,6 +1,8 @@
-import { BoardCardsSortOptions } from '../enums'
+import { BoardCardsFilterOptions, BoardCardsSortOptions } from '../enums'
 import { useBoardCards } from '../provider'
 import { filterCardsBy } from '../utils'
+import { VotingState } from '@/enums'
+import { useBoardControlsState } from '@/providers/retro-board/controls'
 import type { CardGroupState } from '../types'
 import type { Card } from '@/types'
 
@@ -93,21 +95,62 @@ function buildComparator(
   }
 }
 
+function getGroupVotes(group: CardGroupState, cards: Record<string, Card>) {
+  return group.cardIds
+    .map(id => cards[id])
+    .filter(Boolean)
+    .reduce((sum, c) => sum + (c.votes ?? 0), 0)
+}
+
+function isGroupDiscussed(group: CardGroupState, cards: Record<string, Card>) {
+  const memberCards = group.cardIds.map(id => cards[id]).filter(Boolean)
+  return memberCards.length > 0 && memberCards.every(c => c.isDiscussed)
+}
+
+function filterGroupsByFilter(
+  groups: CardGroupState[],
+  filter: BoardCardsFilterOptions,
+  cards: Record<string, Card>,
+) {
+  switch (filter) {
+    case BoardCardsFilterOptions.WITH_VOTES: {
+      return groups.filter(g => getGroupVotes(g, cards) > 0)
+    }
+    case BoardCardsFilterOptions.WITHOUT_VOTES: {
+      return groups.filter(g => getGroupVotes(g, cards) === 0)
+    }
+    default: {
+      return groups
+    }
+  }
+}
+
 export function useColumnItems(column: string): ColumnItem[] {
   const boardCards = useBoardCards()
+  const isVotingOpen = useBoardControlsState(
+    s => s.boardControls.voting.state === VotingState.OPEN,
+  )
 
   const standaloneCards = Object.values(boardCards.cards).filter(
     card => card.column === column && !card.cardGroupId,
   )
   const filteredCards = filterCardsBy(standaloneCards, boardCards.filter)
 
-  const columnGroups = Object.values(boardCards.groups).filter(
-    group => group.column === column,
+  const columnGroups = filterGroupsByFilter(
+    Object.values(boardCards.groups).filter(group => group.column === column),
+    boardCards.filter,
+    boardCards.cards,
   )
 
   const items: ColumnItem[] = [
-    ...filteredCards.map(card => ({ kind: 'card' as const, data: card })),
-    ...columnGroups.map(group => ({ kind: 'group' as const, data: group })),
+    ...filteredCards
+      .filter(card => !isVotingOpen || !card.isDiscussed)
+      .map(card => ({ kind: 'card' as const, data: card })),
+    ...columnGroups
+      .filter(
+        group => !isVotingOpen || !isGroupDiscussed(group, boardCards.cards),
+      )
+      .map(group => ({ kind: 'group' as const, data: group })),
   ]
 
   return items.toSorted(buildComparator(boardCards.sort, boardCards.cards))

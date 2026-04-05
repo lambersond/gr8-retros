@@ -28,6 +28,7 @@ import {
   useBoardPermissions,
   useBoardSettings,
 } from '@/providers/retro-board/board-settings'
+import { useBoardControlsState } from '@/providers/retro-board/controls'
 import {
   BoardCardsMessageType,
   CardGroupState,
@@ -61,6 +62,9 @@ export function CardGroup({
   const { id: boardId } = useParams() satisfies { id: string }
   const { publish } = useChannel(boardId)
 
+  const isFacilitatorMode = useBoardControlsState(
+    s => s.boardControls.facilitatorMode.isActive,
+  )
   const canUpvote = userPermissions['upvoting.restricted.canUpvote']
   const isDragEnabled = settings.dragAndDrop.enabled
 
@@ -90,24 +94,24 @@ export function CardGroup({
 
   const aggregates = useMemo(() => {
     const totalUpvotes = memberCards.reduce(
-      (sum, c) => sum + c.upvotedBy.length,
+      (sum, c) => sum + (c.upvotedBy?.length ?? 0),
       0,
     )
     const totalComments = memberCards.reduce(
-      (sum, c) => sum + c.comments.length,
+      (sum, c) => sum + (c.comments?.length ?? 0),
       0,
     )
     const allDiscussed =
       memberCards.length > 0 && memberCards.every(c => c.isDiscussed)
     const allActionItems = memberCards.flatMap(c =>
-      c.actionItems.map(ai => ({ ...ai, cardId: c.id })),
+      (c.actionItems ?? []).map(ai => ({ ...ai, cardId: c.id })),
     )
     const actionItemsExist = allActionItems.length > 0
     const actionItemsComplete =
       actionItemsExist && allActionItems.every(ai => ai.isDone)
     const anyUpvotedByMe =
       !!currentUserId &&
-      memberCards.some(c => c.upvotedBy.includes(currentUserId))
+      memberCards.some(c => c.upvotedBy?.includes(currentUserId))
 
     return {
       totalUpvotes,
@@ -214,7 +218,14 @@ export function CardGroup({
             <GripVertical className='size-4' />
           </div>
         )}
-        <span className='lg:text-lg xl:text-xl font-bold text-text-primary flex-1 truncate'>
+        <span
+          className={clsx(
+            'lg:text-lg xl:text-xl font-bold flex-1 truncate',
+            aggregates.allDiscussed
+              ? 'text-text-secondary line-through'
+              : 'text-text-primary',
+          )}
+        >
           {group.label}
         </span>
         <div className='flex items-center gap-2 shrink-0'>
@@ -390,16 +401,18 @@ export function CardGroup({
         </div>
       )}
 
-      <div className='flex items-center px-3 pb-2 pt-1'>
-        <IconButton
-          icon={Pencil}
-          intent='text-secondary'
-          tooltip='Edit group name'
-          onClick={handleEditGroup}
-          size='sm'
-          data-no-drag
-        />
-      </div>
+      {!isFacilitatorMode && (
+        <div className='flex items-center px-3 pb-2 pt-1'>
+          <IconButton
+            icon={Pencil}
+            intent='text-secondary'
+            tooltip='Edit group name'
+            onClick={handleEditGroup}
+            size='sm'
+            data-no-drag
+          />
+        </div>
+      )}
 
       {isMergeTarget && (
         <div className='px-3 pb-1 text-xs font-semibold text-warning tracking-wide'>

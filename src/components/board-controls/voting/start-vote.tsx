@@ -1,4 +1,8 @@
-import { Checkbox, NumberIncrementor } from '@/components/common'
+import {
+  Checkbox,
+  NumberIncrementor,
+  usePopoverContext,
+} from '@/components/common'
 import { VotingMode } from '@/enums'
 import {
   useBoardControlsActions,
@@ -19,10 +23,17 @@ export function StartVote() {
     }),
   )
 
+  const popover = usePopoverContext()
+
   const isMultiMode = votingMode === VotingMode.MULTI
 
   const handleMultiModeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setVotingMode(e.target.checked ? VotingMode.MULTI : VotingMode.SINGLE)
+  }
+
+  const handleStartVoting = () => {
+    openVoting()
+    popover.setOpen(false)
   }
 
   return (
@@ -46,7 +57,7 @@ export function StartVote() {
         />
       </div>
       <button
-        onClick={openVoting}
+        onClick={handleStartVoting}
         className='px-4 py-2 bg-primary text-white rounded-md hover:bg-primary/90 active:bg-primary/80 transition tracking-wide text-sm cursor-pointer'
       >
         Start Voting

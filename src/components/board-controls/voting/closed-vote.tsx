@@ -1,4 +1,5 @@
 import clsx from 'clsx'
+import { usePopoverContext } from '@/components/common'
 import {
   useBoardControlsActions,
   useBoardControlsState,
@@ -7,6 +8,7 @@ import {
 const canReset = true
 
 export function ClosedVote() {
+  const popover = usePopoverContext()
   const { resetVoting } = useBoardControlsActions(a => ({
     resetVoting: a.resetVoting,
   }))
@@ -31,7 +33,10 @@ export function ClosedVote() {
       <div className='flex gap-2 justify-end'>
         {canReset && (
           <button
-            onClick={resetVoting}
+            onClick={() => {
+              resetVoting()
+              popover.setOpen(false)
+            }}
             className='border border-border-light px-4 py-2 bg-tertiary/80 text-text-secondary rounded-md hover:bg-tertiary transition tracking-wide text-sm cursor-pointer'
           >
             Reset Votes

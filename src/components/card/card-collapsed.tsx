@@ -10,6 +10,7 @@ import {
   useBoardPermissions,
   useBoardSettings,
 } from '@/providers/retro-board/board-settings'
+import { useBoardControlsState } from '@/providers/retro-board/controls'
 import type { CardProps } from './types'
 
 export function CardCollapsed({
@@ -29,6 +30,9 @@ export function CardCollapsed({
   const { userPermissions } = useBoardPermissions()
   const { settings } = useBoardSettings()
 
+  const isFacilitatorMode = useBoardControlsState(
+    s => s.boardControls.facilitatorMode.isActive,
+  )
   const canUpvote = userPermissions['upvoting.restricted.canUpvote']
   const upvoteAction = canUpvote ? handleUpvote : undefined
 
@@ -106,7 +110,7 @@ export function CardCollapsed({
       </div>
       <div className='flex items-center justify-between px-2 pb-1'>
         <div className='flex items-center gap-1'>
-          {canEdit && (
+          {canEdit && !isFacilitatorMode && (
             <IconButton
               icon={Pencil}
               intent='text-secondary'

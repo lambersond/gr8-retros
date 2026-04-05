@@ -82,7 +82,7 @@ type ContextType =
 
 const PopoverContext = createContext<ContextType>(undefined)
 
-const usePopoverContext = () => {
+export const usePopoverContext = () => {
   const context = useContext(PopoverContext)
 
   return context as ReturnType<typeof usePopover>

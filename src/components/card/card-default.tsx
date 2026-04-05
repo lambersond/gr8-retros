@@ -23,6 +23,7 @@ import {
   useBoardPermissions,
   useBoardSettings,
 } from '@/providers/retro-board/board-settings'
+import { useBoardControlsState } from '@/providers/retro-board/controls'
 import type { CardProps } from './types'
 
 export function CardDefault({
@@ -50,6 +51,9 @@ export function CardDefault({
   const { userPermissions } = useBoardPermissions()
   const { settings } = useBoardSettings()
 
+  const isFacilitatorMode = useBoardControlsState(
+    s => s.boardControls.facilitatorMode.isActive,
+  )
   const canUpvote = userPermissions['upvoting.restricted.canUpvote']
   const canAddActionItem = userPermissions['actionItems.restricted.canAdd']
   const isDragEnabled = settings.dragAndDrop.enabled
@@ -188,7 +192,7 @@ export function CardDefault({
         className='flex items-center gap-2 justify-between p-2 border-t border-tertiary'
       >
         <div className='flex items-center gap-1'>
-          {canEdit && (
+          {canEdit && !isFacilitatorMode && (
             <>
               <IconButton
                 icon={Pencil}

@@ -483,6 +483,17 @@ export function RetroBoardControlsProvider({
   )
 
   // ---------------------------------------------------------------------------
+  // Facilitator mode actions
+  // ---------------------------------------------------------------------------
+  const toggleFacilitatorMode = useCallback(() => {
+    updateBoardControls({
+      facilitatorMode: {
+        isActive: !boardControls.facilitatorMode.isActive,
+      },
+    })
+  }, [boardControls.facilitatorMode.isActive, updateBoardControls])
+
+  // ---------------------------------------------------------------------------
   // Stores
   // ---------------------------------------------------------------------------
   const stateStoreRef = useRef(
@@ -520,6 +531,7 @@ export function RetroBoardControlsProvider({
       resetVoting,
       setVotingMode,
       setVotingLimit,
+      toggleFacilitatorMode,
     }),
   )
 
@@ -571,6 +583,7 @@ export function RetroBoardControlsProvider({
       resetVoting,
       setVotingMode,
       setVotingLimit,
+      toggleFacilitatorMode,
     })
   }, [
     togglePlay,
@@ -589,6 +602,7 @@ export function RetroBoardControlsProvider({
     resetVoting,
     setVotingMode,
     setVotingLimit,
+    toggleFacilitatorMode,
   ])
 
   // ---------------------------------------------------------------------------
