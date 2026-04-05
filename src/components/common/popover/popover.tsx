@@ -26,7 +26,7 @@ import {
 import { MoreVertIcon } from '../icons'
 import type { PopoverOptions, PopoverProps, PopoverTriggerProps } from './types'
 
-function usePopover({ placement = 'bottom', modal }: PopoverOptions = {}) {
+function usePopoverState({ placement = 'bottom', modal }: PopoverOptions = {}) {
   const [open, setOpen] = useState(false)
   const [labelId, setLabelId] = useState<string | undefined>()
   const [descriptionId, setDescriptionId] = useState<string | undefined>()
@@ -74,7 +74,7 @@ function usePopover({ placement = 'bottom', modal }: PopoverOptions = {}) {
 }
 
 type ContextType =
-  | (ReturnType<typeof usePopover> & {
+  | (ReturnType<typeof usePopoverState> & {
       setLabelId: React.Dispatch<React.SetStateAction<string | undefined>>
       setDescriptionId: React.Dispatch<React.SetStateAction<string | undefined>>
     })
@@ -82,10 +82,10 @@ type ContextType =
 
 const PopoverContext = createContext<ContextType>(undefined)
 
-export const usePopoverContext = () => {
+export const usePopover = () => {
   const context = useContext(PopoverContext)
 
-  return context as ReturnType<typeof usePopover>
+  return context as ReturnType<typeof usePopoverState>
 }
 
 function PopoverContainer({
@@ -95,7 +95,7 @@ function PopoverContainer({
 }: {
   children: React.ReactNode
 } & PopoverOptions) {
-  const popover = usePopover({ modal, ...restOptions })
+  const popover = usePopoverState({ modal, ...restOptions })
   return (
     <PopoverContext.Provider value={popover}>
       {children}
@@ -107,7 +107,7 @@ const PopoverTrigger = forwardRef<
   HTMLElement,
   React.HTMLProps<HTMLElement> & PopoverTriggerProps
 >(function PopoverTrigger({ children, asChild = false, ...props }, propRef) {
-  const context = usePopoverContext()
+  const context = usePopover()
   const childrenRef = (children as any).ref
   const ref = useMergeRefs([context.refs.setReference, propRef, childrenRef])
 
@@ -139,7 +139,7 @@ const PopoverContent = forwardRef<
   HTMLDivElement,
   React.HTMLProps<HTMLDivElement>
 >(function PopoverContent({ style, ...props }, propRef) {
-  const { context: floatingContext, ...context } = usePopoverContext()
+  const { context: floatingContext, ...context } = usePopover()
   const ref = useMergeRefs([context.refs.setFloating, propRef])
 
   if (!floatingContext.open) return

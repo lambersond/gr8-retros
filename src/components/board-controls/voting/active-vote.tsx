@@ -1,4 +1,4 @@
-import { Info, usePopoverContext } from '@/components/common'
+import { Info, usePopover } from '@/components/common'
 import { useModals } from '@/hooks/use-modals'
 import { hasMinimumRole } from '@/lib/roles'
 import { useBoardSettings } from '@/providers/retro-board/board-settings'
@@ -9,7 +9,7 @@ import {
 import { useViewingMembers } from '@/providers/viewing-members'
 
 export function ActiveVote() {
-  const popover = usePopoverContext()
+  const popover = usePopover()
   const { openModal } = useModals()
   const { closeVoting } = useBoardControlsActions(a => ({
     closeVoting: a.closeVoting,

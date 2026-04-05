@@ -1,5 +1,5 @@
 import clsx from 'clsx'
-import { usePopoverContext } from '@/components/common'
+import { usePopover } from '@/components/common'
 import {
   useBoardControlsActions,
   useBoardControlsState,
@@ -8,7 +8,7 @@ import {
 const canReset = true
 
 export function ClosedVote() {
-  const popover = usePopoverContext()
+  const popover = usePopover()
   const { resetVoting } = useBoardControlsActions(a => ({
     resetVoting: a.resetVoting,
   }))

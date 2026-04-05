@@ -1,8 +1,8 @@
 'use client'
 
-import { Presentation } from 'lucide-react'
-import { Popover, usePopoverContext } from '../common'
+import { Popover } from '../common'
 import { BoardControlItem } from './board-control-item'
+import { FacilitateSessionButton } from './facilitate'
 import { MusicStatus, TimeRemaining, VotesRemaining } from './indicators'
 import { AudioRefs, MusicControls, VolumeControl } from './music'
 import { TimerInputs } from './timer'
@@ -31,30 +31,6 @@ const getHeaderLabel = (
   if (parts.length === 0) return ''
   if (parts.length === 1) return parts[0]
   return `${parts.slice(0, -1).join(', ')}, and ${parts.at(-1)}`
-}
-
-function FacilitateSessionButton({
-  isFacilitatorMode,
-  onToggle,
-}: {
-  isFacilitatorMode: boolean
-  onToggle: () => void
-}) {
-  const popover = usePopoverContext()
-  const handleClick = () => {
-    onToggle()
-    popover.setOpen(false)
-  }
-
-  return (
-    <button
-      onClick={handleClick}
-      className='flex items-center gap-2 w-full text-sm font-semibold cursor-pointer rounded-md px-2 py-1.5 transition-colors hover:bg-primary/10'
-    >
-      <Presentation className='size-4' />
-      {isFacilitatorMode ? 'End Session' : 'Facilitate Session'}
-    </button>
-  )
 }
 
 export function BoardControls() {

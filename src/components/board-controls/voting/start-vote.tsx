@@ -1,7 +1,7 @@
 import {
   Checkbox,
   NumberIncrementor,
-  usePopoverContext,
+  usePopover,
 } from '@/components/common'
 import { VotingMode } from '@/enums'
 import {
@@ -23,7 +23,7 @@ export function StartVote() {
     }),
   )
 
-  const popover = usePopoverContext()
+  const popover = usePopover()
 
   const isMultiMode = votingMode === VotingMode.MULTI
 
