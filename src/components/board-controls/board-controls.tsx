@@ -52,6 +52,7 @@ export function BoardControls() {
                   {getHeaderLabel(
                     settings.timer.enabled,
                     settings.music.enabled,
+                    settings.voting.enabled,
                   )}
                 </p>
               </BoardControlItem>
