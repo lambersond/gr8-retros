@@ -2,6 +2,7 @@
 
 import Link from 'next/link'
 import { BoardRoleBadge } from '@/components/badges'
+import { SidebarItem } from '@/components/common'
 import { useBoardMemberships } from '@/providers/board-memberships'
 import type { BoardSectionProps } from './types'
 
@@ -18,14 +19,15 @@ export function BoardSection({ isAuthenticated }: Readonly<BoardSectionProps>) {
       <span className='flex flex-col gap-2'>
         {boards.length > 0 ? (
           boards.map(({ boardName, boardId, role }) => (
-            <Link
-              key={boardId}
-              className='p-3 bg-card rounded-lg block hover:bg-paper transition-colors border border-transparent flex justify-between items-center hover:border-primary shadow-sm'
-              href={`/retro/${boardId}`}
-            >
-              <p className='font-semibold'>{boardName}</p>
-              <BoardRoleBadge role={role} />
-            </Link>
+            <SidebarItem key={boardId}>
+              <Link
+                className='p-3 bg-card rounded-lg block hover:bg-paper transition-colors border border-transparent flex justify-between items-center hover:border-primary shadow-sm'
+                href={`/retro/${boardId}`}
+              >
+                <p className='font-semibold'>{boardName}</p>
+                <BoardRoleBadge role={role} />
+              </Link>
+            </SidebarItem>
           ))
         ) : (
           <p className='text-text-secondary'>

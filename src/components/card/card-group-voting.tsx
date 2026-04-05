@@ -4,13 +4,11 @@ import { useMemo } from 'react'
 import clsx from 'clsx'
 import { ArrowBigUp, Vote, X } from 'lucide-react'
 import { useBoardPermissions } from '@/providers/retro-board/board-settings'
-import { useBoardCards } from '@/providers/retro-board/cards'
+import { CardGroupState, useBoardCards } from '@/providers/retro-board/cards'
 import {
   useBoardControlsActions,
   useBoardControlsState,
-} from '@/providers/retro-board/controls/selectors'
-import type { CardGroupState } from '@/providers/retro-board/cards'
-import type { Card as CardType } from '@/types'
+} from '@/providers/retro-board/controls'
 
 export interface CardGroupVotingProps {
   group: CardGroupState
@@ -34,7 +32,7 @@ export function CardGroupVoting({ group }: Readonly<CardGroupVotingProps>) {
   const hasVotingPermissions = userPermissions['voting.restricted.canVote']
 
   const memberCards = useMemo(
-    () => group.cardIds.map(id => allCards[id]).filter(Boolean) as CardType[],
+    () => group.cardIds.map(id => allCards[id]).filter(Boolean),
     [group.cardIds, allCards],
   )
 
