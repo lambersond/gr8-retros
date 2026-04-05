@@ -46,7 +46,8 @@ export function BoardControls() {
   const canFacilitate = user.hasFacilitator
   const isVotingOpen = votingState === VotingState.OPEN
   const showVoting = settings.voting.enabled && !isFacilitatorMode
-  const showFacilitate = canFacilitate && !isVotingOpen
+  const showFacilitate =
+    canFacilitate && !isVotingOpen && settings.facilitatorMode.enabled
   const shouldRender =
     settings.timer.enabled ||
     settings.music.enabled ||

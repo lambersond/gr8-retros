@@ -158,10 +158,12 @@ model BoardSettings {
 
   isDragAndDropEnabled     Boolean    @default(true) // TIER = FREE
   cardGroupingEnabled      Boolean    @default(false) // TIER = BELIEVER
+  // Not implemented yet
   aiCardGroupNamingEnabled Boolean    @default(false) // TIER = SUPPORTER
 
-  // Not implemented yet
   isFacilitatorModeEnabled Boolean    @default(false) // TIER = BELIEVER
+
+  // Not implemented yet
   isAiSummaryEnabled       Boolean    @default(false) // TIER = SUPPORTER
 
   // Default columns and relations

@@ -1,7 +1,7 @@
 export type SettingsToggleProps = {
   canEdit?: boolean
   children?: React.ReactNode
-  hint?: string
+  hint?: React.ReactNode
   Icon: React.ComponentType<React.SVGProps<SVGSVGElement>>
   isEnabled?: boolean
   isUnlocked?: boolean

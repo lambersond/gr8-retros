@@ -9,6 +9,7 @@ import {
   CommentsSettings,
   DangerZoneSettings,
   DragAndDropSettings,
+  FacilitatorModeSettings,
   MusicSettings,
   PrivateSettings,
   TimerSettings,
@@ -55,6 +56,7 @@ export function BoardSettingsSidebar() {
           <CommentsSettings />
           <VotingSettings />
           <DragAndDropSettings />
+          <FacilitatorModeSettings />
           <DangerZoneSettings />
         </section>
       </div>

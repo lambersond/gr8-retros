@@ -213,4 +213,12 @@ export const BASE_SETTINGS: BoardSettingsWithPermissionsNoIcons = {
       },
     },
   },
+  facilitatorMode: {
+    render: true,
+    canEdit: false,
+    enabled: false,
+    isUnlocked: false,
+    key: 'isFacilitatorModeEnabled',
+    title: 'Facilitator Mode',
+  },
 }

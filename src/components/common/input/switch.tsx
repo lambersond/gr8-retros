@@ -45,18 +45,18 @@ export function Switch({
   )
 
   const switchTrackClasses = clsx(
-    'flex items-center flex-shrink-0 rounded-full duration-300 ease-in-out',
+    'flex items-center flex-shrink-0 rounded-full duration-300 ease-in-out cursor-pointer',
     'after:rounded-full after:shadow-md after:duration-300 group-hover:after:translate-x-1',
     SIZE_CLASSES[size],
     'bg-secondary/15 after:bg-secondary/80 peer-checked:bg-primary peer-checked:after:bg-white',
     disabled && 'opacity-50 cursor-not-allowed',
   )
 
-  const sideTextClasses = (side: 'left' | 'right') =>
+  const sideTextClasses = () =>
     clsx(
       'select-none font-normal',
       TEXT_SIZE_CLASSES[size],
-      side === 'left' ? 'text-text-primary' : 'text-text-primary',
+      'text-text-primary',
     )
 
   return (
@@ -68,7 +68,7 @@ export function Switch({
           hasSideText ? 'gap-3' : 'ml-4',
         )}
       >
-        {!!leftText && <p className={sideTextClasses('left')}>{leftText}</p>}
+        {!!leftText && <p className={sideTextClasses()}>{leftText}</p>}
 
         <input
           id={name}
@@ -82,7 +82,7 @@ export function Switch({
 
         <span className={switchTrackClasses} />
 
-        {!!rightText && <p className={sideTextClasses('right')}>{rightText}</p>}
+        {!!rightText && <p className={sideTextClasses()}>{rightText}</p>}
       </div>
     </label>
   )

@@ -125,7 +125,7 @@ export const PLANS = new Map<PlanId, Plan>([
       features: [
         { label: 'Own up to 10 boards' },
         { label: 'Custom board columns' },
-        { label: 'Facilitator Mode', soon: true },
+        { label: 'Facilitator Mode' },
         { label: 'Group cards via drag-and-drop' },
         { label: 'Export as PDF' },
         { label: 'Boards retained for 180 days' },

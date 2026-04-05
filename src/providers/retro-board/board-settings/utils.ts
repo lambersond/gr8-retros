@@ -5,6 +5,7 @@ import {
   MessageSquareWarning,
   Move,
   Music,
+  Presentation,
   UserLock,
   Vote,
 } from 'lucide-react'
@@ -32,6 +33,7 @@ const getBaseSettings = (): BoardSettingsWithPermissions => {
   baseSettings.actionItems.icon = MessageSquareWarning
   baseSettings.voting.icon = Vote
   baseSettings.dragAndDrop.icon = Move
+  baseSettings.facilitatorMode.icon = Presentation
 
   return baseSettings
 }
@@ -156,6 +158,13 @@ export function getSettingsWithPermissions(
     userRole,
   )
 
+  // Facilitator Mode Settings
+  baseSettings.facilitatorMode.enabled = settings.isFacilitatorModeEnabled
+  baseSettings.facilitatorMode.canEdit = userHasPermission(
+    'facilitatorMode',
+    userRole,
+  )
+
   // Drag and Drop Settings
   baseSettings.dragAndDrop.enabled = settings.isDragAndDropEnabled
   baseSettings.dragAndDrop.canEdit = userHasPermission('dragAndDrop', userRole)
@@ -240,6 +249,7 @@ function getStaticBoardPermissions(userRole: BoardRole) {
       'dragAndDrop.grouping.aiNaming',
       userRole,
     ),
+    facilitatorMode: userHasPermission('facilitatorMode', userRole),
   } satisfies Record<PermissionKey, boolean>
 }
 
