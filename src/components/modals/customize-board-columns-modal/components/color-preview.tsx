@@ -28,7 +28,7 @@ export function ColumnPreview({
       style={{ backgroundColor: bg, borderColor: border }}
     >
       <div
-        className='font-semibold truncate px-3 py-2 text-sm'
+        className='font-semibold truncate px-3 py-2 text-sm text-left'
         style={{ backgroundColor: titleBg, color: titleText }}
       >
         {column.emoji} {column.label}

@@ -125,6 +125,7 @@ export const PLANS = new Map<PlanId, Plan>([
       features: [
         { label: 'Own up to 10 boards' },
         { label: 'Custom board columns' },
+        { label: 'Assign admin roles' },
         { label: 'Facilitator Mode' },
         { label: 'Group cards via drag-and-drop' },
         { label: 'Export as PDF' },
@@ -165,8 +166,7 @@ export const PLANS = new Map<PlanId, Plan>([
       checkColor: 'dark:bg-amber-700/30 bg-amber-50 text-amber-500',
       features: [
         { label: 'Own up to 50 boards' },
-        { label: 'Assign admin roles' },
-        { label: 'Board layout variants', soon: true },
+        { label: 'Board layout variants' },
         { label: 'AI-generated grouped card names', soon: true },
         { label: 'AI-generated summaries', soon: true },
         { label: 'Boards retained for 365 days' },

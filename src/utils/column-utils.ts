@@ -1,26 +1,13 @@
-import { COLUMN_TYPES, PRESET_COLUMNS } from '@/constants'
+import { RETRO_THEMES } from '@/constants'
 import type { Column } from '@/types'
 
+const standardTheme = RETRO_THEMES.find(t => t.id === 'standard')!
+
 export function buildDefaultColumnData() {
-  return COLUMN_TYPES.map((type, index) => {
-    const style = PRESET_COLUMNS[type]
-    return {
-      index,
-      columnType: type,
-      label: style.label,
-      emoji: style.emoji ?? undefined,
-      tagline: style.tagline ?? undefined,
-      placeholder: style.placeholder ?? undefined,
-      lightBg: style.light.bg,
-      lightBorder: style.light.border,
-      lightTitleBg: style.light.titleBg,
-      lightTitleText: style.light.titleText,
-      darkBg: style.dark.bg,
-      darkBorder: style.dark.border,
-      darkTitleBg: style.dark.titleBg,
-      darkTitleText: style.dark.titleText,
-    }
-  })
+  return standardTheme.columns.map((col, index) => ({
+    index,
+    ...col,
+  }))
 }
 
 export function toColumnConfig(column: Column) {

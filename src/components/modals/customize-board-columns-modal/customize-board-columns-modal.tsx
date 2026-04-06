@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useCallback, useMemo, useEffect } from 'react'
-import { Plus, X } from 'lucide-react'
+import { Lock, Plus, X } from 'lucide-react'
 import {
   ColorModeToggle,
   ColorsSection,
@@ -10,25 +10,94 @@ import {
   SaveButton,
 } from './components'
 import { makeNewColumn } from './utils'
-import { Dropdown, IconButton, Input, Modal } from '@/components/common'
-import { COLUMNS_MAP } from '@/constants'
+import { PaymentTierBadge } from '@/components/badges'
+import {
+  Dropdown,
+  IconButton,
+  Input,
+  Modal,
+  Tooltip,
+} from '@/components/common'
+import { RETRO_THEMES } from '@/constants'
+import { PaymentTier } from '@/enums'
 import { useModals } from '@/hooks/use-modals'
 import type { ColorMode, CustomizeBoardColumnsModalProps } from './types'
 import type { Column } from '@/types'
 
-const PRESETS = COLUMNS_MAP
-const PRESET_OPTIONS = Object.entries(PRESETS).map(([, preset]) => ({
-  value: preset.columnType,
-  label: `${preset.emoji} ${preset.label}`.trimStart(),
-}))
+const TIER_ORDER: Record<PaymentTier, number> = {
+  [PaymentTier.FREE]: 0,
+  [PaymentTier.SUPPORTER]: 1,
+  [PaymentTier.BELIEVER]: 2,
+  [PaymentTier.CHAMPION]: 3,
+}
+
+function hasTier(current: PaymentTier, required: PaymentTier) {
+  return TIER_ORDER[current] >= TIER_ORDER[required]
+}
+
+const STANDARD_THEME_ID = 'standard'
+
+const PRESET_LOOKUP = new Map<
+  string,
+  (typeof RETRO_THEMES)[number]['columns'][number]
+>(
+  RETRO_THEMES.flatMap(theme =>
+    theme.columns.map(col => [`${theme.id}::${col.columnType}`, col]),
+  ),
+)
 
 export function CustomizeBoardColumnsModal({
   open = true,
   title = 'Customize Board Columns',
   initialColumns,
+  boardTier,
   onSave,
 }: Readonly<CustomizeBoardColumnsModalProps>) {
   const { closeModal } = useModals()
+  const themesUnlocked = hasTier(boardTier, PaymentTier.BELIEVER)
+
+  const themeOptions = useMemo(
+    () =>
+      RETRO_THEMES.map(theme => {
+        const locked = !themesUnlocked && theme.id !== STANDARD_THEME_ID
+        return {
+          id: theme.id,
+          label: locked ? (
+            <span className='flex items-center gap-1 opacity-50'>
+              {theme.name}
+              <Lock className='size-3 text-primary' />
+            </span>
+          ) : (
+            theme.name
+          ),
+          value: theme.id,
+        }
+      }),
+    [themesUnlocked],
+  )
+
+  const presetOptions = useMemo(
+    () =>
+      RETRO_THEMES.flatMap(theme =>
+        theme.columns.map(col => {
+          const locked = !themesUnlocked && theme.id !== STANDARD_THEME_ID
+          const key = `${theme.id}::${col.columnType}`
+          return {
+            id: key,
+            label: locked ? (
+              <span className='flex items-center gap-1 opacity-50'>
+                {`${col.emoji} ${col.label}`.trimStart()}
+                <Lock className='size-3 text-primary' />
+              </span>
+            ) : (
+              `${col.emoji} ${col.label}`.trimStart()
+            ),
+            value: key,
+          }
+        }),
+      ),
+    [themesUnlocked],
+  )
 
   const [columns, setColumns] = useState<Column[]>(
     initialColumns?.map((c, i) => ({ ...c, index: i })),
@@ -67,8 +136,8 @@ export function CustomizeBoardColumnsModal({
       } else if ((typeCounts.get(trimmedType) ?? 0) > 1) {
         err.columnType = 'Must be unique'
       }
-      if (trimmedLabel.length < 5) {
-        err.label = 'Must be more than 4 characters'
+      if (trimmedLabel.length < 3) {
+        err.label = 'Must be more than 2 characters'
       }
       if (Object.keys(err).length > 0) errors[col.id] = err
     }
@@ -111,12 +180,26 @@ export function CustomizeBoardColumnsModal({
   )
 
   const applyPreset = (key: string) => {
-    const preset = PRESETS[key]
+    const preset = PRESET_LOOKUP.get(key)
+    if (!preset) return
     setColumns(prev =>
       prev.map(c =>
         c.id === selectedId ? { ...c, ...preset, id: c.id, index: c.index } : c,
       ),
     )
+  }
+
+  const applyTheme = (themeId: string) => {
+    const theme = RETRO_THEMES.find(t => t.id === themeId)
+    if (!theme) return
+    const newColumns = theme.columns.map((col, i) => ({
+      ...col,
+      id: String(Date.now() + i),
+      index: i,
+      isNew: true,
+    })) as any as Column[]
+    setColumns(newColumns)
+    setSelectedId(newColumns[0]?.id ?? '')
   }
 
   useEffect(() => {
@@ -164,6 +247,41 @@ export function CustomizeBoardColumnsModal({
                   onClick={addColumn}
                   tooltip='Add column'
                 />
+              </div>
+              <div className='px-3 pb-3'>
+                <Dropdown
+                  label='Load theme'
+                  size='sm'
+                  placeholder='Choose a theme...'
+                  defaultEmpty
+                  clearAfterSelect
+                  options={themeOptions}
+                  onSelect={option => {
+                    if (!themesUnlocked && option.value !== STANDARD_THEME_ID)
+                      return
+                    applyTheme(option.value!)
+                  }}
+                />
+                {!themesUnlocked && (
+                  <Tooltip
+                    title={
+                      <span className='text-sm text-text-primary flex items-center gap-1'>
+                        Requires{' '}
+                        <PaymentTierBadge
+                          tier={PaymentTier.BELIEVER}
+                          redirectToPlans
+                        />{' '}
+                        plan or higher for additional themes.
+                      </span>
+                    }
+                    asChild
+                  >
+                    <p className='mt-1 flex cursor-pointer items-center gap-1 text-[10px] text-text-secondary'>
+                      <Lock className='size-3 text-primary' />
+                      Additional themes require upgrade
+                    </p>
+                  </Tooltip>
+                )}
               </div>
               <ul className='flex-1 list-none space-y-0.5 overflow-y-auto px-2 pb-4'>
                 {columns.map((col, i) => (
@@ -231,12 +349,15 @@ export function CustomizeBoardColumnsModal({
                     placeholder='Choose a preset...'
                     defaultEmpty
                     clearAfterSelect
-                    options={PRESET_OPTIONS.map(p => ({
-                      id: p.label,
-                      label: p.label,
-                      value: p.value,
-                    }))}
+                    options={presetOptions}
                     onSelect={option => {
+                      if (
+                        !themesUnlocked &&
+                        !String(option.value).startsWith(
+                          `${STANDARD_THEME_ID}::`,
+                        )
+                      )
+                        return
                       applyPreset(option.value!)
                     }}
                   />

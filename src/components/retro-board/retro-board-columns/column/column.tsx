@@ -11,7 +11,6 @@ import {
   getWrapperStyles,
 } from './utils'
 import { Card, CardGroup, CardGroupVoting } from '@/components/card'
-import { PRESET_COLUMNS } from '@/constants'
 import { VotingState } from '@/enums'
 import { useBoardControlsState } from '@/providers/retro-board/controls'
 import type { ColumnProps } from './types'
@@ -24,7 +23,7 @@ export function Column({ type, columnConfig }: Readonly<ColumnProps>) {
   )
   const { resolvedTheme } = useTheme()
   const isDark = resolvedTheme === 'dark'
-  const activeStyle = columnConfig ?? PRESET_COLUMNS[type]
+  const activeStyle = columnConfig
   const colors = isDark ? activeStyle.dark : activeStyle.light
   const label = [activeStyle.emoji, activeStyle.label].filter(Boolean).join(' ')
 

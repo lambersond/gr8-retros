@@ -28,6 +28,7 @@ export function BoardCustomizationSettings() {
   const onClick = () => {
     openModal('CustomizeBoardColumnsModal', {
       initialColumns: columns,
+      boardTier,
       async onSave(updatedColumns, originalColumns) {
         const data = await saveBoardColumns(
           updatedColumns as unknown as UpdateBoardColumn[],
