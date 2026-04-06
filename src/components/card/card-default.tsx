@@ -56,7 +56,7 @@ export function CardDefault({
   )
   const canUpvote = userPermissions['upvoting.restricted.canUpvote']
   const canAddActionItem = userPermissions['actionItems.restricted.canAdd']
-  const isDragEnabled = settings.dragAndDrop.enabled
+  const isDragEnabled = settings.dragAndDrop.enabled && !isFacilitatorMode
 
   const onDragStart = useCallback(
     (e: React.DragEvent) => {
