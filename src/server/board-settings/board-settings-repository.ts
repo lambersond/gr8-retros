@@ -131,6 +131,49 @@ export async function deleteBoardSettingById(
   })
 }
 
+export async function transferBoardOwnership(
+  settingsId: string,
+  previousOwnerId: string,
+  newOwnerId: string,
+  settingsPatch: Record<string, any>,
+) {
+  return prisma.$transaction(async tx => {
+    // Demote previous owner to ADMIN
+    await tx.boardMember.update({
+      where: {
+        userId_settingsId: { userId: previousOwnerId, settingsId },
+      },
+      data: { role: BoardRole.ADMIN },
+    })
+
+    // Promote new owner to OWNER
+    await tx.boardMember.update({
+      where: {
+        userId_settingsId: { userId: newOwnerId, settingsId },
+      },
+      data: { role: BoardRole.OWNER },
+    })
+
+    // Update ownerId and disable tier-gated settings
+    const updatedSettings = await tx.boardSettings.update({
+      where: { id: settingsId },
+      data: {
+        ownerId: newOwnerId,
+        ...settingsPatch,
+      },
+      select: {
+        retroSessionId: true,
+        isFacilitatorModeEnabled: true,
+        cardGroupingEnabled: true,
+        aiCardGroupNamingEnabled: true,
+        ownerId: true,
+      },
+    })
+
+    return updatedSettings
+  })
+}
+
 export async function addBoardMember(settingsId: string, newMemberId: string) {
   return prisma.boardMember.create({
     data: {

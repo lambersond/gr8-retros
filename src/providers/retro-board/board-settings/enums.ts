@@ -6,6 +6,7 @@ export enum BoardSettingsMessageType {
   NEW_MEMBER_ADDED = 'NEW_MEMBER_ADDED',
   MEMBER_REMOVED = 'MEMBER_REMOVED',
   UPDATE_MEMBER_ROLE = 'UPDATE_MEMBER_ROLE',
+  TRANSFER_BOARD = 'TRANSFER_BOARD',
 }
 
 export enum BoardSettingsInternalActionType {

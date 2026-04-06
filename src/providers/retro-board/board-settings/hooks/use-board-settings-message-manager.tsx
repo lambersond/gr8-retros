@@ -56,6 +56,18 @@ export function useBoardSettingsMessageHandlers() {
           fetchBoards(true)
         }
       },
+      [BoardSettingsMessageType.TRANSFER_BOARD]: data => {
+        dispatch({
+          type: BoardSettingsMessageType.TRANSFER_BOARD,
+          payload: data.payload,
+        })
+        if (
+          data.payload.previousOwnerId === user?.id ||
+          data.payload.newOwnerId === user?.id
+        ) {
+          fetchBoards(true)
+        }
+      },
     }
     return h
   }, [dispatch, fetchBoards, user?.id, router])

@@ -3,9 +3,22 @@
 import { userService } from '../user'
 import * as repository from './board-settings-repository'
 import { MAX_BOARDS_PER_SUBSCRIPTION } from '@/constants'
-import { BoardRole } from '@/enums'
+import { BoardRole, PaymentTier } from '@/enums'
 import { publishMessageToChannel } from '@/lib/ably'
 import { SETTINGS_ROLE_MAP, userHasPermission } from '@/lib/roles'
+
+const TIER_ORDER: Record<PaymentTier, number> = {
+  [PaymentTier.FREE]: 0,
+  [PaymentTier.SUPPORTER]: 1,
+  [PaymentTier.BELIEVER]: 2,
+  [PaymentTier.CHAMPION]: 3,
+}
+
+const TIER_GATED_SETTINGS: Record<string, PaymentTier> = {
+  isFacilitatorModeEnabled: PaymentTier.SUPPORTER,
+  cardGroupingEnabled: PaymentTier.SUPPORTER,
+  aiCardGroupNamingEnabled: PaymentTier.BELIEVER,
+}
 
 export async function updateSettingById(
   id: string,
@@ -154,4 +167,76 @@ export async function addBoardMember(
     },
   })
   return newMember
+}
+
+export async function transferBoardOwnership(
+  settingsId: string,
+  newOwnerId: string,
+  userId: string,
+) {
+  // Only the current owner can transfer
+  const callerRole = await userService.getUserBoardRole(userId, settingsId)
+  if (callerRole !== BoardRole.OWNER) {
+    return {
+      error: 'INSUFFICIENT_PERMISSIONS',
+      message: 'Only the board owner can transfer ownership',
+    }
+  }
+
+  // Target must be an ADMIN on this board
+  const targetRole = await userService.getUserBoardRole(newOwnerId, settingsId)
+  if (targetRole !== BoardRole.ADMIN) {
+    return {
+      error: 'INVALID_TARGET',
+      message: 'Board can only be transferred to an admin',
+    }
+  }
+
+  // Determine which settings to disable based on new owner's tier
+  const newOwner = await userService.getUserById(newOwnerId)
+  if (!newOwner) {
+    return { error: 'USER_NOT_FOUND', message: 'New owner not found' }
+  }
+
+  const newTier = newOwner.paymentTier
+  const settingsPatch: Record<string, boolean> = {}
+
+  for (const [key, requiredTier] of Object.entries(TIER_GATED_SETTINGS)) {
+    if (TIER_ORDER[newTier] < TIER_ORDER[requiredTier]) {
+      settingsPatch[key] = false
+    }
+  }
+
+  try {
+    const result = await repository.transferBoardOwnership(
+      settingsId,
+      userId,
+      newOwnerId,
+      settingsPatch,
+    )
+
+    await publishMessageToChannel(result.retroSessionId, {
+      name: 'members-updated',
+      data: {
+        type: 'TRANSFER_BOARD',
+        payload: {
+          previousOwnerId: userId,
+          newOwnerId,
+          newOwnerTier: newTier,
+          settingsPatch,
+        },
+      },
+    })
+
+    return {
+      success: true,
+      deactivateFacilitatorMode:
+        settingsPatch.isFacilitatorModeEnabled === false,
+    }
+  } catch {
+    return {
+      error: 'TRANSFER_FAILED',
+      message: 'Failed to transfer board ownership',
+    }
+  }
 }

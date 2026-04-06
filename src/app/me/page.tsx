@@ -24,16 +24,22 @@ export default async function Me() {
 
   return (
     <div className='max-h-[calc(100vh_-_--spacing(23))] min-h-[calc(100vh_-_--spacing(23))] text-text-primary bg-page overflow-y-auto'>
-      <div className='relative max-w-2xl mx-auto px-4 py-14 flex flex-col gap-5'>
+      <div className='relative max-w-[1440px] mx-auto px-4 py-14 flex flex-col gap-5'>
         <Suspense fallback={<Skeleton />}>
           <MyInfo myInfo={userInfo} />
         </Suspense>
-        <Suspense fallback={<Skeleton />}>
-          <MyBoards myBoards={userBoards} userInfo={userInfo} />
-        </Suspense>
-        <Suspense fallback={<Skeleton />}>
-          <MyActionItems myActionItems={userActionItems} />
-        </Suspense>
+        <div className='flex flex-col lg:flex-row gap-5'>
+          <div className='lg:flex-[1]'>
+            <Suspense fallback={<Skeleton />}>
+              <MyBoards myBoards={userBoards} userInfo={userInfo} />
+            </Suspense>
+          </div>
+          <div className='lg:flex-[2]'>
+            <Suspense fallback={<Skeleton />}>
+              <MyActionItems myActionItems={userActionItems} />
+            </Suspense>
+          </div>
+        </div>
       </div>
     </div>
   )
@@ -41,13 +47,10 @@ export default async function Me() {
 
 function Skeleton() {
   return (
-    <div
-      className='rounded-2xl bg-white p-6 animate-pulse'
-      style={{ border: '1px solid rgba(0,0,0,0.06)' }}
-    >
-      <div className='h-4 w-32 rounded bg-slate-200 mb-4' />
-      <div className='h-3 w-full rounded bg-slate-100 mb-2' />
-      <div className='h-3 w-3/4 rounded bg-slate-100' />
+    <div className='rounded-2xl bg-paper p-6 animate-pulse border border-border-light'>
+      <div className='h-4 w-32 rounded bg-hover mb-4' />
+      <div className='h-3 w-full rounded bg-hover/60 mb-2' />
+      <div className='h-3 w-3/4 rounded bg-hover/60' />
     </div>
   )
 }

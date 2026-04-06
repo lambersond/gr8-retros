@@ -115,6 +115,29 @@ export const boardCardActionHandlers = {
       },
     }
   },
+
+  [BoardSettingsMessageType.TRANSFER_BOARD]: (state, action) => {
+    const { previousOwnerId, newOwnerId, newOwnerTier, settingsPatch } =
+      action.payload
+    return {
+      ...state,
+      settings: {
+        ...state.settings,
+        ...settingsPatch,
+        ownerId: newOwnerId,
+        boardTier: newOwnerTier,
+        members: state.settings.members.map(member => {
+          if (member.user.id === previousOwnerId) {
+            return { ...member, role: BoardRole.ADMIN }
+          }
+          if (member.user.id === newOwnerId) {
+            return { ...member, role: BoardRole.OWNER }
+          }
+          return member
+        }),
+      },
+    }
+  },
 } satisfies {
   [K in
     | BoardSettingsMessageType

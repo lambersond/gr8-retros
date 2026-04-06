@@ -7,5 +7,6 @@ export type MyInfoProps = {
     name: string | null
     image: string | null
     paymentTier: PaymentTier
+    stripeCustomerId: string | null
   } | null>
 }

@@ -55,6 +55,7 @@ export async function getUserInfo(userId: string) {
       email: true,
       image: true,
       paymentTier: true,
+      stripeCustomerId: true,
     },
   })
 }
