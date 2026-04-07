@@ -114,6 +114,11 @@ export type BoardCardsReducerAction =
       column: string
     }
   | {
+      type: BoardCardsMessageType.DELETE_ORPHANED_CARDS
+      cardIds: string[]
+      groupIds: string[]
+    }
+  | {
       type: BoardCardsInternalActionType.FILTER_CARDS
       filter: BoardCardsFilterOptions
     }

@@ -176,6 +176,15 @@ export function useBoardCardsMessageHandlers() {
             column,
           })
         },
+
+        [BoardCardsMessageType.DELETE_ORPHANED_CARDS]: data => {
+          const { cardIds, groupIds } = data.payload
+          dispatch({
+            type: BoardCardsMessageType.DELETE_ORPHANED_CARDS,
+            cardIds,
+            groupIds,
+          })
+        },
       }
 
     return h

@@ -189,3 +189,10 @@ export async function getCardGroupById(cardGroupId: string) {
     include: { cards: true },
   })
 }
+
+export async function deleteCardGroupsByIds(groupIds: string[]) {
+  if (groupIds.length === 0) return { count: 0 }
+  return prisma.cardGroup.deleteMany({
+    where: { id: { in: groupIds } },
+  })
+}

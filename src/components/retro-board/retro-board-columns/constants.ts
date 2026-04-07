@@ -10,6 +10,5 @@ export const COLUMN_CLASSES = clsx(
   'px-3 sm:px-2',
   'w-full min-w-[320px]', // < md: 1 column at a time
   'md:w-1/2', // md: 2 columns
-  'lg:w-1/3', // lg: 3 columns
-  'xl:flex-1 xl:max-w-[420px]', // xl+: equal flex from basis-0, cap at 420px
+  'xl:w-auto xl:grow xl:basis-1/4 lg:max-w-[420px]', // lg: ≤3 grow to max-w, >3 at 1/4 width
 )

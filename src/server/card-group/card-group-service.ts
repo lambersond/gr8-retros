@@ -49,6 +49,10 @@ export async function deleteCardGroup(cardGroupId: string) {
   return repository.deleteCardGroup(cardGroupId)
 }
 
+export async function deleteCardGroupsByIds(groupIds: string[]) {
+  return repository.deleteCardGroupsByIds(groupIds)
+}
+
 export async function deleteEmptyCardGroup(cardGroupId: string) {
   const group = await repository.getCardGroupById(cardGroupId)
   if (!group) throw new Error('Card group not found')

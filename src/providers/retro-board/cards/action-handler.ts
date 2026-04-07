@@ -289,6 +289,23 @@ export const boardCardActionHandlers: {
       groups: { ...state.groups, [groupId]: { ...group, position, column } },
     }
   },
+  [BoardCardsMessageType.DELETE_ORPHANED_CARDS]: (state, action) => {
+    const { cardIds, groupIds } = action
+    const cardIdSet = new Set(cardIds)
+    const groupIdSet = new Set(groupIds)
+
+    const newCards = { ...state.cards }
+    for (const id of cardIdSet) {
+      delete newCards[id]
+    }
+
+    const newGroups = { ...state.groups }
+    for (const id of groupIdSet) {
+      delete newGroups[id]
+    }
+
+    return { ...state, cards: newCards, groups: newGroups }
+  },
   [BoardCardsInternalActionType.RESYNC_CARDS]: (state, action) => {
     const newState = utils.createInitialState(
       action.board,

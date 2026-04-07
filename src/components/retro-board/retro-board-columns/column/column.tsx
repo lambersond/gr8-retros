@@ -4,12 +4,7 @@ import { useTheme } from 'next-themes'
 import { IconButton } from '../../../common'
 import { useColumn } from '../../hooks/use-column'
 import { useColumnDragDrop } from '../../hooks/use-column-drag-drop'
-import {
-  getTitleClasses,
-  getTitleStyles,
-  getWrapperClasses,
-  getWrapperStyles,
-} from './utils'
+import { getTitleStyles, getWrapperStyles } from './utils'
 import { Card, CardGroup, CardGroupVoting } from '@/components/card'
 import { VotingState } from '@/enums'
 import { useBoardControlsState } from '@/providers/retro-board/controls'
@@ -46,7 +41,7 @@ export function Column({ type, columnConfig }: Readonly<ColumnProps>) {
   return (
     <summary
       className={clsx(
-        getWrapperClasses(),
+        'flex flex-col min-h-0 h-full rounded-lg border-2 relative',
         isOverInsert && 'ring-2 ring-primary',
       )}
       style={getWrapperStyles(colors)}
@@ -54,7 +49,10 @@ export function Column({ type, columnConfig }: Readonly<ColumnProps>) {
       onDragLeave={handleDragLeave}
       onDrop={handleDrop}
     >
-      <p className={getTitleClasses()} style={getTitleStyles(colors)}>
+      <p
+        className='text-xl tracking-tight font-semibold w-full text-left p-3 rounded-t-md'
+        style={getTitleStyles(colors)}
+      >
         {label}
       </p>
       {!isVoteOpen && (

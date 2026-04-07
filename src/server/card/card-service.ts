@@ -18,6 +18,10 @@ export async function deleteCardsByBoardId(boardId: string) {
   return repository.deleteCardsByBoardId(boardId)
 }
 
+export async function deleteCardsByIds(cardIds: string[]) {
+  return repository.deleteCardsByIds(cardIds)
+}
+
 export async function createCard(params: CreateCardParams) {
   return repository.createCard(params)
 }

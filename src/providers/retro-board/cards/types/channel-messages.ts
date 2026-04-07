@@ -75,5 +75,9 @@ export type CardMessageData =
       BoardCardsMessageType.UPDATE_GROUP_POSITION,
       { groupId: string; position: number; column: string }
     >
+  | MessageStruct<
+      BoardCardsMessageType.DELETE_ORPHANED_CARDS,
+      { cardIds: string[]; groupIds: string[] }
+    >
 
 export type CardMessage = { data: CardMessageData }

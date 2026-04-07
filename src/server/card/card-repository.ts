@@ -134,6 +134,13 @@ export async function deleteCardById(cardId: string) {
   })
 }
 
+export async function deleteCardsByIds(cardIds: string[]) {
+  if (cardIds.length === 0) return { count: 0 }
+  return prisma.card.deleteMany({
+    where: { id: { in: cardIds } },
+  })
+}
+
 export async function deleteCompletedCardsByBoardId(boardId: string) {
   return prisma.card.deleteMany({
     where: {
