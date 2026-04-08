@@ -16,6 +16,12 @@ export function PlanCard({ plan, isYearly }: Readonly<PlanCardProps>) {
   const displayNote =
     isYearly && plan.yearlyPriceNote ? plan.yearlyPriceNote : plan.priceNote
 
+  const hasSubscription = !!session?.user?.stripeCustomerId
+  const isCurrentPlan =
+    hasSubscription &&
+    !!plan.paymentTier &&
+    session?.user?.paymentTier === plan.paymentTier
+
   function handleCta() {
     switch (plan.cta) {
       case 'home': {
@@ -29,6 +35,17 @@ export function PlanCard({ plan, isYearly }: Readonly<PlanCardProps>) {
       }
 
       case 'checkout': {
+        // If user already has a paid subscription, send them to the billing
+        // portal to change plan instead of creating a duplicate subscription.
+        if (hasSubscription) {
+          fetch('/api/stripe/portal', { method: 'POST' })
+            .then(res => res.json())
+            .then(data => {
+              if (data.url) globalThis.location.href = data.url
+            })
+          return
+        }
+
         const link = stripeLink(plan, isYearly)
         if (!link) return
 
@@ -106,12 +123,16 @@ export function PlanCard({ plan, isYearly }: Readonly<PlanCardProps>) {
       {/* CTA */}
       <button
         onClick={handleCta}
+        disabled={isCurrentPlan}
         className={clsx(
-          'mb-6 w-full cursor-pointer rounded-xl py-2.5 text-sm font-medium transition-all duration-200 hover:shadow-sm',
+          'mb-6 w-full rounded-xl py-2.5 text-sm font-medium transition-all duration-200',
+          isCurrentPlan
+            ? 'cursor-default opacity-60'
+            : 'cursor-pointer hover:shadow-sm',
           plan.buttonColor,
         )}
       >
-        {plan.ctaLabel}
+        {isCurrentPlan ? 'Current Plan' : plan.ctaLabel}
       </button>
 
       <div className='mb-4 border-t border-border-light' />

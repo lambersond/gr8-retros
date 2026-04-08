@@ -169,6 +169,35 @@ export async function addBoardMember(
   return newMember
 }
 
+export async function resetBoardSettings(settingsId: string, userId: string) {
+  const callerRole = await userService.getUserBoardRole(userId, settingsId)
+  if (callerRole !== BoardRole.OWNER) {
+    return {
+      error: 'INSUFFICIENT_PERMISSIONS',
+      message: 'Only the board owner can reset settings',
+    }
+  }
+
+  try {
+    const result = await repository.resetBoardSettings(settingsId, userId)
+    return {
+      settings: {
+        ...result.settings,
+        members: result.settings.members.map(m => ({
+          ...m,
+          permissionMask: Number(m.permissionMask),
+        })),
+      },
+      columns: result.columns,
+    }
+  } catch {
+    return {
+      error: 'RESET_FAILED',
+      message: 'Failed to reset board settings',
+    }
+  }
+}
+
 export async function transferBoardOwnership(
   settingsId: string,
   newOwnerId: string,

@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(grep -n \"type BoardSettings\\\\|interface BoardSettings\" /Users/dlamberson/workspace/easy-retro/src/types/*.ts)"
+    ],
+    "additionalDirectories": [
+      "/Users/dlamberson/workspace/easy-retro/src/app/api/board-settings/[settingsId]"
+    ]
+  }
+}

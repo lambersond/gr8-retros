@@ -1,3 +1,4 @@
+import { useChannel } from 'ably/react'
 import { TriangleAlert } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { BoardRole } from '@/enums'
@@ -7,6 +8,8 @@ import {
   useBoardPermissions,
   useBoardSettings,
 } from '@/providers/retro-board/board-settings'
+import { BoardSettingsMessageType } from '@/providers/retro-board/board-settings/enums'
+import { BoardColumnsMessageType } from '@/providers/retro-board/columns'
 import {
   useBoardControlsActions,
   useBoardControlsState,
@@ -15,11 +18,12 @@ import {
 export function DangerZoneSettings() {
   const { openModal } = useModals()
   const router = useRouter()
-  const { id } = useBoardSettings()
+  const { id, boardId } = useBoardSettings()
   const members = useBoardMembers()
   const {
     user: { hasOwner },
   } = useBoardPermissions()
+  const { publish } = useChannel(boardId)
   const isFacilitatorModeActive = useBoardControlsState(
     s => s.boardControls.facilitatorMode.isActive,
   )
@@ -39,6 +43,56 @@ export function DangerZoneSettings() {
         if (result.deactivateFacilitatorMode && isFacilitatorModeActive) {
           updateBoardControls({ facilitatorMode: { isActive: false } })
         }
+      },
+    })
+  }
+
+  const handleResetSettings = () => {
+    openModal('ConfirmModal', {
+      title: 'Reset Settings',
+      message: (
+        <div className='flex flex-col gap-2 text-danger'>
+          <p>This will reset your board to its default state:</p>
+          <ul className='list-disc pl-5 text-sm'>
+            <li>Columns reset to standard theme</li>
+            <li>All permissions reset to defaults</li>
+            <li>Join links cleared</li>
+            <li>All members demoted to Member role</li>
+          </ul>
+          <p>Cards and action items will not be affected.</p>
+          <p>Are you sure?</p>
+        </div>
+      ),
+      confirmButtonText: 'Yes, Reset',
+      color: 'danger',
+      onConfirm: () => {
+        fetch(`/api/board-settings/${id}/reset`, { method: 'POST' })
+          .then(res => res.json())
+          .then(data => {
+            if (data.error) return
+
+            if (isFacilitatorModeActive) {
+              updateBoardControls({ facilitatorMode: { isActive: false } })
+            }
+
+            publish({
+              data: {
+                type: BoardSettingsMessageType.UPDATE_BOARD_SETTINGS,
+                payload: data.settings,
+              },
+            })
+            publish({
+              data: {
+                type: BoardColumnsMessageType.UPDATE_COLUMNS,
+                payload: data.columns,
+              },
+            })
+            publish({
+              data: {
+                type: BoardSettingsMessageType.REVOKE_INVITATION_LINK,
+              },
+            })
+          })
       },
     })
   }
@@ -74,6 +128,12 @@ export function DangerZoneSettings() {
         <TriangleAlert className='size-6 text-danger' />
         <p className='font-bold text-lg'>Danger Zone</p>
       </div>
+      <button
+        className='bg-danger/90 text-white font-bold px-4 py-2 rounded cursor-pointer hover:bg-danger'
+        onClick={handleResetSettings}
+      >
+        Reset Settings
+      </button>
       {admins.length > 0 && (
         <button
           className='bg-danger/90 text-white font-bold px-4 py-2 rounded cursor-pointer hover:bg-danger'

@@ -1,3 +1,5 @@
+import type { PaymentTier } from '@/enums'
+
 export interface PlanFeature {
   label: string
   soon?: true
@@ -24,6 +26,7 @@ export interface Plan {
   highlight?: boolean
   cta: CtaType
   ctaLabel: string
+  paymentTier?: PaymentTier // maps this plan to a PaymentTier for active-subscription checks
   stripeLinks?: {
     monthly: { test: string; live: string }
     yearly: { test: string; live: string }
@@ -106,6 +109,7 @@ export const PLANS = new Map<PlanId, Plan>([
       tagline: 'For teams ready to level up.',
       cta: 'checkout',
       ctaLabel: 'Get started',
+      paymentTier: 'SUPPORTER' as const,
       stripeLinks: {
         monthly: {
           test: 'https://buy.stripe.com/test_9B69AT3z0aTLasT1Il8k801',
@@ -147,6 +151,7 @@ export const PLANS = new Map<PlanId, Plan>([
       tagline: 'AI-powered insights for teams that ship.',
       cta: 'checkout',
       ctaLabel: 'Get started',
+      paymentTier: 'BELIEVER' as const,
       stripeLinks: {
         monthly: {
           test: 'https://buy.stripe.com/test_3cI00j7Pg0f7asTaeR8k800',

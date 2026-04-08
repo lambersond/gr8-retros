@@ -29,10 +29,12 @@ export const { auth, handlers, signIn, signOut } = NextAuth({
         select: {
           id: true,
           paymentTier: true,
+          stripeCustomerId: true,
         },
       })
 
       session.user.paymentTier = userData?.paymentTier
+      session.user.stripeCustomerId = userData?.stripeCustomerId
       return session
     },
   },

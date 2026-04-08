@@ -3,6 +3,7 @@
 
 import prisma from '@/clients/prisma'
 import { BoardRole } from '@/enums'
+import { buildDefaultColumnData } from '@/utils/column-utils'
 
 export async function updateSettingById(
   settingId: string,
@@ -171,6 +172,97 @@ export async function transferBoardOwnership(
     })
 
     return updatedSettings
+  })
+}
+
+export async function resetBoardSettings(settingsId: string, ownerId: string) {
+  const defaultColumns = buildDefaultColumnData()
+
+  return prisma.$transaction(async tx => {
+    // 1. Reset all settings to defaults
+    await tx.boardSettings.update({
+      where: { id: settingsId },
+      data: {
+        isPrivate: false,
+        privateOpenAccess: false,
+        privateCardRetention: 7,
+        isCommentsEnabled: true,
+        commentsAnytime: true,
+        commentsRestricted: false,
+        isMusicEnabled: true,
+        musicAnytime: true,
+        musicRestricted: false,
+        isTimerEnabled: true,
+        timerDefault: 300,
+        timerRestricted: false,
+        isUpvotingEnabled: true,
+        upvoteAnytime: true,
+        upvoteLimit: -1,
+        upvoteRestricted: false,
+        isActionItemsEnabled: true,
+        actionItemsAnytime: true,
+        actionItemsRestricted: false,
+        isVotingEnabled: false,
+        votingMode: 'MULTI',
+        votingLimit: 3,
+        votingRestricted: false,
+        isDragAndDropEnabled: true,
+        cardGroupingEnabled: false,
+        aiCardGroupNamingEnabled: false,
+        isFacilitatorModeEnabled: false,
+        isAiSummaryEnabled: false,
+      },
+    })
+
+    // 2. Replace columns with standard defaults
+    await tx.boardColumn.deleteMany({ where: { boardSettingsId: settingsId } })
+    await tx.boardColumn.createMany({
+      data: defaultColumns.map(col => ({
+        boardSettingsId: settingsId,
+        ...col,
+      })),
+    })
+
+    // 3. Delete invite links
+    await tx.boardInvite.deleteMany({ where: { boardSettingsId: settingsId } })
+
+    // 4. Reset all non-owner members to MEMBER
+    await tx.boardMember.updateMany({
+      where: {
+        settingsId,
+        userId: { not: ownerId },
+      },
+      data: { role: BoardRole.MEMBER },
+    })
+
+    // Fetch the full updated state for the response
+    const [settings, columns] = await Promise.all([
+      tx.boardSettings.findUniqueOrThrow({
+        where: { id: settingsId },
+        include: {
+          members: {
+            select: {
+              permissionMask: true,
+              role: true,
+              user: {
+                select: {
+                  id: true,
+                  name: true,
+                  image: true,
+                  paymentTier: true,
+                },
+              },
+            },
+          },
+        },
+      }),
+      tx.boardColumn.findMany({
+        where: { boardSettingsId: settingsId },
+        orderBy: { index: 'asc' },
+      }),
+    ])
+
+    return { settings, columns }
   })
 }
 
