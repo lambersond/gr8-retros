@@ -105,7 +105,7 @@ export type BoardCardsReducerAction =
   | {
       type: BoardCardsMessageType.UPDATE_CARD_GROUP
       groupId: string
-      patch: { label?: string }
+      patch: { label?: string; isGeneratingLabel?: boolean }
     }
   | {
       type: BoardCardsMessageType.UPDATE_GROUP_POSITION

@@ -11,6 +11,7 @@ import {
   useBoardCardsDispatch,
   type CardGroupState,
 } from '@/providers/retro-board/cards'
+import { generateGroupLabel } from '@/server/ai/generate-group-label'
 import {
   addCardToGroup,
   removeCardFromGroup,
@@ -62,6 +63,7 @@ export function useColumnDragDrop(columnType: string) {
   const { openModal } = useModals()
   const { settings } = useBoardSettings()
   const groupingEnabled = settings.dragAndDrop.subsettings.grouping.enabled
+  const aiNamingEnabled = settings.dragAndDrop.subsettings.aiNaming.enabled
   const [dropState, setDropState] = useState<DropState>()
   const bodyRef = useRef<HTMLDivElement | null>(null)
 
@@ -179,7 +181,7 @@ export function useColumnDragDrop(columnType: string) {
         await handleReorder(dragId, dragKind, index, fromGroupId)
       }
     },
-    [boardCards, boardId, columnType, dispatch, groupingEnabled, publish],
+    [aiNamingEnabled, boardCards, boardId, columnType, dispatch, groupingEnabled, publish],
   )
 
   const detachFromGroup = async (cardId: string, groupId: string) => {
@@ -252,43 +254,128 @@ export function useColumnDragDrop(columnType: string) {
             payload: { cardId: srcId, groupId: targetGroup.id },
           },
         })
-      } else if (targetCard) {
-        // Card onto card → open modal for group name
-        openModal('CreateCardGroupModal', {
-          onSubmit: async (label: string) => {
-            const result = await createCardGroup({
-              boardId,
-              column: columnType,
-              label,
-              cardId1: targetId,
-              cardId2: srcId,
-              position: targetCard.position,
+
+        if (aiNamingEnabled) {
+          dispatch({
+            type: BoardCardsMessageType.UPDATE_CARD_GROUP,
+            groupId: targetGroup.id,
+            patch: { isGeneratingLabel: true },
+          })
+          const allCardIds = [...targetGroup.cardIds, srcId]
+          const contents = allCardIds
+            .map(id => boardCards.cards[id]?.content)
+            .filter(Boolean)
+          const label = await generateGroupLabel(contents)
+          if (label) {
+            await editCardGroup({ cardGroupId: targetGroup.id, label })
+            dispatch({
+              type: BoardCardsMessageType.UPDATE_CARD_GROUP,
+              groupId: targetGroup.id,
+              patch: { label, isGeneratingLabel: false },
             })
-            if (result) {
-              const groupState: CardGroupState = {
-                id: result.id,
-                label: result.label,
-                column: result.column,
-                position: result.position,
-                retroSessionId: result.retroSessionId,
-                createdAt: result.createdAt,
-                updatedAt: result.updatedAt,
-                cardIds: [targetId, srcId],
-              }
-              dispatch({
-                type: BoardCardsMessageType.CREATE_CARD_GROUP,
-                group: groupState,
-                cardIds: [targetId, srcId],
-              })
-              publish({
-                data: {
-                  type: BoardCardsMessageType.CREATE_CARD_GROUP,
-                  payload: { group: groupState, cardIds: [targetId, srcId] },
-                },
-              })
+            publish({
+              data: {
+                type: BoardCardsMessageType.UPDATE_CARD_GROUP,
+                payload: { groupId: targetGroup.id, patch: { label } },
+              },
+            })
+          } else {
+            dispatch({
+              type: BoardCardsMessageType.UPDATE_CARD_GROUP,
+              groupId: targetGroup.id,
+              patch: { isGeneratingLabel: false },
+            })
+          }
+        }
+      } else if (targetCard) {
+        const createGroup = async (label: string) => {
+          const result = await createCardGroup({
+            boardId,
+            column: columnType,
+            label,
+            cardId1: targetId,
+            cardId2: srcId,
+            position: targetCard.position,
+          })
+          if (result) {
+            const groupState: CardGroupState = {
+              id: result.id,
+              label: result.label,
+              column: result.column,
+              position: result.position,
+              retroSessionId: result.retroSessionId,
+              createdAt: result.createdAt,
+              updatedAt: result.updatedAt,
+              cardIds: [targetId, srcId],
             }
-          },
-        })
+            dispatch({
+              type: BoardCardsMessageType.CREATE_CARD_GROUP,
+              group: groupState,
+              cardIds: [targetId, srcId],
+            })
+            publish({
+              data: {
+                type: BoardCardsMessageType.CREATE_CARD_GROUP,
+                payload: { group: groupState, cardIds: [targetId, srcId] },
+              },
+            })
+          }
+        }
+
+        if (aiNamingEnabled) {
+          const result = await createCardGroup({
+            boardId,
+            column: columnType,
+            label: '',
+            cardId1: targetId,
+            cardId2: srcId,
+            position: targetCard.position,
+          })
+          if (result) {
+            const groupState: CardGroupState = {
+              id: result.id,
+              label: result.label,
+              column: result.column,
+              position: result.position,
+              retroSessionId: result.retroSessionId,
+              createdAt: result.createdAt,
+              updatedAt: result.updatedAt,
+              cardIds: [targetId, srcId],
+              isGeneratingLabel: true,
+            }
+            dispatch({
+              type: BoardCardsMessageType.CREATE_CARD_GROUP,
+              group: groupState,
+              cardIds: [targetId, srcId],
+            })
+            publish({
+              data: {
+                type: BoardCardsMessageType.CREATE_CARD_GROUP,
+                payload: { group: groupState, cardIds: [targetId, srcId] },
+              },
+            })
+
+            const contents = [targetCard.content, srcCard.content]
+            const label =
+              (await generateGroupLabel(contents)) ?? 'Grouped Cards'
+            await editCardGroup({ cardGroupId: result.id, label })
+            dispatch({
+              type: BoardCardsMessageType.UPDATE_CARD_GROUP,
+              groupId: result.id,
+              patch: { label, isGeneratingLabel: false },
+            })
+            publish({
+              data: {
+                type: BoardCardsMessageType.UPDATE_CARD_GROUP,
+                payload: { groupId: result.id, patch: { label } },
+              },
+            })
+          }
+        } else {
+          openModal('CreateCardGroupModal', {
+            onSubmit: createGroup,
+          })
+        }
       }
     } else if (srcKind === 'group') {
       const srcGroup = boardCards.groups[srcId]
@@ -333,52 +420,71 @@ export function useColumnDragDrop(columnType: string) {
           },
         })
       } else if (targetGroup) {
-        // Group onto group → prompt for new name, merge all cards
-        openModal('CreateCardGroupModal', {
-          onSubmit: async (label: string) => {
-            // Move all src cards into target group
-            for (const cardId of srcGroup.cardIds) {
-              await addCardToGroup({ cardId, cardGroupId: targetGroup.id })
-              dispatch({
-                type: BoardCardsMessageType.ADD_CARD_TO_GROUP,
-                cardId,
-                groupId: targetGroup.id,
-              })
-              publish({
-                data: {
-                  type: BoardCardsMessageType.ADD_CARD_TO_GROUP,
-                  payload: { cardId, groupId: targetGroup.id },
-                },
-              })
-            }
-            // Delete now-empty source group
-            await deleteCardGroup(srcId)
+        // Group onto group → merge all cards and set label
+        const mergeGroups = async (label: string) => {
+          for (const cardId of srcGroup.cardIds) {
+            await addCardToGroup({ cardId, cardGroupId: targetGroup.id })
             dispatch({
-              type: BoardCardsMessageType.DELETE_CARD_GROUP,
-              groupId: srcId,
-              restoredCards: [],
-            })
-            publish({
-              data: {
-                type: BoardCardsMessageType.DELETE_CARD_GROUP,
-                payload: { groupId: srcId, restoredCards: [] },
-              },
-            })
-            // Rename target group with new label
-            await editCardGroup({ cardGroupId: targetGroup.id, label })
-            dispatch({
-              type: BoardCardsMessageType.UPDATE_CARD_GROUP,
+              type: BoardCardsMessageType.ADD_CARD_TO_GROUP,
+              cardId,
               groupId: targetGroup.id,
-              patch: { label },
             })
             publish({
               data: {
-                type: BoardCardsMessageType.UPDATE_CARD_GROUP,
-                payload: { groupId: targetGroup.id, patch: { label } },
+                type: BoardCardsMessageType.ADD_CARD_TO_GROUP,
+                payload: { cardId, groupId: targetGroup.id },
               },
             })
-          },
-        })
+          }
+          await deleteCardGroup(srcId)
+          dispatch({
+            type: BoardCardsMessageType.DELETE_CARD_GROUP,
+            groupId: srcId,
+            restoredCards: [],
+          })
+          publish({
+            data: {
+              type: BoardCardsMessageType.DELETE_CARD_GROUP,
+              payload: { groupId: srcId, restoredCards: [] },
+            },
+          })
+          await editCardGroup({ cardGroupId: targetGroup.id, label })
+          dispatch({
+            type: BoardCardsMessageType.UPDATE_CARD_GROUP,
+            groupId: targetGroup.id,
+            patch: { label },
+          })
+          publish({
+            data: {
+              type: BoardCardsMessageType.UPDATE_CARD_GROUP,
+              payload: { groupId: targetGroup.id, patch: { label } },
+            },
+          })
+        }
+
+        if (aiNamingEnabled) {
+          dispatch({
+            type: BoardCardsMessageType.UPDATE_CARD_GROUP,
+            groupId: targetGroup.id,
+            patch: { isGeneratingLabel: true },
+          })
+          const allCardIds = [...targetGroup.cardIds, ...srcGroup.cardIds]
+          const contents = allCardIds
+            .map(id => boardCards.cards[id]?.content)
+            .filter(Boolean)
+          const label =
+            (await generateGroupLabel(contents)) ?? 'Grouped Cards'
+          await mergeGroups(label)
+          dispatch({
+            type: BoardCardsMessageType.UPDATE_CARD_GROUP,
+            groupId: targetGroup.id,
+            patch: { isGeneratingLabel: false },
+          })
+        } else {
+          openModal('CreateCardGroupModal', {
+            onSubmit: mergeGroups,
+          })
+        }
       }
     }
   }

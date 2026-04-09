@@ -172,7 +172,7 @@ export const PLANS = new Map<PlanId, Plan>([
       features: [
         { label: 'Own up to 50 boards' },
         { label: 'Board layout variants' },
-        { label: 'AI-generated grouped card names', soon: true },
+        { label: 'AI-generated grouped card names' },
         { label: 'AI-generated summaries', soon: true },
         { label: 'Boards retained for 365 days' },
         { label: 'Cards retained for 90 days' },

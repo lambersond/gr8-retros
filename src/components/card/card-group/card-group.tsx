@@ -4,11 +4,10 @@ import { useCallback, useMemo, useState } from 'react'
 import { useChannel } from 'ably/react'
 import clsx from 'clsx'
 import {
-  ChevronDown,
-  ChevronUp,
   CircleAlert,
   CircleCheckBig,
   GripVertical,
+  Loader2,
   Pencil,
 } from 'lucide-react'
 import { useParams } from 'next/navigation'
@@ -203,16 +202,26 @@ export function CardGroup({
             <GripVertical className='size-4' />
           </div>
         )}
-        <span
-          className={clsx(
-            'lg:text-lg xl:text-xl font-bold flex-1 truncate',
-            aggregates.allDiscussed
-              ? 'text-text-secondary line-through'
-              : 'text-text-primary',
-          )}
-        >
-          {group.label}
-        </span>
+        {group.isGeneratingLabel ? (
+          <span className='flex items-center gap-2 flex-1 text-text-secondary'>
+            <Loader2 className='size-4 animate-spin' />
+            <span className='text-sm italic'>Generating label…</span>
+          </span>
+        ) : (
+          <button
+            data-no-drag
+            className={clsx(
+              'lg:text-lg xl:text-xl font-bold flex-1 text-left cursor-pointer',
+              aggregates.allDiscussed
+                ? 'text-text-secondary line-through'
+                : 'text-text-primary',
+            )}
+            onMouseDown={e => e.stopPropagation()}
+            onClick={toggleExpand}
+          >
+            {group.label}
+          </button>
+        )}
         <div className='flex items-center gap-2 shrink-0'>
           {aggregates.actionItemsExist && (
             <div className='flex items-center'>
@@ -230,18 +239,6 @@ export function CardGroup({
           <span className='text-xs bg-primary/15 text-primary px-2 py-0.5 rounded-full'>
             ×{memberCards.length}
           </span>
-          <button
-            data-no-drag
-            className='text-text-secondary hover:text-text-primary transition-colors cursor-pointer'
-            onMouseDown={e => e.stopPropagation()}
-            onClick={toggleExpand}
-          >
-            {expanded ? (
-              <ChevronUp className='size-4' />
-            ) : (
-              <ChevronDown className='size-4' />
-            )}
-          </button>
         </div>
       </div>
 
