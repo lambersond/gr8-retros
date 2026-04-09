@@ -10,6 +10,7 @@ export function CardGroupActions({
   votes,
   settings,
   onMarkAllDiscussed,
+  onOpenComments,
 }: Readonly<CardGroupActionsProps>) {
   return (
     <div className='flex items-center py-1 px-3 gap-1'>
@@ -60,7 +61,8 @@ export function CardGroupActions({
           amount={aggregates.totalComments}
           icon={<MessageSquareIcon className='size-4 text-text-secondary' />}
           text={`Comment${aggregates.totalComments === 1 ? '' : 's'}`}
-          buttonClasses='bg-text-secondary/10'
+          onClick={onOpenComments}
+          buttonClasses='bg-text-secondary/10 cursor-pointer'
           textClasses='text-text-secondary'
         />
       )}

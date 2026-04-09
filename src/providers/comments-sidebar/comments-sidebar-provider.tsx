@@ -27,6 +27,7 @@ export function CommentsSidebarProvider({
   const [state, dispatch] = useReducer(reducer, {
     boardId,
     cardId: undefined,
+    groupId: undefined,
     sidebarOpen: false,
   })
 

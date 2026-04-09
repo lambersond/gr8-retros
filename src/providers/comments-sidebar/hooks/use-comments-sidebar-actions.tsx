@@ -14,12 +14,23 @@ export function useCommentsSidebarActions() {
     })
   }
 
+  function openGroupSidebar(groupId: string, boardId: string) {
+    dispatch({
+      type: COMMENTS_SIDEBAR_ACTION_TYPES.OPEN_SIDEBAR,
+      payload: {
+        groupId,
+        boardId,
+      },
+    })
+  }
+
   function closeSidebar() {
     dispatch({ type: COMMENTS_SIDEBAR_ACTION_TYPES.CLOSE_SIDEBAR })
   }
 
   return {
     openSidebar,
+    openGroupSidebar,
     closeSidebar,
   }
 }

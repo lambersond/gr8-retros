@@ -2,7 +2,7 @@ import { SidebarCloseIcon } from 'lucide-react'
 import { Comment } from '../comment'
 import { Sidebar, SidebarItem } from '../common'
 import { AddCommentForm } from '../forms/add-comment-form'
-import { useCardComments } from '../retro-board'
+import { useCardComments, useGroupComments } from '../retro-board'
 import {
   useCommentsActions,
   useCommentsSidebar,
@@ -12,14 +12,19 @@ import { useBoardPermissions } from '@/providers/retro-board/board-settings/hook
 
 export function CommentsSidebar() {
   const { closeSidebar } = useCommentsSidebarActions()
-  const { sidebarOpen, cardId } = useCommentsSidebar()
-  const comments = useCardComments(cardId)
+  const { sidebarOpen, cardId, groupId } = useCommentsSidebar()
+  const cardComments = useCardComments(groupId ? undefined : cardId)
+  const { comments: groupComments, memberCards } = useGroupComments(groupId)
   const { addComment } = useCommentsActions()
   const { userPermissions } = useBoardPermissions()
   const canComment = userPermissions['comments.restricted.canComment']
 
-  const handleAddComment = (content: string) => {
-    addComment(content, cardId)
+  const isGroupMode = !!groupId
+  const comments = isGroupMode ? groupComments : cardComments
+
+  const handleAddComment = (content: string, targetCardId?: string) => {
+    const resolvedCardId = targetCardId ?? cardId
+    addComment(content, resolvedCardId)
   }
 
   return (
@@ -34,7 +39,9 @@ export function CommentsSidebar() {
           <div>
             <p className='text-2xl font-bold'>Comments</p>
             <p className='text-text-secondary text-sm'>
-              For when the card needs more context.
+              {isGroupMode
+                ? 'Comments across all cards in this group.'
+                : 'For when the card needs more context.'}
             </p>
           </div>
           <SidebarItem>
@@ -52,7 +59,12 @@ export function CommentsSidebar() {
           )}
         </section>
         <div className='flex-1' id='spacer' />
-        {canComment && <AddCommentForm onSubmit={handleAddComment} />}
+        {canComment && (
+          <AddCommentForm
+            onSubmit={handleAddComment}
+            memberCards={isGroupMode ? memberCards : undefined}
+          />
+        )}
       </div>
     </Sidebar>
   )

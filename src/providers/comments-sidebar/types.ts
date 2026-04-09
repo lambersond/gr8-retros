@@ -3,6 +3,7 @@ import type { SidebarActionType } from '@/types'
 export type CommentsSidebarState = {
   sidebarOpen: boolean
   cardId?: string
+  groupId?: string
   boardId: string
 }
 
@@ -12,7 +13,8 @@ export type CommentsSidebarAction =
   | {
       type: CommentsSidebarActionType['OPEN_SIDEBAR']
       payload: {
-        cardId: string
+        cardId?: string
+        groupId?: string
         boardId: string
       }
     }

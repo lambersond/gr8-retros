@@ -10,6 +10,7 @@ export function reducer(
       return {
         ...state,
         cardId: undefined,
+        groupId: undefined,
         sidebarOpen: false,
       }
     }
@@ -17,6 +18,7 @@ export function reducer(
       return {
         ...state,
         cardId: action.payload.cardId,
+        groupId: action.payload.groupId,
         sidebarOpen: true,
       }
     }

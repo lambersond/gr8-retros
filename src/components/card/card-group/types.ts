@@ -26,6 +26,7 @@ export interface CardGroupActionsProps {
   votes?: number
   settings: BoardSettingsWithPermissions
   onMarkAllDiscussed: (e: React.MouseEvent<HTMLButtonElement>) => void
+  onOpenComments?: () => void
 }
 
 export interface CardGroupExpandedListProps {

@@ -16,6 +16,7 @@ import { CardGroupActions } from './card-group-actions'
 import { CardGroupExpandedList } from './card-group-expanded-list'
 import { GroupActionItem } from './group-action-item'
 import { useModals } from '@/hooks/use-modals'
+import { useCommentsSidebarActions } from '@/providers/comments-sidebar'
 import {
   useBoardPermissions,
   useBoardSettings,
@@ -48,6 +49,7 @@ export function CardGroup({
   const isFacilitatorMode = useBoardControlsState(
     s => s.boardControls.facilitatorMode.isActive,
   )
+  const { openGroupSidebar } = useCommentsSidebarActions()
   const canUpvote = userPermissions['upvoting.restricted.canUpvote']
   const isDragEnabled = settings.dragAndDrop.enabled && !isFacilitatorMode
 
@@ -150,6 +152,10 @@ export function CardGroup({
     [group.id, onRemoveCard],
   )
 
+  const handleOpenComments = useCallback(() => {
+    openGroupSidebar(group.id, boardId)
+  }, [group.id, boardId, openGroupSidebar])
+
   const handleEditGroup = useCallback(() => {
     openModal('EditCardGroupModal', {
       currentLabel: group.label,
@@ -249,6 +255,7 @@ export function CardGroup({
           votes={votes}
           settings={settings}
           onMarkAllDiscussed={handleMarkAllDiscussed}
+          onOpenComments={handleOpenComments}
         />
       )}
 
