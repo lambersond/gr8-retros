@@ -17,12 +17,17 @@ function getGroupAggregates(
   const memberCards = group.cardIds.map(id => cards[id]).filter(Boolean)
   return {
     upvotes: memberCards.reduce((sum, c) => sum + c.upvotedBy.length, 0),
-    votes: (group.votes ?? 0) + memberCards.reduce((sum, c) => sum + (c.votes ?? 0), 0),
+    votes:
+      (group.votes ?? 0) +
+      memberCards.reduce((sum, c) => sum + (c.votes ?? 0), 0),
     actionItemCount: memberCards.reduce(
       (sum, c) => sum + (c.actionItems?.length ?? 0),
       0,
     ),
-    commentCount: memberCards.reduce((sum, c) => sum + (c.comments?.length ?? 0), 0),
+    commentCount: memberCards.reduce(
+      (sum, c) => sum + (c.comments?.length ?? 0),
+      0,
+    ),
     isDiscussed:
       memberCards.length > 0 && memberCards.every(c => c.isDiscussed),
     newestAt:

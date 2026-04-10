@@ -181,7 +181,15 @@ export function useColumnDragDrop(columnType: string) {
         await handleReorder(dragId, dragKind, index, fromGroupId)
       }
     },
-    [aiNamingEnabled, boardCards, boardId, columnType, dispatch, groupingEnabled, publish],
+    [
+      aiNamingEnabled,
+      boardCards,
+      boardId,
+      columnType,
+      dispatch,
+      groupingEnabled,
+      publish,
+    ],
   )
 
   const detachFromGroup = async (cardId: string, groupId: string) => {
@@ -276,7 +284,10 @@ export function useColumnDragDrop(columnType: string) {
             publish({
               data: {
                 type: BoardCardsMessageType.UPDATE_CARD_GROUP,
-                payload: { groupId: targetGroup.id, patch: { label } },
+                payload: {
+                  groupId: targetGroup.id,
+                  patch: { label, isGeneratingLabel: false },
+                },
               },
             })
           } else {
@@ -367,7 +378,10 @@ export function useColumnDragDrop(columnType: string) {
             publish({
               data: {
                 type: BoardCardsMessageType.UPDATE_CARD_GROUP,
-                payload: { groupId: result.id, patch: { label } },
+                payload: {
+                  groupId: result.id,
+                  patch: { label, isGeneratingLabel: false },
+                },
               },
             })
           }
@@ -472,8 +486,7 @@ export function useColumnDragDrop(columnType: string) {
           const contents = allCardIds
             .map(id => boardCards.cards[id]?.content)
             .filter(Boolean)
-          const label =
-            (await generateGroupLabel(contents)) ?? 'Grouped Cards'
+          const label = (await generateGroupLabel(contents)) ?? 'Grouped Cards'
           await mergeGroups(label)
           dispatch({
             type: BoardCardsMessageType.UPDATE_CARD_GROUP,
