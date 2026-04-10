@@ -17,21 +17,21 @@ function getGroupAggregates(
   const memberCards = group.cardIds.map(id => cards[id]).filter(Boolean)
   return {
     upvotes: memberCards.reduce((sum, c) => sum + c.upvotedBy.length, 0),
-    votes: memberCards.reduce((sum, c) => sum + (c.votes ?? 0), 0),
+    votes: (group.votes ?? 0) + memberCards.reduce((sum, c) => sum + (c.votes ?? 0), 0),
     actionItemCount: memberCards.reduce(
-      (sum, c) => sum + c.actionItems.length,
+      (sum, c) => sum + (c.actionItems?.length ?? 0),
       0,
     ),
-    commentCount: memberCards.reduce((sum, c) => sum + c.comments.length, 0),
+    commentCount: memberCards.reduce((sum, c) => sum + (c.comments?.length ?? 0), 0),
     isDiscussed:
       memberCards.length > 0 && memberCards.every(c => c.isDiscussed),
     newestAt:
       memberCards.length > 0
-        ? Math.max(...memberCards.map(c => c.createdAt.getTime()))
+        ? Math.max(...memberCards.map(c => new Date(c.createdAt).getTime()))
         : 0,
     oldestAt:
       memberCards.length > 0
-        ? Math.min(...memberCards.map(c => c.createdAt.getTime()))
+        ? Math.min(...memberCards.map(c => new Date(c.createdAt).getTime()))
         : 0,
   }
 }
@@ -52,11 +52,11 @@ function buildComparator(
         return {
           upvotes: item.data.upvotedBy.length,
           votes: item.data.votes ?? 0,
-          actionItemCount: item.data.actionItems.length,
-          commentCount: item.data.comments.length,
+          actionItemCount: item.data.actionItems?.length ?? 0,
+          commentCount: item.data.comments?.length ?? 0,
           isDiscussed: item.data.isDiscussed,
-          newestAt: item.data.createdAt.getTime(),
-          oldestAt: item.data.createdAt.getTime(),
+          newestAt: new Date(item.data.createdAt).getTime(),
+          oldestAt: new Date(item.data.createdAt).getTime(),
         }
       }
       return getGroupAggregates(item.data, cards)
@@ -96,10 +96,11 @@ function buildComparator(
 }
 
 function getGroupVotes(group: CardGroupState, cards: Record<string, Card>) {
-  return group.cardIds
+  const memberVotes = group.cardIds
     .map(id => cards[id])
     .filter(Boolean)
     .reduce((sum, c) => sum + (c.votes ?? 0), 0)
+  return (group.votes ?? 0) + memberVotes
 }
 
 function isGroupDiscussed(group: CardGroupState, cards: Record<string, Card>) {

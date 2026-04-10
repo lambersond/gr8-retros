@@ -86,9 +86,9 @@ const cardSortFunctions = {
       (a, b) => getLengthOrZero(b.comments) - getLengthOrZero(a.comments),
     ),
   [BoardCardsSortOptions.BY_NEWEST]: (cards: Card[]) =>
-    cards.toSorted((a, b) => b.createdAt.getTime() - a.createdAt.getTime()),
+    cards.toSorted((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()),
   [BoardCardsSortOptions.BY_OLDEST]: (cards: Card[]) =>
-    cards.toSorted((a, b) => a.createdAt.getTime() - b.createdAt.getTime()),
+    cards.toSorted((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()),
   [BoardCardsSortOptions.NONE]: (cards: Card[]) => cards,
   [BoardCardsSortOptions.BY_VOTES]: (cards: Card[]) =>
     cards.toSorted((a, b) => (b.votes ?? 0) - (a.votes ?? 0)),

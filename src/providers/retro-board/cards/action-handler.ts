@@ -132,15 +132,21 @@ export const boardCardActionHandlers: {
   },
   [BoardCardsInternalActionType.CLOSE_VOTING_RESULTS]: (state, action) => {
     const newStateCards = { ...state.cards }
-    for (const [cardId, votes] of Object.entries(action.votingResults)) {
-      const card = newStateCards[cardId]
+    const newStateGroups = { ...state.groups }
+    for (const [id, votes] of Object.entries(action.votingResults)) {
+      const card = newStateCards[id]
       if (card) {
-        newStateCards[cardId] = { ...card, votes: votes.length }
+        newStateCards[id] = { ...card, votes: votes.length }
+      }
+      const group = newStateGroups[id]
+      if (group) {
+        newStateGroups[id] = { ...group, votes: votes.length }
       }
     }
     return {
       ...state,
       cards: newStateCards,
+      groups: newStateGroups,
       filter: BoardCardsFilterOptions.WITH_VOTES,
       sort: BoardCardsSortOptions.BY_VOTES,
     }
@@ -150,9 +156,14 @@ export const boardCardActionHandlers: {
     for (const card of Object.values(newStateCards)) {
       newStateCards[card.id] = { ...card, votes: 0 }
     }
+    const newStateGroups = { ...state.groups }
+    for (const group of Object.values(newStateGroups)) {
+      newStateGroups[group.id] = { ...group, votes: 0 }
+    }
     return {
       ...state,
       cards: newStateCards,
+      groups: newStateGroups,
       filter: BoardCardsFilterOptions.ALL,
       sort: BoardCardsSortOptions.NONE,
     }

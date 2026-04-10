@@ -4,6 +4,7 @@ import type { Card, CardGroup } from '@/types'
 export type CardGroupState = CardGroup & {
   cardIds: string[]
   isGeneratingLabel?: boolean
+  votes?: number
 }
 
 export type BoardCardsState = {
