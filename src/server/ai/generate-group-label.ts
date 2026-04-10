@@ -15,7 +15,7 @@ export async function generateGroupLabel(
 
   try {
     const { text } = await generateText({
-      model: gateway('meta/llama3.1-8b-instruct'),
+      model: gateway('meta/llama-3.3-70b'),
       system:
         'You generate concise group labels for retrospective board cards. Given a list of card titles, return a single short label that captures the common theme. The label must be under 225 characters. Return only the label text, nothing else.',
       prompt: cardContents.map((c, i) => `${i + 1}. ${c}`).join('\n'),
