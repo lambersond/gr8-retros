@@ -1,0 +1,15 @@
+canvas#dice-canvas {
+  position: fixed;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+  z-index: 100000;
+  width: 100vw;
+  height: 100vh;
+  opacity: 1;
+  transition: opacity 0.5s ease-out;
+}
+
+canvas#dice-canvas.hide-dice {
+  opacity: 0;
+}

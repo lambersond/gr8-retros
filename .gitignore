@@ -1,5 +1,10 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
+# temp
+/public/assets/ammo
+/public/assets/themes
+/src/app/dice
+
 # dependencies
 /node_modules
 /.pnp

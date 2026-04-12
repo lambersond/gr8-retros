@@ -32,26 +32,90 @@ export type DropState =
   | { type: 'merge'; colId: string; targetId: string }
   | null
 
-function getDropZone(e: React.DragEvent, bodyEl: HTMLElement): DropZone {
-  const items = [
-    ...bodyEl.querySelectorAll<HTMLElement>('[data-id]:not(.dragging)'),
-  ]
+interface CachedItemRect {
+  id: string
+  top: number
+  bottom: number
+  height: number
+}
 
-  for (const [i, item] of items.entries()) {
-    const r = item.getBoundingClientRect()
-    if (e.clientY < r.top) return { type: 'insert', index: i }
-    if (e.clientY > r.bottom) continue
+function snapshotItemRects(bodyEl: HTMLElement) {
+  const elements = bodyEl.querySelectorAll<HTMLElement>('[data-id]')
+  const rects: CachedItemRect[] = []
+  let draggingFullIndex = -1
+  let fullIndex = 0
 
-    const rel = (e.clientY - r.top) / r.height
+  for (const el of elements) {
+    if (el.classList.contains('dragging')) {
+      draggingFullIndex = fullIndex
+    } else {
+      const r = el.getBoundingClientRect()
+      rects.push({
+        id: el.dataset.id!,
+        top: r.top,
+        bottom: r.bottom,
+        height: r.height,
+      })
+    }
+    fullIndex++
+  }
+
+  return { rects, draggingFullIndex }
+}
+
+/**
+ * Maps an index in the non-dragging rects array back to the
+ * corresponding index in the full items array (which includes
+ * the dragging element the rects array skips).
+ */
+function toFullIndex(
+  nonDraggingIndex: number,
+  draggingFullIndex: number,
+): number {
+  if (draggingFullIndex === -1) return nonDraggingIndex
+  return nonDraggingIndex >= draggingFullIndex
+    ? nonDraggingIndex + 1
+    : nonDraggingIndex
+}
+
+function getDropZoneFromRects(
+  clientY: number,
+  rects: CachedItemRect[],
+): DropZone {
+  for (const [i, r] of rects.entries()) {
+    if (clientY < r.top) return { type: 'insert', index: i }
+    if (clientY > r.bottom) continue
+
+    const rel = (clientY - r.top) / r.height
 
     if (rel < 0.28) return { type: 'insert', index: i }
-    if (rel <= 0.72) {
-      return { type: 'merge', targetId: item.dataset.id! }
-    }
+    if (rel <= 0.72) return { type: 'merge', targetId: r.id }
     return { type: 'insert', index: i + 1 }
   }
 
-  return { type: 'insert', index: items.length }
+  return { type: 'insert', index: rects.length }
+}
+
+function mergeZoneToInsertIndex(
+  rects: CachedItemRect[],
+  targetId: string,
+): number {
+  const idx = rects.findIndex(r => r.id === targetId)
+  return idx === -1 ? rects.length : idx + 1
+}
+
+function isDropStateEqual(
+  prev: DropState | undefined,
+  next: DropState,
+): boolean {
+  if (!prev || !next) return !prev && !next
+  if (prev.type !== next.type || prev.colId !== next.colId) return false
+  if (next.type === 'insert') {
+    return (prev as Extract<DropState, { type: 'insert' }>).index === next.index
+  }
+  return (
+    (prev as Extract<DropState, { type: 'merge' }>).targetId === next.targetId
+  )
 }
 
 export function useColumnDragDrop(columnType: string) {
@@ -66,6 +130,59 @@ export function useColumnDragDrop(columnType: string) {
   const aiNamingEnabled = settings.dragAndDrop.subsettings.aiNaming.enabled
   const [dropState, setDropState] = useState<DropState>()
   const bodyRef = useRef<HTMLDivElement | null>(null)
+
+  // --- Broadcast helpers ---
+
+  const broadcastAddToGroup = async (cardId: string, groupId: string) => {
+    await addCardToGroup({ cardId, cardGroupId: groupId })
+    dispatch({
+      type: BoardCardsMessageType.ADD_CARD_TO_GROUP,
+      cardId,
+      groupId,
+    })
+    publish({
+      data: {
+        type: BoardCardsMessageType.ADD_CARD_TO_GROUP,
+        payload: { cardId, groupId },
+      },
+    })
+  }
+
+  const broadcastGroupCreate = (
+    group: CardGroupState,
+    cardIds: [string, string],
+  ) => {
+    dispatch({
+      type: BoardCardsMessageType.CREATE_CARD_GROUP,
+      group,
+      cardIds,
+    })
+    publish({
+      data: {
+        type: BoardCardsMessageType.CREATE_CARD_GROUP,
+        payload: { group, cardIds },
+      },
+    })
+  }
+
+  const broadcastGroupPatch = (
+    groupId: string,
+    patch: Record<string, unknown>,
+  ) => {
+    dispatch({
+      type: BoardCardsMessageType.UPDATE_CARD_GROUP,
+      groupId,
+      patch,
+    })
+    publish({
+      data: {
+        type: BoardCardsMessageType.UPDATE_CARD_GROUP,
+        payload: { groupId, patch },
+      },
+    })
+  }
+
+  // --- Drag event handlers ---
 
   const handleDragStart = useCallback((e: React.DragEvent) => {
     const target = e.currentTarget as HTMLElement
@@ -96,35 +213,26 @@ export function useColumnDragDrop(columnType: string) {
       const body = bodyRef.current
       if (!body) return
 
-      const rawZone = getDropZone(e, body)
-      let zone: DropZone = rawZone
-      if (!groupingEnabled && rawZone.type === 'merge') {
-        const items = [
-          ...body.querySelectorAll<HTMLElement>('[data-id]:not(.dragging)'),
-        ]
-        const targetIdx = items.findIndex(
-          el => el.dataset.id === rawZone.targetId,
-        )
-        const insertIdx = targetIdx === -1 ? items.length : targetIdx + 1
-        zone = { type: 'insert', index: insertIdx }
-      }
+      const { rects, draggingFullIndex } = snapshotItemRects(body)
+      const rawZone = getDropZoneFromRects(e.clientY, rects)
+      const zone: DropZone =
+        !groupingEnabled && rawZone.type === 'merge'
+          ? {
+              type: 'insert',
+              index: mergeZoneToInsertIndex(rects, rawZone.targetId),
+            }
+          : rawZone
+
       const next: DropState =
         zone.type === 'insert'
-          ? { type: 'insert', colId: columnType, index: zone.index }
+          ? {
+              type: 'insert',
+              colId: columnType,
+              index: toFullIndex(zone.index, draggingFullIndex),
+            }
           : { type: 'merge', colId: columnType, targetId: zone.targetId }
 
-      setDropState(prev => {
-        if (
-          prev?.type === next.type &&
-          prev?.colId === next.colId &&
-          (next.type === 'insert'
-            ? (prev as any).index === next.index
-            : (prev as any).targetId === (next as any).targetId)
-        ) {
-          return prev
-        }
-        return next
-      })
+      setDropState(prev => (isDropStateEqual(prev, next) ? prev : next))
     },
     [columnType, groupingEnabled],
   )
@@ -139,58 +247,7 @@ export function useColumnDragDrop(columnType: string) {
     [columnType],
   )
 
-  const handleDrop = useCallback(
-    async (e: React.DragEvent) => {
-      e.preventDefault()
-      setDropState(undefined)
-
-      let dragData: { id: string; kind: string; fromGroupId?: string }
-      try {
-        dragData = JSON.parse(e.dataTransfer.getData('text/plain'))
-      } catch {
-        return
-      }
-
-      const { id: dragId, kind: dragKind, fromGroupId } = dragData
-      const body = bodyRef.current
-      const rawZone = body
-        ? getDropZone(e, body)
-        : { type: 'insert' as const, index: 0 }
-
-      if (rawZone.type === 'merge' && groupingEnabled) {
-        if (dragId === rawZone.targetId) return
-        // Don't merge back into the same group
-        if (fromGroupId && rawZone.targetId === fromGroupId) return
-        await handleMerge(dragId, dragKind, rawZone.targetId, fromGroupId)
-      } else {
-        const index =
-          rawZone.type === 'insert'
-            ? rawZone.index
-            : (() => {
-                if (!body) return 0
-                const items = [
-                  ...body.querySelectorAll<HTMLElement>(
-                    '[data-id]:not(.dragging)',
-                  ),
-                ]
-                const idx = items.findIndex(
-                  el => el.dataset.id === rawZone.targetId,
-                )
-                return idx === -1 ? items.length : idx + 1
-              })()
-        await handleReorder(dragId, dragKind, index, fromGroupId)
-      }
-    },
-    [
-      aiNamingEnabled,
-      boardCards,
-      boardId,
-      columnType,
-      dispatch,
-      groupingEnabled,
-      publish,
-    ],
-  )
+  // --- Group manipulation ---
 
   const detachFromGroup = async (cardId: string, groupId: string) => {
     const group = boardCards.groups[groupId]
@@ -231,85 +288,59 @@ export function useColumnDragDrop(columnType: string) {
     }
   }
 
-  const handleMerge = async (
+  // --- Merge sub-handlers ---
+
+  const mergeCardIntoGroup = async (
     srcId: string,
-    srcKind: string,
-    targetId: string,
-    fromGroupId?: string,
+    targetGroup: CardGroupState,
   ) => {
-    const targetCard = boardCards.cards[targetId]
-    const targetGroup = boardCards.groups[targetId]
+    await broadcastAddToGroup(srcId, targetGroup.id)
 
-    if (srcKind === 'card') {
-      const srcCard = boardCards.cards[srcId]
-      if (!srcCard) return
+    if (!aiNamingEnabled) return
 
-      if (fromGroupId) {
-        await detachFromGroup(srcId, fromGroupId)
-      }
+    dispatch({
+      type: BoardCardsMessageType.UPDATE_CARD_GROUP,
+      groupId: targetGroup.id,
+      patch: { isGeneratingLabel: true },
+    })
+    const allCardIds = [...targetGroup.cardIds, srcId]
+    const contents = allCardIds
+      .map(id => boardCards.cards[id]?.content)
+      .filter(Boolean)
+    const label = await generateGroupLabel(contents)
+    if (label) {
+      await editCardGroup({ cardGroupId: targetGroup.id, label })
+      broadcastGroupPatch(targetGroup.id, { label, isGeneratingLabel: false })
+    } else {
+      dispatch({
+        type: BoardCardsMessageType.UPDATE_CARD_GROUP,
+        groupId: targetGroup.id,
+        patch: { isGeneratingLabel: false },
+      })
+    }
+  }
 
-      if (targetGroup) {
-        // Card onto existing group → add to group
-        await addCardToGroup({ cardId: srcId, cardGroupId: targetGroup.id })
-        dispatch({
-          type: BoardCardsMessageType.ADD_CARD_TO_GROUP,
-          cardId: srcId,
-          groupId: targetGroup.id,
-        })
-        publish({
-          data: {
-            type: BoardCardsMessageType.ADD_CARD_TO_GROUP,
-            payload: { cardId: srcId, groupId: targetGroup.id },
-          },
-        })
-
-        if (aiNamingEnabled) {
-          dispatch({
-            type: BoardCardsMessageType.UPDATE_CARD_GROUP,
-            groupId: targetGroup.id,
-            patch: { isGeneratingLabel: true },
-          })
-          const allCardIds = [...targetGroup.cardIds, srcId]
-          const contents = allCardIds
-            .map(id => boardCards.cards[id]?.content)
-            .filter(Boolean)
-          const label = await generateGroupLabel(contents)
-          if (label) {
-            await editCardGroup({ cardGroupId: targetGroup.id, label })
-            dispatch({
-              type: BoardCardsMessageType.UPDATE_CARD_GROUP,
-              groupId: targetGroup.id,
-              patch: { label, isGeneratingLabel: false },
-            })
-            publish({
-              data: {
-                type: BoardCardsMessageType.UPDATE_CARD_GROUP,
-                payload: {
-                  groupId: targetGroup.id,
-                  patch: { label, isGeneratingLabel: false },
-                },
-              },
-            })
-          } else {
-            dispatch({
-              type: BoardCardsMessageType.UPDATE_CARD_GROUP,
-              groupId: targetGroup.id,
-              patch: { isGeneratingLabel: false },
-            })
-          }
-        }
-      } else if (targetCard) {
-        const createGroup = async (label: string) => {
+  const createGroupFromCards = async (
+    srcId: string,
+    srcContent: string,
+    targetId: string,
+    targetPosition: number,
+    targetContent: string,
+  ) => {
+    if (!aiNamingEnabled) {
+      openModal('CreateCardGroupModal', {
+        onSubmit: async (label: string) => {
           const result = await createCardGroup({
             boardId,
             column: columnType,
             label,
             cardId1: targetId,
             cardId2: srcId,
-            position: targetCard.position,
+            position: targetPosition,
           })
-          if (result) {
-            const groupState: CardGroupState = {
+          if (!result) return
+          broadcastGroupCreate(
+            {
               id: result.id,
               label: result.label,
               column: result.column,
@@ -318,189 +349,214 @@ export function useColumnDragDrop(columnType: string) {
               createdAt: result.createdAt,
               updatedAt: result.updatedAt,
               cardIds: [targetId, srcId],
-            }
-            dispatch({
-              type: BoardCardsMessageType.CREATE_CARD_GROUP,
-              group: groupState,
-              cardIds: [targetId, srcId],
-            })
-            publish({
-              data: {
-                type: BoardCardsMessageType.CREATE_CARD_GROUP,
-                payload: { group: groupState, cardIds: [targetId, srcId] },
-              },
-            })
-          }
-        }
-
-        if (aiNamingEnabled) {
-          const result = await createCardGroup({
-            boardId,
-            column: columnType,
-            label: '',
-            cardId1: targetId,
-            cardId2: srcId,
-            position: targetCard.position,
-          })
-          if (result) {
-            const groupState: CardGroupState = {
-              id: result.id,
-              label: result.label,
-              column: result.column,
-              position: result.position,
-              retroSessionId: result.retroSessionId,
-              createdAt: result.createdAt,
-              updatedAt: result.updatedAt,
-              cardIds: [targetId, srcId],
-              isGeneratingLabel: true,
-            }
-            dispatch({
-              type: BoardCardsMessageType.CREATE_CARD_GROUP,
-              group: groupState,
-              cardIds: [targetId, srcId],
-            })
-            publish({
-              data: {
-                type: BoardCardsMessageType.CREATE_CARD_GROUP,
-                payload: { group: groupState, cardIds: [targetId, srcId] },
-              },
-            })
-
-            const contents = [targetCard.content, srcCard.content]
-            const label =
-              (await generateGroupLabel(contents)) ?? 'Grouped Cards'
-            await editCardGroup({ cardGroupId: result.id, label })
-            dispatch({
-              type: BoardCardsMessageType.UPDATE_CARD_GROUP,
-              groupId: result.id,
-              patch: { label, isGeneratingLabel: false },
-            })
-            publish({
-              data: {
-                type: BoardCardsMessageType.UPDATE_CARD_GROUP,
-                payload: {
-                  groupId: result.id,
-                  patch: { label, isGeneratingLabel: false },
-                },
-              },
-            })
-          }
-        } else {
-          openModal('CreateCardGroupModal', {
-            onSubmit: createGroup,
-          })
-        }
-      }
-    } else if (srcKind === 'group') {
-      const srcGroup = boardCards.groups[srcId]
-      if (!srcGroup) return
-
-      if (targetCard) {
-        // Group onto standalone card → add card to group & move group
-        await addCardToGroup({ cardId: targetId, cardGroupId: srcGroup.id })
-        dispatch({
-          type: BoardCardsMessageType.ADD_CARD_TO_GROUP,
-          cardId: targetId,
-          groupId: srcGroup.id,
-        })
-        publish({
-          data: {
-            type: BoardCardsMessageType.ADD_CARD_TO_GROUP,
-            payload: { cardId: targetId, groupId: srcGroup.id },
-          },
-        })
-
-        // Move group to the target card's column/position
-        const newPosition = targetCard.position ?? 1
-        await editCardGroup({
-          cardGroupId: srcGroup.id,
-          position: newPosition,
-          column: columnType,
-        })
-        dispatch({
-          type: BoardCardsMessageType.UPDATE_GROUP_POSITION,
-          groupId: srcGroup.id,
-          position: newPosition,
-          column: columnType,
-        })
-        publish({
-          data: {
-            type: BoardCardsMessageType.UPDATE_GROUP_POSITION,
-            payload: {
-              groupId: srcGroup.id,
-              position: newPosition,
-              column: columnType,
             },
-          },
-        })
-      } else if (targetGroup) {
-        // Group onto group → merge all cards and set label
-        const mergeGroups = async (label: string) => {
-          for (const cardId of srcGroup.cardIds) {
-            await addCardToGroup({ cardId, cardGroupId: targetGroup.id })
-            dispatch({
-              type: BoardCardsMessageType.ADD_CARD_TO_GROUP,
-              cardId,
-              groupId: targetGroup.id,
-            })
-            publish({
-              data: {
-                type: BoardCardsMessageType.ADD_CARD_TO_GROUP,
-                payload: { cardId, groupId: targetGroup.id },
-              },
-            })
-          }
-          await deleteCardGroup(srcId)
-          dispatch({
-            type: BoardCardsMessageType.DELETE_CARD_GROUP,
-            groupId: srcId,
-            restoredCards: [],
-          })
-          publish({
-            data: {
-              type: BoardCardsMessageType.DELETE_CARD_GROUP,
-              payload: { groupId: srcId, restoredCards: [] },
-            },
-          })
-          await editCardGroup({ cardGroupId: targetGroup.id, label })
-          dispatch({
-            type: BoardCardsMessageType.UPDATE_CARD_GROUP,
-            groupId: targetGroup.id,
-            patch: { label },
-          })
-          publish({
-            data: {
-              type: BoardCardsMessageType.UPDATE_CARD_GROUP,
-              payload: { groupId: targetGroup.id, patch: { label } },
-            },
-          })
-        }
-
-        if (aiNamingEnabled) {
-          dispatch({
-            type: BoardCardsMessageType.UPDATE_CARD_GROUP,
-            groupId: targetGroup.id,
-            patch: { isGeneratingLabel: true },
-          })
-          const allCardIds = [...targetGroup.cardIds, ...srcGroup.cardIds]
-          const contents = allCardIds
-            .map(id => boardCards.cards[id]?.content)
-            .filter(Boolean)
-          const label = (await generateGroupLabel(contents)) ?? 'Grouped Cards'
-          await mergeGroups(label)
-          dispatch({
-            type: BoardCardsMessageType.UPDATE_CARD_GROUP,
-            groupId: targetGroup.id,
-            patch: { isGeneratingLabel: false },
-          })
-        } else {
-          openModal('CreateCardGroupModal', {
-            onSubmit: mergeGroups,
-          })
-        }
-      }
+            [targetId, srcId],
+          )
+        },
+      })
+      return
     }
+
+    const result = await createCardGroup({
+      boardId,
+      column: columnType,
+      label: '',
+      cardId1: targetId,
+      cardId2: srcId,
+      position: targetPosition,
+    })
+    if (!result) return
+
+    broadcastGroupCreate(
+      {
+        id: result.id,
+        label: result.label,
+        column: result.column,
+        position: result.position,
+        retroSessionId: result.retroSessionId,
+        createdAt: result.createdAt,
+        updatedAt: result.updatedAt,
+        cardIds: [targetId, srcId],
+        isGeneratingLabel: true,
+      },
+      [targetId, srcId],
+    )
+
+    const label =
+      (await generateGroupLabel([targetContent, srcContent])) ?? 'Grouped Cards'
+    await editCardGroup({ cardGroupId: result.id, label })
+    broadcastGroupPatch(result.id, { label, isGeneratingLabel: false })
   }
+
+  const mergeGroupOntoCard = async (
+    srcGroup: CardGroupState,
+    targetId: string,
+    targetPosition: number,
+  ) => {
+    await broadcastAddToGroup(targetId, srcGroup.id)
+
+    const newPosition = targetPosition ?? 1
+    await editCardGroup({
+      cardGroupId: srcGroup.id,
+      position: newPosition,
+      column: columnType,
+    })
+    dispatch({
+      type: BoardCardsMessageType.UPDATE_GROUP_POSITION,
+      groupId: srcGroup.id,
+      position: newPosition,
+      column: columnType,
+    })
+    publish({
+      data: {
+        type: BoardCardsMessageType.UPDATE_GROUP_POSITION,
+        payload: {
+          groupId: srcGroup.id,
+          position: newPosition,
+          column: columnType,
+        },
+      },
+    })
+  }
+
+  const mergeTwoGroups = async (
+    srcGroup: CardGroupState,
+    targetGroup: CardGroupState,
+  ) => {
+    const performMerge = async (label: string) => {
+      await Promise.all(
+        srcGroup.cardIds.map(cardId =>
+          broadcastAddToGroup(cardId, targetGroup.id),
+        ),
+      )
+      await deleteCardGroup(srcGroup.id)
+      dispatch({
+        type: BoardCardsMessageType.DELETE_CARD_GROUP,
+        groupId: srcGroup.id,
+        restoredCards: [],
+      })
+      publish({
+        data: {
+          type: BoardCardsMessageType.DELETE_CARD_GROUP,
+          payload: { groupId: srcGroup.id, restoredCards: [] },
+        },
+      })
+      await editCardGroup({ cardGroupId: targetGroup.id, label })
+      broadcastGroupPatch(targetGroup.id, { label })
+    }
+
+    if (!aiNamingEnabled) {
+      openModal('CreateCardGroupModal', { onSubmit: performMerge })
+      return
+    }
+
+    dispatch({
+      type: BoardCardsMessageType.UPDATE_CARD_GROUP,
+      groupId: targetGroup.id,
+      patch: { isGeneratingLabel: true },
+    })
+    const allCardIds = [...targetGroup.cardIds, ...srcGroup.cardIds]
+    const contents = allCardIds
+      .map(id => boardCards.cards[id]?.content)
+      .filter(Boolean)
+    const label = (await generateGroupLabel(contents)) ?? 'Grouped Cards'
+    await performMerge(label)
+    dispatch({
+      type: BoardCardsMessageType.UPDATE_CARD_GROUP,
+      groupId: targetGroup.id,
+      patch: { isGeneratingLabel: false },
+    })
+  }
+
+  // --- Main merge dispatcher ---
+
+  const handleMerge = async (
+    srcId: string,
+    srcKind: string,
+    targetId: string,
+    fromGroupId?: string,
+  ) => {
+    if (srcKind === 'card') {
+      const srcCard = boardCards.cards[srcId]
+      if (!srcCard) return
+      if (fromGroupId) await detachFromGroup(srcId, fromGroupId)
+
+      const targetGroup = boardCards.groups[targetId]
+      if (targetGroup) return mergeCardIntoGroup(srcId, targetGroup)
+
+      const targetCard = boardCards.cards[targetId]
+      if (targetCard) {
+        return createGroupFromCards(
+          srcId,
+          srcCard.content,
+          targetId,
+          targetCard.position ?? 0,
+          targetCard.content,
+        )
+      }
+      return
+    }
+
+    const srcGroup = boardCards.groups[srcId]
+    if (!srcGroup) return
+
+    const targetCard = boardCards.cards[targetId]
+    if (targetCard) {
+      return mergeGroupOntoCard(srcGroup, targetId, targetCard.position ?? 0)
+    }
+
+    const targetGroup = boardCards.groups[targetId]
+    if (targetGroup) return mergeTwoGroups(srcGroup, targetGroup)
+  }
+
+  // --- Drop + Reorder ---
+
+  const handleDrop = useCallback(
+    async (e: React.DragEvent) => {
+      e.preventDefault()
+      setDropState(undefined)
+
+      let dragData: { id: string; kind: string; fromGroupId?: string }
+      try {
+        dragData = JSON.parse(e.dataTransfer.getData('text/plain'))
+      } catch {
+        return
+      }
+
+      const { id: dragId, kind: dragKind, fromGroupId } = dragData
+      const body = bodyRef.current
+      const { rects, draggingFullIndex } = body
+        ? snapshotItemRects(body)
+        : { rects: [] as CachedItemRect[], draggingFullIndex: -1 }
+      const rawZone =
+        rects.length > 0
+          ? getDropZoneFromRects(e.clientY, rects)
+          : { type: 'insert' as const, index: 0 }
+
+      if (rawZone.type === 'merge' && groupingEnabled) {
+        if (dragId === rawZone.targetId) return
+        // Don't merge back into the same group
+        if (fromGroupId && rawZone.targetId === fromGroupId) return
+        await handleMerge(dragId, dragKind, rawZone.targetId, fromGroupId)
+      } else {
+        const rawIndex =
+          rawZone.type === 'insert'
+            ? rawZone.index
+            : mergeZoneToInsertIndex(rects, rawZone.targetId)
+        const index = toFullIndex(rawIndex, draggingFullIndex)
+        await handleReorder(dragId, dragKind, index, fromGroupId)
+      }
+    },
+    [
+      aiNamingEnabled,
+      boardCards,
+      boardId,
+      columnType,
+      dispatch,
+      groupingEnabled,
+      publish,
+    ],
+  )
 
   const handleReorder = async (
     dragId: string,
