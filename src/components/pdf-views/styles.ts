@@ -191,6 +191,119 @@ export const STYLES = StyleSheet.create({
     marginLeft: 8,
   },
 
+  // Participants
+  participantsContainer: {
+    backgroundColor: '#f9fafb',
+    borderRadius: 6,
+    padding: 10,
+    marginBottom: 16,
+  },
+  participantsTitle: {
+    fontSize: 10,
+    fontFamily: 'Helvetica-Bold',
+    color: '#1f2937',
+    marginBottom: 4,
+  },
+  participantsText: {
+    fontSize: 9,
+    color: '#4b5563',
+    lineHeight: 1.4,
+  },
+
+  // Discussion Timings
+  timingsContainer: {
+    backgroundColor: '#f0fdf4',
+    borderRadius: 6,
+    padding: 12,
+    marginBottom: 24,
+    borderLeftWidth: 3,
+    borderLeftColor: '#22c55e',
+  },
+  timingsTitle: {
+    fontSize: 11,
+    fontFamily: 'Helvetica-Bold',
+    color: '#1f2937',
+    marginBottom: 8,
+  },
+  timingRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingVertical: 2,
+  },
+  timingLabel: {
+    fontSize: 9,
+    color: '#374151',
+    flex: 1,
+  },
+  timingDuration: {
+    fontSize: 9,
+    fontFamily: 'Helvetica-Bold',
+    color: '#374151',
+    marginLeft: 12,
+  },
+
+  // AI Summary
+  summaryContainer: {
+    backgroundColor: '#f0f4ff',
+    borderRadius: 6,
+    padding: 14,
+    marginBottom: 24,
+    borderLeftWidth: 3,
+    borderLeftColor: '#6366f1',
+  },
+  summaryTitle: {
+    fontSize: 12,
+    fontFamily: 'Helvetica-Bold',
+    color: '#1f2937',
+    marginBottom: 6,
+  },
+  summaryText: {
+    fontSize: 9,
+    color: '#374151',
+    lineHeight: 1.5,
+  },
+
+  // Comments
+  commentItem: {
+    flexDirection: 'row',
+    marginTop: 2,
+    paddingLeft: 4,
+  },
+  commentBubble: {
+    fontSize: 8,
+    color: '#6b7280',
+    marginRight: 4,
+  },
+  commentText: {
+    flex: 1,
+    fontSize: 8,
+    color: '#6b7280',
+    fontStyle: 'italic',
+  },
+  commentAuthor: {
+    fontSize: 7,
+    color: '#9ca3af',
+    marginLeft: 4,
+  },
+
+  // Card Groups
+  groupHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    paddingHorizontal: 6,
+    paddingVertical: 3,
+    marginBottom: 4,
+    marginTop: 4,
+    backgroundColor: '#f3f4f6',
+    borderRadius: 3,
+  },
+  groupLabel: {
+    fontSize: 9,
+    fontFamily: 'Helvetica-Bold',
+    color: '#4b5563',
+  },
+
   // Footer
   footer: {
     position: 'absolute',

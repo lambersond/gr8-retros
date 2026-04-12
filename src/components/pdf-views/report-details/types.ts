@@ -1,8 +1,10 @@
 export type ReportDetailsDocumentProps = {
   title?: string
   date?: Date
+  summary?: string
   stats: ReportDetailsStats
   columns: ReportDetailsColumn[]
+  sessionData?: ReportSessionData
 }
 
 export type ReportDetailsColumn = {
@@ -13,9 +15,29 @@ export type ReportDetailsColumn = {
 
 export type ReportDetailsStats = {
   totalCards: number
+  totalGroups: number
+  totalDiscussed: number
   totalVotes: number
   totalActions: number
   completedActions: number
+  totalComments: number
+}
+
+export type ReportSessionParticipant = {
+  name: string
+  image?: string
+}
+
+export type ReportDiscussionTiming = {
+  label: string
+  column: string
+  durationMs: number
+}
+
+export type ReportSessionData = {
+  sessionStartedAt: number
+  participants: ReportSessionParticipant[]
+  discussionTimings: ReportDiscussionTiming[]
 }
 
 type ReportDetailsColumnSettings = {
@@ -30,12 +52,21 @@ type ReportDetailsColumnStyles = {
   textColor: string
 }
 
-type ReportDetailsColumnCard = {
+export type ReportDetailsColumnCard = {
   id: string
   title: string
   votes: number
+  isDiscussed: boolean
   submittedBy?: string
+  groupLabel?: string
+  comments: ReportDetailsCardComment[]
   actionItems: ReportDetailsCardActionItem[]
+}
+
+type ReportDetailsCardComment = {
+  id: string
+  content: string
+  author: string
 }
 
 type ReportDetailsCardActionItem = {

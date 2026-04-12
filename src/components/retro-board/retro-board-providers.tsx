@@ -4,6 +4,7 @@ import { BoardSettingsProvider } from '@/providers/retro-board/board-settings'
 import { BoardCardsProvider } from '@/providers/retro-board/cards'
 import { BoardColumnsProvider } from '@/providers/retro-board/columns'
 import { RetroBoardControlsProvider } from '@/providers/retro-board/controls'
+import { SessionStatsProvider } from '@/providers/retro-board/session-stats'
 import { ViewingMembersProvider } from '@/providers/viewing-members'
 import type { Board } from '@/types'
 
@@ -24,11 +25,13 @@ export function RetroBoardProviders({
         <RetroBoardControlsProvider boardId={board.id}>
           <BoardColumnsProvider board={board}>
             <BoardCardsProvider board={board}>
-              <CommentsSidebarProvider boardId={board.id}>
-                <MessageOrchestrator boardId={board.id}>
-                  {children}
-                </MessageOrchestrator>
-              </CommentsSidebarProvider>
+              <SessionStatsProvider boardId={board.id}>
+                <CommentsSidebarProvider boardId={board.id}>
+                  <MessageOrchestrator boardId={board.id}>
+                    {children}
+                  </MessageOrchestrator>
+                </CommentsSidebarProvider>
+              </SessionStatsProvider>
             </BoardCardsProvider>
           </BoardColumnsProvider>
         </RetroBoardControlsProvider>

@@ -32,6 +32,7 @@ export type PermissionKey =
   | 'dragAndDrop.grouping'
   | 'dragAndDrop.grouping.aiNaming'
   | 'facilitatorMode'
+  | 'aiSummary'
 
 export type DynamcicPermissionKey =
   | 'actionItems.restricted.canAdd'
@@ -73,6 +74,7 @@ export const SETTINGS_ROLE_MAP: Record<string, PermissionKey> = {
   cardGroupingEnabled: 'dragAndDrop.grouping',
   aiCardGroupNamingEnabled: 'dragAndDrop.grouping.aiNaming',
   isFacilitatorModeEnabled: 'facilitatorMode',
+  isAiSummaryEnabled: 'aiSummary',
 }
 
 export const ROLE_HIERARCHY: Record<BoardRole, number> = {
@@ -123,6 +125,7 @@ const PERMISSIONS_MAP: Record<PermissionKey, BoardRole> &
   'dragAndDrop.grouping': BoardRole.ADMIN,
   'dragAndDrop.grouping.aiNaming': BoardRole.ADMIN,
   facilitatorMode: BoardRole.ADMIN,
+  aiSummary: BoardRole.ADMIN,
 } as const
 
 export function userHasPermission(

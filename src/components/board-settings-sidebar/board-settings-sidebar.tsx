@@ -3,6 +3,7 @@ import { PaymentTierBadge } from '../badges'
 import { Sidebar, SidebarItem } from '../common'
 import {
   ActionItemsSettings,
+  AiSummarySettings,
   BoardCustomizationSettings,
   BoardMembers,
   ClaimBoard,
@@ -57,6 +58,7 @@ export function BoardSettingsSidebar() {
           <VotingSettings />
           <DragAndDropSettings />
           <FacilitatorModeSettings />
+          <AiSummarySettings />
           <DangerZoneSettings />
         </section>
       </div>

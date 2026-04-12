@@ -6,6 +6,7 @@ import {
   Move,
   Music,
   Presentation,
+  Sparkles,
   UserLock,
   Vote,
 } from 'lucide-react'
@@ -34,6 +35,7 @@ const getBaseSettings = (): BoardSettingsWithPermissions => {
   baseSettings.voting.icon = Vote
   baseSettings.dragAndDrop.icon = Move
   baseSettings.facilitatorMode.icon = Presentation
+  baseSettings.aiSummary.icon = Sparkles
 
   return baseSettings
 }
@@ -165,6 +167,10 @@ export function getSettingsWithPermissions(
     userRole,
   )
 
+  // AI Summary Settings
+  baseSettings.aiSummary.enabled = settings.isAiSummaryEnabled
+  baseSettings.aiSummary.canEdit = userHasPermission('aiSummary', userRole)
+
   // Drag and Drop Settings
   baseSettings.dragAndDrop.enabled = settings.isDragAndDropEnabled
   baseSettings.dragAndDrop.canEdit = userHasPermission('dragAndDrop', userRole)
@@ -250,6 +256,7 @@ function getStaticBoardPermissions(userRole: BoardRole) {
       userRole,
     ),
     facilitatorMode: userHasPermission('facilitatorMode', userRole),
+    aiSummary: userHasPermission('aiSummary', userRole),
   } satisfies Record<PermissionKey, boolean>
 }
 

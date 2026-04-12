@@ -1,6 +1,7 @@
 import type {
   ReportDetailsColumn,
   ReportDetailsStats,
+  ReportSessionData,
 } from '@/components/pdf-views/report-details'
 
 export type PDFPreviewModalProps = {
@@ -12,4 +13,6 @@ type ReportDetailsModalProps = {
   type: 'ReportDetails'
   columns: ReportDetailsColumn[]
   stats: ReportDetailsStats
+  summary?: string
+  sessionData?: ReportSessionData
 }

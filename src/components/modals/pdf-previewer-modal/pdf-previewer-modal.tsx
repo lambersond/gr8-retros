@@ -24,7 +24,14 @@ export function PDFPreviewerModal({
 
   const getDocumentComponent = () => {
     if (type === 'ReportDetails') {
-      return <ReportDetailsDocument {...props} />
+      return (
+        <ReportDetailsDocument
+          columns={props.columns}
+          stats={props.stats}
+          summary={props.summary}
+          sessionData={props.sessionData}
+        />
+      )
     }
 
     return (

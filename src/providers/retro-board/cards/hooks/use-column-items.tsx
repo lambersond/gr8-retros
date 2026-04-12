@@ -16,10 +16,11 @@ function getGroupAggregates(
 ) {
   const memberCards = group.cardIds.map(id => cards[id]).filter(Boolean)
   return {
-    upvotes: memberCards.reduce((sum, c) => sum + c.upvotedBy.length, 0),
-    votes:
-      (group.votes ?? 0) +
-      memberCards.reduce((sum, c) => sum + (c.votes ?? 0), 0),
+    upvotes: memberCards.reduce(
+      (sum, c) => sum + (c.upvotedBy?.length ?? 0),
+      0,
+    ),
+    votes: memberCards.reduce((sum, c) => sum + (c.votes ?? 0), 0),
     actionItemCount: memberCards.reduce(
       (sum, c) => sum + (c.actionItems?.length ?? 0),
       0,
@@ -55,7 +56,7 @@ function buildComparator(
     const getValues = (item: ColumnItem) => {
       if (item.kind === 'card') {
         return {
-          upvotes: item.data.upvotedBy.length,
+          upvotes: item.data.upvotedBy?.length ?? 0,
           votes: item.data.votes ?? 0,
           actionItemCount: item.data.actionItems?.length ?? 0,
           commentCount: item.data.comments?.length ?? 0,

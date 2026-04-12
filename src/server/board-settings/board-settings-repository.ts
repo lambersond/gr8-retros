@@ -167,6 +167,7 @@ export async function transferBoardOwnership(
         isFacilitatorModeEnabled: true,
         cardGroupingEnabled: true,
         aiCardGroupNamingEnabled: true,
+        isAiSummaryEnabled: true,
         ownerId: true,
       },
     })

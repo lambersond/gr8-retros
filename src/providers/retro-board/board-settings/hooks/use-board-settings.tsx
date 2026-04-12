@@ -10,6 +10,7 @@ export function useBoardSettings() {
     id: ctx.settings.id,
     ownerId: ctx.settings.ownerId,
     boardTier: ctx.settings.boardTier,
+    isAiSummaryEnabled: ctx.settings.isAiSummaryEnabled,
     settings: ctx.boardSettingsWithPermissions,
     invite: ctx.settings.invite,
     sidebarOpen: ctx.sidebarOpen,

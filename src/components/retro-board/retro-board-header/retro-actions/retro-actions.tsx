@@ -1,4 +1,4 @@
-import { useMemo } from 'react'
+import { useCallback, useMemo, useState } from 'react'
 import {
   ArrowDownWideNarrow,
   BrushCleaning,
@@ -6,10 +6,18 @@ import {
   Eraser,
   Funnel,
   Hammer,
+  Loader,
   Settings,
+  Sparkles,
 } from 'lucide-react'
 import { useRetroActions } from './use-retro-actions'
-import { IconButton, Menu, Popover } from '@/components/common'
+import {
+  IconButton,
+  Menu,
+  Popover,
+  type Option as MenuOption,
+  type GroupOption as MenuGroupOption,
+} from '@/components/common'
 import { PdfIcon } from '@/components/common/icons'
 import {
   calculateStatsForPDF,
@@ -30,6 +38,9 @@ import {
 } from '@/providers/retro-board/cards'
 import { useBoardColumns } from '@/providers/retro-board/columns'
 import { useBoardControlsState } from '@/providers/retro-board/controls'
+import { useSessionStats } from '@/providers/retro-board/session-stats'
+import { generateSessionSummary } from '@/server/ai/generate-session-summary'
+import type { ReportSessionData } from '@/components/pdf-views/report-details'
 
 export function RetroActions({ id }: Readonly<{ id: string }>) {
   const {
@@ -42,13 +53,15 @@ export function RetroActions({ id }: Readonly<{ id: string }>) {
     hasVotingResults: s.boardControls.voting.state === VotingState.CLOSED,
   }))
   const { openSidebar } = useBoardSettingsActions()
-  const { isClaimed } = useBoardSettings()
+  const { isClaimed, isAiSummaryEnabled } = useBoardSettings()
   const { isAuthenticated } = useAuth()
   const { openModal } = useModals()
   const data = useBoardCards()
   const stats = calculateStatsForPDF(data)
   const { columns } = useBoardColumns()
   const formattedData = formatColumnDataForPDF(data, columns)
+  const sessionStats = useSessionStats()
+  const [isGeneratingSummary, setIsGeneratingSummary] = useState(false)
 
   const { user } = useBoardPermissions()
 
@@ -56,8 +69,98 @@ export function RetroActions({ id }: Readonly<{ id: string }>) {
   const showSettingsButton = (isAuthenticated && !isClaimed) || user.hasMember
   const showFilterButton = hasVotingResults
 
+  const handleExportReport = useCallback(() => {
+    openModal('PDFPreviewerModal', {
+      title: 'Export Report Details',
+      type: 'ReportDetails',
+      columns: formattedData,
+      stats,
+    })
+  }, [formattedData, stats, openModal])
+
+  const handleExportAiSummary = useCallback(async () => {
+    setIsGeneratingSummary(true)
+    let summary: string | undefined
+
+    try {
+      const columnLabels: Record<string, string> = {}
+      for (const col of columns) {
+        columnLabels[col.columnType] = col.label
+      }
+
+      const summaryCards = Object.values(data.cards).map(card => ({
+        content: card.content,
+        column: card.column,
+        votes: card.upvotedBy.length,
+        isDiscussed: card.isDiscussed,
+        comments: (card.comments ?? []).map(c => c.content),
+        actionItems: (card.actionItems ?? []).map(ai => ({
+          content: ai.content,
+          completed: ai.isDone,
+        })),
+        groupLabel: card.cardGroupId
+          ? data.groups[card.cardGroupId]?.label
+          : undefined,
+      }))
+
+      summary = await generateSessionSummary(summaryCards, columnLabels, {
+        totalCards: stats.totalCards,
+        totalGroups: stats.totalGroups,
+        totalDiscussed: stats.totalDiscussed,
+        totalComments: stats.totalComments,
+        totalActionItems: stats.totalActions,
+        incompleteActionItems: stats.totalActions - stats.completedActions,
+        hadVoting: stats.totalVotes > 0,
+        totalVotes: stats.totalVotes,
+      })
+    } catch {
+      // Continue without summary on failure
+    } finally {
+      setIsGeneratingSummary(false)
+    }
+
+    const sessionData: ReportSessionData = {
+      sessionStartedAt: sessionStats.sessionStartedAt,
+      participants: sessionStats.participants,
+      discussionTimings: Object.values(sessionStats.discussionTimings),
+    }
+
+    openModal('PDFPreviewerModal', {
+      title: 'Export AI Summary Report',
+      type: 'ReportDetails',
+      columns: formattedData,
+      stats,
+      summary,
+      sessionData,
+    })
+  }, [data, columns, formattedData, stats, sessionStats, openModal])
+
   const hammerOptions = useMemo(() => {
-    const options = [
+    const exportOptions: MenuOption[] = [
+      {
+        label: 'Report Details',
+        icon: <PdfIcon height={16} width={17} className='-mr-1' />,
+        onClick: handleExportReport,
+      },
+    ]
+
+    if (isAiSummaryEnabled && !isGeneratingSummary) {
+      exportOptions.push({
+        label: 'AI Summary Report',
+        icon: <Sparkles size={16} />,
+        onClick: handleExportAiSummary,
+      })
+    }
+
+    if (isAiSummaryEnabled && isGeneratingSummary) {
+      exportOptions.push({
+        label: 'Generating Summary...',
+        icon: <Loader size={16} className='animate-spin' />,
+        onClick: () => {},
+      })
+    }
+
+    const options: (MenuOption | MenuGroupOption)[] = [
       {
         label: 'Clear Only Completed Items',
         onClick: handleClearCompleted,
@@ -66,24 +169,11 @@ export function RetroActions({ id }: Readonly<{ id: string }>) {
       {
         key: 'export-group',
         label: 'Export Options',
-        divider: true,
         showHeader: true,
         icon: <Download size={16} />,
-        options: [
-          {
-            label: 'Report Details',
-            icon: <PdfIcon height={16} width={17} className='-mr-1' />,
-            onClick: () =>
-              openModal('PDFPreviewerModal', {
-                title: 'Export Report Details',
-                type: 'ReportDetails',
-                columns: formattedData,
-                stats,
-              }),
-          },
-        ],
+        options: exportOptions,
       },
-    ] as any[]
+    ]
 
     if (user.hasAdmin) {
       options.splice(1, 0, {
@@ -94,7 +184,15 @@ export function RetroActions({ id }: Readonly<{ id: string }>) {
       })
     }
     return options
-  }, [user, handleClearBoard, handleClearCompleted])
+  }, [
+    user,
+    handleClearBoard,
+    handleClearCompleted,
+    handleExportReport,
+    handleExportAiSummary,
+    isAiSummaryEnabled,
+    isGeneratingSummary,
+  ])
 
   const sortOptions = useMemo(() => {
     const options = [
