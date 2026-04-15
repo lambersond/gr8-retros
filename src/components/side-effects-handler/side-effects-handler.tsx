@@ -1,7 +1,9 @@
 'use client'
 
-import { useEffect } from 'react'
+import { useEffect, useRef } from 'react'
 import { VotingState } from '@/enums'
+import { useAuth } from '@/hooks/use-auth'
+import { useModals } from '@/hooks/use-modals'
 import {
   BoardCardsInternalActionType,
   BoardCardsMessageType,
@@ -9,6 +11,10 @@ import {
   useBoardCardsDispatch,
 } from '@/providers/retro-board/cards'
 import { useBoardControlsState } from '@/providers/retro-board/controls'
+import {
+  useFacilitatorDiceActions,
+  useFacilitatorDiceState,
+} from '@/providers/retro-board/facilitator-dice'
 
 /**
  * This component is responsible for handling any side effects
@@ -50,6 +56,25 @@ export function SideEffectsHandler() {
       }
     }
   }, [votingState, votingResults])
+
+  // Dice session listener — opens color picker for non-initiator participants
+  const { activeSession } = useFacilitatorDiceState()
+  const { submitRoll } = useFacilitatorDiceActions()
+  const { user } = useAuth()
+  const { openModal } = useModals()
+  const lastSessionIdRef = useRef<string | undefined>(undefined)
+
+  useEffect(() => {
+    if (!activeSession) return
+    if (activeSession.sessionId === lastSessionIdRef.current) return
+
+    lastSessionIdRef.current = activeSession.sessionId
+
+    if (activeSession.initiatorClientId === user.id) return
+    if (!activeSession.participants[user.id]) return
+
+    openModal('DiceColorPickerModal', { submitRoll })
+  }, [activeSession, user.id, openModal])
 
   return <></>
 }

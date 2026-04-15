@@ -1,6 +1,7 @@
 export { ConfirmModal } from './confirm-modal'
 export { CreateBoardModal } from './create-board-modal'
 export { CreateCardGroupModal } from './create-card-group-modal'
+export { DiceColorPickerModal } from './dice-color-picker-modal'
 export { EditCardGroupModal } from './edit-card-group-modal'
 export { CustomizeBoardColumnsModal } from './customize-board-columns-modal'
 export { ManageUsersModal } from './manage-users-modal'

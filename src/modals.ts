@@ -16,6 +16,11 @@ export const MODALS = {
       default: module.CreateCardGroupModal,
     })),
   ),
+  DiceColorPickerModal: lazy(() =>
+    import('./components/modals').then(module => ({
+      default: module.DiceColorPickerModal,
+    })),
+  ),
   CustomizeBoardColumnsModal: lazy(() =>
     import('./components/modals').then(module => ({
       default: module.CustomizeBoardColumnsModal,

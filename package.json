@@ -19,7 +19,7 @@
     "vercel-build:blank": "prisma generate --no-engine && prisma migrate deploy && prisma db push && next build"
   },
   "dependencies": {
-    "@3d-dice/dice-box": "^1.1.4",
+    "@3d-dice/dice-box-threejs": "^0.0.12",
     "@ai-sdk/openai": "^3.0.52",
     "@auth/prisma-adapter": "^2.11.1",
     "@floating-ui/react": "^0.27.19",

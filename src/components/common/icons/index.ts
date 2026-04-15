@@ -1,3 +1,4 @@
+export { D20Icon } from './d20'
 export { DiscussedIcon } from './discussed'
 export { MoreVertIcon } from './more-vert'
 export { MusicIcon } from './music'

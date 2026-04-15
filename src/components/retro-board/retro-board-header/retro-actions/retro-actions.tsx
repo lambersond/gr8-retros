@@ -18,7 +18,7 @@ import {
   type Option as MenuOption,
   type GroupOption as MenuGroupOption,
 } from '@/components/common'
-import { PdfIcon } from '@/components/common/icons'
+import { D20Icon, PdfIcon } from '@/components/common/icons'
 import {
   calculateStatsForPDF,
   formatColumnDataForPDF,
@@ -38,6 +38,7 @@ import {
 } from '@/providers/retro-board/cards'
 import { useBoardColumns } from '@/providers/retro-board/columns'
 import { useBoardControlsState } from '@/providers/retro-board/controls'
+import { useFacilitatorDiceActions } from '@/providers/retro-board/facilitator-dice'
 import { useSessionStats } from '@/providers/retro-board/session-stats'
 import { generateSessionSummary } from '@/server/ai/generate-session-summary'
 import type { ReportSessionData } from '@/components/pdf-views/report-details'
@@ -62,12 +63,18 @@ export function RetroActions({ id }: Readonly<{ id: string }>) {
   const formattedData = formatColumnDataForPDF(data, columns)
   const sessionStats = useSessionStats()
   const [isGeneratingSummary, setIsGeneratingSummary] = useState(false)
+  const { startSession, submitRoll } = useFacilitatorDiceActions()
 
   const { user } = useBoardPermissions()
 
   const showAdminActions = !isClaimed || user.hasFacilitator
   const showSettingsButton = (isAuthenticated && !isClaimed) || user.hasMember
   const showFilterButton = hasVotingResults
+
+  const handleChooseFacilitator = useCallback(() => {
+    startSession()
+    openModal('DiceColorPickerModal', { submitRoll })
+  }, [startSession, openModal, submitRoll])
 
   const handleExportReport = useCallback(() => {
     openModal('PDFPreviewerModal', {
@@ -162,6 +169,18 @@ export function RetroActions({ id }: Readonly<{ id: string }>) {
 
     const options: (MenuOption | MenuGroupOption)[] = [
       {
+        label: 'Choose Facilitator',
+        onClick: handleChooseFacilitator,
+        icon: (
+          <D20Icon
+            height={16}
+            width={16}
+            className='transition-transform duration-1000 ease-in-out group-hover:rotate-[360deg]'
+          />
+        ),
+        className: 'group hidden',
+      },
+      {
         label: 'Clear Only Completed Items',
         onClick: handleClearCompleted,
         icon: <BrushCleaning size={16} />,
@@ -186,6 +205,7 @@ export function RetroActions({ id }: Readonly<{ id: string }>) {
     return options
   }, [
     user,
+    handleChooseFacilitator,
     handleClearBoard,
     handleClearCompleted,
     handleExportReport,
