@@ -54,7 +54,8 @@ export function RetroActions({ id }: Readonly<{ id: string }>) {
     hasVotingResults: s.boardControls.voting.state === VotingState.CLOSED,
   }))
   const { openSidebar } = useBoardSettingsActions()
-  const { isClaimed, isAiSummaryEnabled } = useBoardSettings()
+  const { isClaimed, isAiSummaryEnabled, settings } = useBoardSettings()
+  const isFacilitatorModeEnabled = settings.facilitatorMode.enabled
   const { isAuthenticated } = useAuth()
   const { openModal } = useModals()
   const data = useBoardCards()
@@ -169,18 +170,6 @@ export function RetroActions({ id }: Readonly<{ id: string }>) {
 
     const options: (MenuOption | MenuGroupOption)[] = [
       {
-        label: 'Choose Facilitator',
-        onClick: handleChooseFacilitator,
-        icon: (
-          <D20Icon
-            height={16}
-            width={16}
-            className='transition-transform duration-1000 ease-in-out group-hover:rotate-[360deg]'
-          />
-        ),
-        className: 'group hidden',
-      },
-      {
         label: 'Clear Only Completed Items',
         onClick: handleClearCompleted,
         icon: <BrushCleaning size={16} />,
@@ -194,8 +183,24 @@ export function RetroActions({ id }: Readonly<{ id: string }>) {
       },
     ]
 
+    if (isFacilitatorModeEnabled) {
+      options.unshift({
+        label: 'Choose Facilitator',
+        onClick: handleChooseFacilitator,
+        icon: (
+          <D20Icon
+            height={16}
+            width={16}
+            className='transition-transform duration-1000 ease-in-out group-hover:rotate-[360deg]'
+          />
+        ),
+        className: 'group',
+      })
+    }
+
     if (user.hasAdmin) {
-      options.splice(1, 0, {
+      const insertIdx = isFacilitatorModeEnabled ? 1 : 0
+      options.splice(insertIdx, 0, {
         label: 'Clear All Cards',
         onClick: handleClearBoard,
         color: 'danger',
@@ -211,6 +216,7 @@ export function RetroActions({ id }: Readonly<{ id: string }>) {
     handleExportReport,
     handleExportAiSummary,
     isAiSummaryEnabled,
+    isFacilitatorModeEnabled,
     isGeneratingSummary,
   ])
 

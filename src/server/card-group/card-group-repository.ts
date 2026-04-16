@@ -196,3 +196,13 @@ export async function deleteCardGroupsByIds(groupIds: string[]) {
     where: { id: { in: groupIds } },
   })
 }
+
+export async function getCardGroupsWithCardCount(boardId: string) {
+  return prisma.cardGroup.findMany({
+    where: { retroSessionId: boardId },
+    select: {
+      id: true,
+      _count: { select: { cards: true } },
+    },
+  })
+}

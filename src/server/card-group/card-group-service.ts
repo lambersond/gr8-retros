@@ -60,3 +60,27 @@ export async function deleteEmptyCardGroup(cardGroupId: string) {
   if (group.cards.length > 1) throw new Error('Card group is not empty')
   return repository.deleteEmptyCardGroup(cardGroupId)
 }
+
+export async function cleanupSparseCardGroups(boardId: string) {
+  const groups = await repository.getCardGroupsWithCardCount(boardId)
+
+  const emptyGroupIds: string[] = []
+  const singleCardGroupIds: string[] = []
+
+  for (const group of groups) {
+    if (group._count.cards === 0) emptyGroupIds.push(group.id)
+    else if (group._count.cards === 1) singleCardGroupIds.push(group.id)
+  }
+
+  const promises: Promise<unknown>[] = []
+
+  if (emptyGroupIds.length > 0) {
+    promises.push(repository.deleteCardGroupsByIds(emptyGroupIds))
+  }
+
+  for (const groupId of singleCardGroupIds) {
+    promises.push(deleteEmptyCardGroup(groupId))
+  }
+
+  await Promise.all(promises)
+}

@@ -1,1 +1,1 @@
-export * from './card-group-service'
+export * as cardGroupService from './card-group-service'

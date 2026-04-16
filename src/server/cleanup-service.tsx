@@ -1,6 +1,7 @@
 import { subDays } from 'date-fns'
 import { boardService } from './board'
 import { cardService } from './card'
+import { cardGroupService } from './card-group'
 import { RETENTION_POLICY } from '@/constants'
 import { PaymentTier } from '@/enums'
 
@@ -36,6 +37,21 @@ export async function dailyCleanup() {
 
   try {
     await Promise.all(cardDeletionPromises)
+
+    const boardsToCleanup = allBoards
+      .filter(b => !boardsToDelete.includes(b.id))
+      .map(b => b.id)
+
+    await Promise.all(
+      boardsToCleanup.map(boardId =>
+        cardGroupService.cleanupSparseCardGroups(boardId).catch(error => {
+          console.error(
+            `Failed to clean card groups for board ${boardId}:`,
+            error,
+          )
+        }),
+      ),
+    )
 
     if (boardsToDelete.length > 0) {
       await boardService.deleteManyBoardsByIds(boardsToDelete)

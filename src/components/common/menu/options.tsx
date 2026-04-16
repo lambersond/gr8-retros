@@ -6,7 +6,14 @@ export function Options({ options, indent = false }: Readonly<OptionsProps>) {
   return (
     <>
       {options.map(
-        ({ label, onClick, icon, divider, color = 'primary', className }) => (
+        ({
+          label,
+          onClick,
+          icon,
+          divider,
+          color = 'primary',
+          className = '',
+        }) => (
           <Fragment key={label}>
             {divider && <div className='border-t border-black/10' />}
             <button

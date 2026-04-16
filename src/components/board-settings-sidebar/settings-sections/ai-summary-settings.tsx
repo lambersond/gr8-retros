@@ -26,24 +26,21 @@ export function AiSummarySettings() {
 
   const isUnlocked = hasTier(boardTier, PaymentTier.BELIEVER)
 
-  // TODO: remove the wrapper div once tested
   return (
-    <div className='hidden'>
-      <SettingsToggle
-        title={setting.title}
-        Icon={setting.icon}
-        canEdit={setting.canEdit}
-        isEnabled={setting.enabled}
-        isUnlocked={isUnlocked}
-        hint={
-          <span className='text-sm text-text-primary flex items-center gap-1'>
-            Upgrade to{' '}
-            <PaymentTierBadge tier={PaymentTier.BELIEVER} redirectToPlans /> to
-            unlock this setting
-          </span>
-        }
-        onToggle={updateBoardSetting(setting.key, !setting.enabled)}
-      />
-    </div>
+    <SettingsToggle
+      title={setting.title}
+      Icon={setting.icon}
+      canEdit={setting.canEdit}
+      isEnabled={setting.enabled}
+      isUnlocked={isUnlocked}
+      hint={
+        <span className='text-sm text-text-primary flex items-center gap-1'>
+          Upgrade to{' '}
+          <PaymentTierBadge tier={PaymentTier.BELIEVER} redirectToPlans /> to
+          unlock this setting
+        </span>
+      }
+      onToggle={updateBoardSetting(setting.key, !setting.enabled)}
+    />
   )
 }
