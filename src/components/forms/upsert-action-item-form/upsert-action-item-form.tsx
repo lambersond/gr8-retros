@@ -1,7 +1,8 @@
 import { noop } from 'lodash'
 import { Controller, useForm } from 'react-hook-form'
 import { type UpsertActionItemFields, upsertActionItemResolver } from './schema'
-import { Dropdown, Form, TextArea } from '@/components/common'
+import { Dropdown, Form } from '@/components/common'
+import { EmojiTextArea } from '@/components/emoji-completion'
 import { SubmitButton } from '@/components/submit-button'
 import type { UpsertActionItemFormProps } from './types'
 
@@ -14,7 +15,7 @@ export function UpsertActionItemForm({
   showDelete = false,
   onDelete,
 }: Readonly<UpsertActionItemFormProps>) {
-  const { control, formState, handleSubmit, register } =
+  const { control, formState, handleSubmit, register, setValue } =
     useForm<UpsertActionItemFields>({
       resolver: upsertActionItemResolver,
       defaultValues: {
@@ -23,23 +24,32 @@ export function UpsertActionItemForm({
       },
     })
 
+  const { ref: rhfRef, onChange: rhfOnChange, ...rhfRest } = register('content')
+
   const handleOnSubmit = (data: UpsertActionItemFields) => {
     onSubmit(data.content, data.assignedToId)
   }
 
   return (
     <Form onSubmit={handleSubmit(handleOnSubmit)}>
-      <TextArea
+      <EmojiTextArea
+        {...rhfRest}
+        ref={rhfRef}
         onClick={noop}
-        name='content'
         data-testid='content-form__content'
         placeholder={placeholder}
-        register={register}
         rows={5}
         maxLength={256}
         tabIndex={0}
         error={formState.errors.content?.message}
         defaultValue={defaultContent}
+        onChange={rhfOnChange}
+        onValueChange={value =>
+          setValue('content', value, {
+            shouldDirty: true,
+            shouldValidate: true,
+          })
+        }
         onKeyDown={e => {
           if (e.key === 'Enter' && !e.shiftKey) {
             e.preventDefault()

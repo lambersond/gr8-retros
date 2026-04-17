@@ -3,6 +3,7 @@ import { SendHorizonal } from 'lucide-react'
 import { useForm } from 'react-hook-form'
 import { type ContentFields, contentResolver } from './schema'
 import { IconButton } from '@/components/common/button/icon-button'
+import { EmojiTextArea } from '@/components/emoji-completion'
 import type { AddCommentFormProps } from './types'
 
 export function AddCommentForm({
@@ -12,10 +13,12 @@ export function AddCommentForm({
   const [selectedCardId, setSelectedCardId] = useState(
     memberCards?.[0]?.id ?? '',
   )
-  const { handleSubmit, register, reset, trigger, getValues } =
+  const { handleSubmit, register, reset, setValue, trigger, getValues } =
     useForm<ContentFields>({
       resolver: contentResolver,
     })
+
+  const { ref: rhfRef, onChange: rhfOnChange, ...rhfRest } = register('content')
 
   const handleOnSubmit = (data: ContentFields) => {
     onSubmit(data.content, memberCards ? selectedCardId : undefined)
@@ -54,16 +57,26 @@ export function AddCommentForm({
           ))}
         </select>
       )}
-      <div className='flex items-end p-2'>
-        <textarea
+      <div className='relative p-2'>
+        <EmojiTextArea
+          {...rhfRest}
+          ref={rhfRef}
           id='add_comment'
           placeholder='Add a comment...'
-          className='w-full focus:outline-none resize-none'
+          className='w-full pr-10 focus:outline-none resize-none'
           rows={3}
+          onChange={rhfOnChange}
+          onValueChange={value =>
+            setValue('content', value, {
+              shouldDirty: true,
+              shouldValidate: true,
+            })
+          }
           onKeyDown={handleKeyDown}
-          {...register('content')}
         />
-        <IconButton icon={SendHorizonal} intent='text-secondary' />
+        <div className='absolute right-3 bottom-12'>
+          <IconButton icon={SendHorizonal} intent='text-secondary' />
+        </div>
       </div>
     </form>
   )
