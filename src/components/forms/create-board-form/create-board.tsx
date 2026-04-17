@@ -1,7 +1,8 @@
 import { useCallback, useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { createBoardResolver, type CreateBoardFields } from './schema'
-import { Form, Input } from '@/components/common'
+import { Form } from '@/components/common'
+import { EmojiInput } from '@/components/emoji-completion'
 import type { Availability, CreateBoardFormProps } from './types'
 
 export function CreateBoardForm({ onSubmit }: Readonly<CreateBoardFormProps>) {
@@ -12,10 +13,13 @@ export function CreateBoardForm({ onSubmit }: Readonly<CreateBoardFormProps>) {
     handleSubmit,
     register,
     reset,
+    setValue,
     watch,
   } = useForm<CreateBoardFields>({
     resolver: createBoardResolver,
   })
+
+  const { ref: rhfRef, onChange: rhfOnChange, ...rhfRest } = register('boardName')
 
   const boardName = watch('boardName')
 
@@ -51,9 +55,17 @@ export function CreateBoardForm({ onSubmit }: Readonly<CreateBoardFormProps>) {
 
   return (
     <Form onSubmit={handleSubmit(handleOnSubmit)}>
-      <Input
+      <EmojiInput
+        {...rhfRest}
+        ref={rhfRef}
         label='Board Name'
-        {...register('boardName')}
+        onChange={rhfOnChange}
+        onValueChange={value =>
+          setValue('boardName', value, {
+            shouldDirty: true,
+            shouldValidate: true,
+          })
+        }
         error={errors.boardName?.message}
         hint={<AvailabilityHint availability={availability} />}
       />

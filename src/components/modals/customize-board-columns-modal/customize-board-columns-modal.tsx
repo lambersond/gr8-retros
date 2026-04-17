@@ -18,6 +18,7 @@ import {
   Modal,
   Tooltip,
 } from '@/components/common'
+import { EmojiPickerButton } from '@/components/emoji-completion'
 import { RETRO_THEMES } from '@/constants'
 import { PaymentTier } from '@/enums'
 import { useModals } from '@/hooks/use-modals'
@@ -369,18 +370,40 @@ export function CustomizeBoardColumnsModal({
                     error={columnErrors[selected.id]?.columnType}
                   />
                   <section className='space-y-3'>
-                    <Input
-                      label='label'
-                      value={selected.label}
-                      onChange={e => updateField('label', e.target.value)}
-                      error={columnErrors[selected.id]?.label}
-                    />
-                    <Input
-                      label='emoji'
-                      value={selected.emoji}
-                      onChange={e => updateField('emoji', e.target.value)}
-                      hideError
-                    />
+                    <div className='flex items-start gap-4'>
+                      <div className='flex flex-col gap-1'>
+                        <span className='text-[10px] font-semibold text-text-secondary uppercase tracking-widest'>
+                          Emoji
+                        </span>
+                        <div className='cursor-pointer flex h-[42px] w-[72px] items-center rounded-md border border-border-light bg-paper'>
+                          <EmojiPickerButton
+                            id='emoji-picker'
+                            className='flex flex-1 h-full items-center justify-center cursor-pointer'
+                            onEmojiSelect={emoji => updateField('emoji', emoji)}
+                          >
+                            <span className='text-xl leading-none'>
+                              {selected.emoji}
+                            </span>
+                          </EmojiPickerButton>
+                          {selected.emoji && (
+                            <button
+                              type='button'
+                              aria-label='Clear emoji'
+                              className='cursor-pointer flex items-center justify-center rounded p-0.5 mr-1.5 text-text-secondary hover:text-danger hover:bg-hover'
+                              onClick={() => updateField('emoji', '')}
+                            >
+                              <X size={14} />
+                            </button>
+                          )}
+                        </div>
+                      </div>
+                      <Input
+                        label='label'
+                        value={selected.label}
+                        onChange={e => updateField('label', e.target.value)}
+                        error={columnErrors[selected.id]?.label}
+                      />
+                    </div>
                     <Input
                       label='tagline'
                       value={selected.tagline}

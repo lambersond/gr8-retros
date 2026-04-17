@@ -31,9 +31,9 @@ export function useEmojiCompletion({ onApply }: Options) {
   const close = useCallback(() => setState(CLOSED), [])
 
   const handleInput = useCallback(
-    (textarea: HTMLTextAreaElement) => {
-      const { value } = textarea
-      const caret = textarea.selectionStart
+    (element: HTMLTextAreaElement | HTMLInputElement) => {
+      const { value } = element
+      const caret = element.selectionStart ?? 0
       const before = value.slice(0, caret)
 
       // 1) Closing colon → try unique auto-replace
@@ -60,7 +60,7 @@ export function useEmojiCompletion({ onApply }: Options) {
         const matches = searchEmojis(shortcode)
         if (matches.length > 0) {
           const shortcodeStart = caret - shortcode.length - 1 // index of `:`
-          caretRectRef.current = getCaretRect(textarea, caret)
+          caretRectRef.current = getCaretRect(element, caret)
           setState({
             open: true,
             matches,
@@ -77,9 +77,9 @@ export function useEmojiCompletion({ onApply }: Options) {
   )
 
   const apply = useCallback(
-    (emoji: EmojiMatch, textarea: HTMLTextAreaElement) => {
-      const { value } = textarea
-      const caret = textarea.selectionStart
+    (emoji: EmojiMatch, element: HTMLTextAreaElement | HTMLInputElement) => {
+      const { value } = element
+      const caret = element.selectionStart ?? 0
       const newValue =
         value.slice(0, state.shortcodeStart) + emoji.char + value.slice(caret)
       const newCaret = state.shortcodeStart + emoji.char.length
@@ -90,7 +90,7 @@ export function useEmojiCompletion({ onApply }: Options) {
   )
 
   const handleKeyDown = useCallback(
-    (e: KeyboardEvent<HTMLTextAreaElement>): boolean => {
+    (e: KeyboardEvent<HTMLTextAreaElement | HTMLInputElement>): boolean => {
       if (!state.open || state.matches.length === 0) return false
 
       switch (e.key) {

@@ -33,20 +33,20 @@ const MIRROR_PROPERTIES = [
 ] as const
 
 /**
- * Returns a DOMRect-like object for the caret position inside a textarea,
+ * Returns a DOMRect-like object for the caret position inside a text element,
  * in viewport coordinates. Uses a hidden mirror div to measure.
  */
 export function getCaretRect(
-  textarea: HTMLTextAreaElement,
+  element: HTMLTextAreaElement | HTMLInputElement,
   position: number,
 ): DOMRect {
   const div = document.createElement('div')
-  const computed = getComputedStyle(textarea)
+  const computed = getComputedStyle(element)
 
   div.style.position = 'absolute'
   div.style.visibility = 'hidden'
   div.style.whiteSpace = 'pre-wrap'
-  div.style.wordWrap = 'break-word'
+  div.style.overflowWrap = 'break-word'
   div.style.height = 'auto'
   div.style.overflow = 'hidden'
 
@@ -54,25 +54,28 @@ export function getCaretRect(
     div.style.setProperty(prop, computed.getPropertyValue(prop))
   }
 
-  const textBefore = textarea.value.slice(0, position)
+  const textBefore = element.value.slice(0, position)
   div.textContent = textBefore
 
   const span = document.createElement('span')
-  span.textContent = textarea.value.slice(position) || '\u200b'
-  div.appendChild(span)
+  span.textContent = element.value.slice(position) || '\u200B'
+  div.append(span)
 
-  document.body.appendChild(div)
+  document.body.append(div)
 
-  const textareaRect = textarea.getBoundingClientRect()
+  const elRect = element.getBoundingClientRect()
   const divRect = div.getBoundingClientRect()
   const spanRect = span.getBoundingClientRect()
 
-  const top =
-    textareaRect.top + (spanRect.top - divRect.top) - textarea.scrollTop
-  const left =
-    textareaRect.left + (spanRect.left - divRect.left) - textarea.scrollLeft
+  const top = elRect.top + (spanRect.top - divRect.top) - element.scrollTop
+  const left = elRect.left + (spanRect.left - divRect.left) - element.scrollLeft
 
-  document.body.removeChild(div)
+  div.remove()
 
-  return DOMRect.fromRect({ x: left, y: top, width: 0, height: spanRect.height })
+  return DOMRect.fromRect({
+    x: left,
+    y: top,
+    width: 0,
+    height: spanRect.height,
+  })
 }

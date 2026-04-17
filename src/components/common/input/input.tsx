@@ -1,20 +1,24 @@
 import clsx from 'clsx'
+import { forwardRef } from 'react'
 import type { InputProps } from './types'
 
-export function Input({
-  label,
-  error,
-  register,
-  className = '',
-  name = 'input',
-  width = 'full',
-  disabled = false,
-  registerOptions,
-  containerClassName = '',
-  hint,
-  hideError = false,
-  ...props
-}: Readonly<InputProps>) {
+export const Input = forwardRef<HTMLInputElement, InputProps>(function Input(
+  {
+    label,
+    error,
+    register,
+    className = '',
+    name = 'input',
+    width = 'full',
+    disabled = false,
+    registerOptions,
+    containerClassName = '',
+    hint,
+    hideError = false,
+    ...props
+  },
+  ref,
+) {
   const classes = clsx(
     'mt-1 block w-full appearance-none rounded-md bg-transparent border border-border-light focus:border-primary px-3 py-2 outline-none placeholder:text-text-secondary bg-paper',
     {
@@ -47,6 +51,7 @@ export function Input({
         name={name}
         className={classes}
         disabled={disabled}
+        ref={ref}
         {...register?.(name, registerOptions)}
         {...props}
       />
@@ -60,4 +65,4 @@ export function Input({
       )}
     </div>
   )
-}
+})

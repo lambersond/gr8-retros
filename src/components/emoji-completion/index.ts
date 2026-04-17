@@ -1,3 +1,4 @@
+export { EmojiInput } from './emoji-input'
 export { EmojiPickerButton } from './emoji-picker-button'
 export { EmojiSuggestions } from './emoji-suggestions'
 export { EmojiTextArea } from './emoji-text-area'

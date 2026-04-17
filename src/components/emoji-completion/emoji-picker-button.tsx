@@ -1,8 +1,6 @@
 'use client'
 
-import dynamic from 'next/dynamic'
 import { useState } from 'react'
-import { EmojiStyle, Theme, type EmojiClickData } from 'emoji-picker-react'
 import {
   useFloating,
   useDismiss,
@@ -13,14 +11,24 @@ import {
   autoUpdate,
   FloatingPortal,
 } from '@floating-ui/react'
+import { EmojiStyle, Theme, type EmojiClickData } from 'emoji-picker-react'
+import dynamic from 'next/dynamic'
 
 const EmojiPicker = dynamic(() => import('emoji-picker-react'), { ssr: false })
 
 type Props = {
   onEmojiSelect: (emoji: string) => void
+  children?: React.ReactNode
+  id?: string
+  className?: string
 }
 
-export function EmojiPickerButton({ onEmojiSelect }: Props) {
+export function EmojiPickerButton({
+  onEmojiSelect,
+  children,
+  id,
+  className,
+}: Readonly<Props>) {
   const [open, setOpen] = useState(false)
 
   const { refs, floatingStyles, context } = useFloating({
@@ -37,10 +45,14 @@ export function EmojiPickerButton({ onEmojiSelect }: Props) {
   return (
     <>
       <button
+        id={id}
         ref={refs.setReference}
         type='button'
         aria-label='Insert emoji'
-        className='flex items-center justify-center rounded-md p-1 text-text-secondary hover:text-text-primary hover:bg-hover'
+        className={
+          className ??
+          'flex items-center justify-center rounded-md p-1 text-text-secondary hover:text-text-primary hover:bg-hover'
+        }
         {...getReferenceProps({
           onMouseDown: e => {
             e.preventDefault()
@@ -48,7 +60,7 @@ export function EmojiPickerButton({ onEmojiSelect }: Props) {
           },
         })}
       >
-        <span className='text-lg leading-none'>😀</span>
+        {children ?? <span className='text-lg leading-none'>😀</span>}
       </button>
       {open && (
         <FloatingPortal>
