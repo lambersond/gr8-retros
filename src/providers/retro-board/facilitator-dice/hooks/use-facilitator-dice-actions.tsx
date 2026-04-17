@@ -73,5 +73,19 @@ export function useFacilitatorDiceActions() {
     [user.id, roll, dispatch, publish],
   )
 
-  return { startSession, submitRoll }
+  const submitDnr = useCallback(() => {
+    dispatch({
+      type: FacilitatorDiceMessageType.DICE_DNR_RESULT,
+      clientId: user.id,
+    })
+
+    publish({
+      data: {
+        type: FacilitatorDiceMessageType.DICE_DNR_RESULT,
+        payload: { clientId: user.id },
+      },
+    })
+  }, [user.id, dispatch, publish])
+
+  return { startSession, submitRoll, submitDnr }
 }

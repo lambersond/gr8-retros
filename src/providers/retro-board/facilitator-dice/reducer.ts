@@ -34,6 +34,42 @@ export function facilitatorDiceReducer(
         },
       }
     }
+    case FacilitatorDiceMessageType.DICE_DNR_RESULT: {
+      if (!state.activeSession) return state
+      const participant = state.activeSession.participants[action.clientId]
+      if (!participant) return state
+      return {
+        activeSession: {
+          ...state.activeSession,
+          participants: {
+            ...state.activeSession.participants,
+            [action.clientId]: {
+              ...participant,
+              dnr: true,
+            },
+          },
+        },
+      }
+    }
+    case FacilitatorDiceInternalAction.CLEAR_DNR: {
+      if (!state.activeSession) return state
+      const participant = state.activeSession.participants[action.clientId]
+      if (!participant) return state
+      return {
+        activeSession: {
+          ...state.activeSession,
+          participants: {
+            ...state.activeSession.participants,
+            [action.clientId]: {
+              ...participant,
+              dnr: undefined,
+              result: undefined,
+              color: undefined,
+            },
+          },
+        },
+      }
+    }
     case FacilitatorDiceInternalAction.CLEAR_SESSION: {
       return { activeSession: undefined }
     }

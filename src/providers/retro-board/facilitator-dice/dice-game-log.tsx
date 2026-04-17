@@ -2,8 +2,12 @@
 
 import { useMemo } from 'react'
 import { Loader, Trophy, X } from 'lucide-react'
+import { D20Icon } from '@/components/common/icons'
+import { useAuth } from '@/hooks/use-auth'
+import { useModals } from '@/hooks/use-modals'
 import {
   FacilitatorDiceInternalAction,
+  useFacilitatorDiceActions,
   useFacilitatorDiceDispatch,
   useFacilitatorDiceState,
   type DiceParticipant,
@@ -12,6 +16,9 @@ import {
 export function DiceGameLog() {
   const { activeSession } = useFacilitatorDiceState()
   const dispatch = useFacilitatorDiceDispatch()
+  const { submitRoll, submitDnr } = useFacilitatorDiceActions()
+  const { user } = useAuth()
+  const { openModal } = useModals()
 
   const participants = useMemo(() => {
     if (!activeSession) return []
@@ -27,11 +34,14 @@ export function DiceGameLog() {
     const noResult: RollResult = { isComplete: false, winner: undefined }
     if (!activeSession || participants.length === 0) return noResult
 
-    const allRolled = participants.every(p => p.result !== undefined)
-    if (!allRolled) return noResult
+    const allResolved = participants.every(
+      p => p.result !== undefined || p.dnr,
+    )
+    if (!allResolved) return noResult
 
     let best: DiceParticipant | undefined
     for (const p of participants) {
+      if (p.dnr) continue
       if (!best || (p.result ?? 0) > (best.result ?? 0)) {
         best = p
       }
@@ -43,6 +53,14 @@ export function DiceGameLog() {
 
   const handleDismiss = () => {
     dispatch({ type: FacilitatorDiceInternalAction.CLEAR_SESSION })
+  }
+
+  const handleReroll = () => {
+    dispatch({
+      type: FacilitatorDiceInternalAction.CLEAR_DNR,
+      clientId: user.id,
+    })
+    openModal('DiceColorPickerModal', { submitRoll, onDnr: submitDnr })
   }
 
   return (
@@ -64,17 +82,26 @@ export function DiceGameLog() {
             key={p.clientId}
             className='flex items-center justify-between gap-2'
           >
-            <span className='truncate text-sm text-text-primary'>{p.name}</span>
-            {p.result === undefined ? (
-              <Loader size={16} className='animate-spin text-text-primary/40' />
-            ) : (
-              <span
-                className='text-lg font-bold'
-                style={{ color: p.color ?? 'inherit' }}
-              >
-                {p.result}
+            <div className='flex items-center gap-2 min-w-0'>
+              {p.dnr && p.clientId === user.id && (
+                <button
+                  type='button'
+                  onClick={handleReroll}
+                  className='group cursor-pointer flex-shrink-0 text-text-secondary hover:text-primary'
+                  title='Reroll'
+                >
+                  <D20Icon
+                    height={18}
+                    width={18}
+                    className='transition-transform duration-700 ease-in-out group-hover:rotate-[360deg]'
+                  />
+                </button>
+              )}
+              <span className='truncate text-sm text-text-primary'>
+                {p.name}
               </span>
-            )}
+            </div>
+            <ParticipantResult participant={p} />
           </div>
         ))}
         {isComplete && winner && (
@@ -87,5 +114,28 @@ export function DiceGameLog() {
         )}
       </div>
     </div>
+  )
+}
+
+function ParticipantResult({
+  participant: p,
+}: Readonly<{ participant: DiceParticipant }>) {
+  if (p.dnr) {
+    return (
+      <span className='text-xs font-semibold text-text-secondary'>DNR</span>
+    )
+  }
+  if (p.result === undefined) {
+    return (
+      <Loader size={16} className='animate-spin text-text-primary/40' />
+    )
+  }
+  return (
+    <span
+      className='text-lg font-bold'
+      style={{ color: p.color ?? 'inherit' }}
+    >
+      {p.result}
+    </span>
   )
 }

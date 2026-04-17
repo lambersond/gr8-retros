@@ -1,7 +1,8 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Modal } from '@/components/common'
+import { D20Icon } from '@/components/common/icons'
 import { DICE_COLORS } from '@/constants'
 import { useModals } from '@/hooks/use-modals'
 import type { DiceColorPickerModalProps } from './types'
@@ -9,15 +10,23 @@ import type { DiceColorPickerModalProps } from './types'
 export function DiceColorPickerModal({
   open = true,
   submitRoll,
+  onDnr,
 }: Readonly<DiceColorPickerModalProps>) {
   const { closeModal } = useModals()
   const [selectedColor, setSelectedColor] = useState<string>()
 
-  const onClose = () => closeModal('DiceColorPickerModal')
+  useEffect(() => {
+    if (open) setSelectedColor(undefined)
+  }, [open])
+
+  const onClose = () => {
+    closeModal('DiceColorPickerModal')
+    if (!selectedColor) onDnr?.()
+  }
 
   const handleRoll = () => {
     if (!selectedColor) return
-    onClose()
+    closeModal('DiceColorPickerModal')
     submitRoll(selectedColor)
   }
 
@@ -29,14 +38,20 @@ export function DiceColorPickerModal({
             <button
               key={color.hex}
               onClick={() => setSelectedColor(color.hex)}
-              className={`w-12 h-12 rounded-full cursor-pointer transition-all ${
+              className={`group cursor-pointer transition-all ${
                 selectedColor === color.hex
-                  ? 'ring-3 ring-offset-2 ring-primary scale-110'
+                  ? 'scale-110 drop-shadow-lg'
                   : 'hover:scale-105'
               }`}
-              style={{ backgroundColor: color.hex }}
               title={color.name}
-            />
+            >
+              <D20Icon
+                height={48}
+                width={48}
+                className='transition-transform duration-700 ease-in-out group-hover:rotate-[360deg]'
+                style={{ color: color.hex }}
+              />
+            </button>
           ))}
         </div>
         <div className='flex justify-end gap-2'>

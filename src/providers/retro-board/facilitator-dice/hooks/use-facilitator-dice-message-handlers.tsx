@@ -13,9 +13,12 @@ export function useFacilitatorDiceMessageHandlers() {
   return useMemo(() => {
     const handlers: Record<FacilitatorDiceMessageType, (data: any) => void> = {
       [FacilitatorDiceMessageType.DICE_SESSION_START]: data => {
+        const session = data.payload.session as DiceSession
+        if (session.initiatorClientId === user.id) return
+
         dispatch({
           type: FacilitatorDiceMessageType.DICE_SESSION_START,
-          session: data.payload.session as DiceSession,
+          session,
         })
       },
       [FacilitatorDiceMessageType.DICE_ROLL_RESULT]: data => {
@@ -32,6 +35,15 @@ export function useFacilitatorDiceMessageHandlers() {
           clientId,
           result,
           color,
+        })
+      },
+      [FacilitatorDiceMessageType.DICE_DNR_RESULT]: data => {
+        const clientId = data.payload.clientId as string
+        if (clientId === user.id) return
+
+        dispatch({
+          type: FacilitatorDiceMessageType.DICE_DNR_RESULT,
+          clientId,
         })
       },
     }

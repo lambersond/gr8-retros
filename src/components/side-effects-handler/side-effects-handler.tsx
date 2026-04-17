@@ -59,7 +59,7 @@ export function SideEffectsHandler() {
 
   // Dice session listener — opens color picker for non-initiator participants
   const { activeSession } = useFacilitatorDiceState()
-  const { submitRoll } = useFacilitatorDiceActions()
+  const { submitRoll, submitDnr } = useFacilitatorDiceActions()
   const { user } = useAuth()
   const { openModal } = useModals()
   const lastSessionIdRef = useRef<string | undefined>(undefined)
@@ -73,7 +73,7 @@ export function SideEffectsHandler() {
     if (activeSession.initiatorClientId === user.id) return
     if (!activeSession.participants[user.id]) return
 
-    openModal('DiceColorPickerModal', { submitRoll })
+    openModal('DiceColorPickerModal', { submitRoll, onDnr: submitDnr })
   }, [activeSession, user.id, openModal])
 
   return <></>

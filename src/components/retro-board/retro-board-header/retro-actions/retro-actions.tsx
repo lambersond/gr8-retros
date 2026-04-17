@@ -64,7 +64,7 @@ export function RetroActions({ id }: Readonly<{ id: string }>) {
   const formattedData = formatColumnDataForPDF(data, columns)
   const sessionStats = useSessionStats()
   const [isGeneratingSummary, setIsGeneratingSummary] = useState(false)
-  const { startSession, submitRoll } = useFacilitatorDiceActions()
+  const { startSession, submitRoll, submitDnr } = useFacilitatorDiceActions()
 
   const { user } = useBoardPermissions()
 
@@ -74,8 +74,8 @@ export function RetroActions({ id }: Readonly<{ id: string }>) {
 
   const handleChooseFacilitator = useCallback(() => {
     startSession()
-    openModal('DiceColorPickerModal', { submitRoll })
-  }, [startSession, openModal, submitRoll])
+    openModal('DiceColorPickerModal', { submitRoll, onDnr: submitDnr })
+  }, [startSession, openModal, submitRoll, submitDnr])
 
   const handleExportReport = useCallback(() => {
     openModal('PDFPreviewerModal', {

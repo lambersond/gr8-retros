@@ -9,6 +9,7 @@ export type DiceParticipant = {
   image: string
   result?: number
   color?: string
+  dnr?: boolean
 }
 
 export type DiceSession = {
@@ -33,5 +34,13 @@ export type FacilitatorDiceAction =
       color: string
     }
   | {
+      type: FacilitatorDiceMessageType.DICE_DNR_RESULT
+      clientId: string
+    }
+  | {
       type: FacilitatorDiceInternalAction.CLEAR_SESSION
+    }
+  | {
+      type: FacilitatorDiceInternalAction.CLEAR_DNR
+      clientId: string
     }
