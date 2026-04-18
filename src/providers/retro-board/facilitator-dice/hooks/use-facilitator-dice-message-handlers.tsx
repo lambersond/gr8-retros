@@ -1,4 +1,5 @@
 import { useMemo } from 'react'
+import { useAbly } from 'ably/react'
 import { FacilitatorDiceMessageType } from '../enums'
 import { useFacilitatorDiceDispatch } from '../provider'
 import { useDice } from '@/hooks/dice'
@@ -9,12 +10,15 @@ export function useFacilitatorDiceMessageHandlers() {
   const dispatch = useFacilitatorDiceDispatch()
   const { roll } = useDice()
   const { user } = useAuth()
+  const ably = useAbly()
 
   return useMemo(() => {
+    const myConnectionId = ably.connection.id
+
     const handlers: Record<FacilitatorDiceMessageType, (data: any) => void> = {
       [FacilitatorDiceMessageType.DICE_SESSION_START]: data => {
         const session = data.payload.session as DiceSession
-        if (session.initiatorClientId === user.id) return
+        if (data.payload.connectionId === myConnectionId) return
 
         dispatch({
           type: FacilitatorDiceMessageType.DICE_SESSION_START,
@@ -26,9 +30,11 @@ export function useFacilitatorDiceMessageHandlers() {
         const result = data.payload.result as number
         const clientId = data.payload.clientId as string
 
-        if (clientId === user.id) return
+        if (data.payload.connectionId === myConnectionId) return
 
-        roll(`1d20@${result}`, { themeColor: color })
+        if (clientId !== user.id) {
+          roll(`1d20@${result}`, { themeColor: color })
+        }
 
         dispatch({
           type: FacilitatorDiceMessageType.DICE_ROLL_RESULT,
@@ -39,7 +45,7 @@ export function useFacilitatorDiceMessageHandlers() {
       },
       [FacilitatorDiceMessageType.DICE_DNR_RESULT]: data => {
         const clientId = data.payload.clientId as string
-        if (clientId === user.id) return
+        if (data.payload.connectionId === myConnectionId) return
 
         dispatch({
           type: FacilitatorDiceMessageType.DICE_DNR_RESULT,
@@ -48,5 +54,5 @@ export function useFacilitatorDiceMessageHandlers() {
       },
     }
     return handlers
-  }, [dispatch, roll, user.id])
+  }, [dispatch, roll, user.id, ably.connection.id])
 }

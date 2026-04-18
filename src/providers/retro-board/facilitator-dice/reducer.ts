@@ -29,6 +29,7 @@ export function facilitatorDiceReducer(
               ...participant,
               result: action.result,
               color: action.color,
+              dnr: undefined,
             },
           },
         },

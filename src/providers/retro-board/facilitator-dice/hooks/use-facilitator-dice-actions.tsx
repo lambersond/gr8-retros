@@ -1,5 +1,5 @@
 import { useCallback } from 'react'
-import { useChannel } from 'ably/react'
+import { useAbly, useChannel } from 'ably/react'
 import { useParams } from 'next/navigation'
 import { FacilitatorDiceMessageType } from '../enums'
 import { useFacilitatorDiceDispatch } from '../provider'
@@ -12,6 +12,7 @@ import type { DiceParticipant, DiceSession } from '../types'
 
 export function useFacilitatorDiceActions() {
   const { id: boardId } = useParams() satisfies { id: string }
+  const ably = useAbly()
   const { publish } = useChannel(boardId)
   const dispatch = useFacilitatorDiceDispatch()
   const { viewingMembers } = useViewingMembers()
@@ -44,12 +45,12 @@ export function useFacilitatorDiceActions() {
     publish({
       data: {
         type: FacilitatorDiceMessageType.DICE_SESSION_START,
-        payload: { session },
+        payload: { session, connectionId: ably.connection.id },
       },
     })
 
     return session.sessionId
-  }, [viewingMembers, user.id, dispatch, publish])
+  }, [viewingMembers, user.id, dispatch, publish, ably.connection.id])
 
   const submitRoll = useCallback(
     async (color: string) => {
@@ -66,11 +67,16 @@ export function useFacilitatorDiceActions() {
       publish({
         data: {
           type: FacilitatorDiceMessageType.DICE_ROLL_RESULT,
-          payload: { clientId: user.id, result, color },
+          payload: {
+            clientId: user.id,
+            result,
+            color,
+            connectionId: ably.connection.id,
+          },
         },
       })
     },
-    [user.id, roll, dispatch, publish],
+    [user.id, roll, dispatch, publish, ably.connection.id],
   )
 
   const submitDnr = useCallback(() => {
@@ -82,10 +88,10 @@ export function useFacilitatorDiceActions() {
     publish({
       data: {
         type: FacilitatorDiceMessageType.DICE_DNR_RESULT,
-        payload: { clientId: user.id },
+        payload: { clientId: user.id, connectionId: ably.connection.id },
       },
     })
-  }, [user.id, dispatch, publish])
+  }, [user.id, dispatch, publish, ably.connection.id])
 
   return { startSession, submitRoll, submitDnr }
 }

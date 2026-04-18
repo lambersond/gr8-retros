@@ -31,8 +31,13 @@ export function DiceColorPickerModal({
   }
 
   return (
-    <Modal title='Choose Your Dice' isOpen={open} onClose={onClose}>
-      <div className='flex flex-col gap-6 py-4'>
+    <Modal
+      title='Choose Your Dice'
+      isOpen={open}
+      onClose={onClose}
+      width='w-[fit-content_!important]'
+    >
+      <div className='flex flex-col gap-6 p-4'>
         <div className='flex flex-wrap justify-center gap-4'>
           {DICE_COLORS.map(color => (
             <button

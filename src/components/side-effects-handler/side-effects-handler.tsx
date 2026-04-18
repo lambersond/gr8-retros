@@ -61,7 +61,7 @@ export function SideEffectsHandler() {
   const { activeSession } = useFacilitatorDiceState()
   const { submitRoll, submitDnr } = useFacilitatorDiceActions()
   const { user } = useAuth()
-  const { openModal } = useModals()
+  const { openModal, closeModal } = useModals()
   const lastSessionIdRef = useRef<string | undefined>(undefined)
 
   useEffect(() => {
@@ -75,6 +75,23 @@ export function SideEffectsHandler() {
 
     openModal('DiceColorPickerModal', { submitRoll, onDnr: submitDnr })
   }, [activeSession, user.id, openModal])
+
+  // Close dice picker when the user's roll/dnr is resolved from another tab
+  const myParticipant = activeSession?.participants[user.id]
+  const wasResolvedRef = useRef(false)
+
+  useEffect(() => {
+    if (!activeSession || !myParticipant) {
+      wasResolvedRef.current = false
+      return
+    }
+
+    const isResolved = myParticipant.result !== undefined || myParticipant.dnr
+    if (isResolved && !wasResolvedRef.current) {
+      closeModal('DiceColorPickerModal')
+    }
+    wasResolvedRef.current = !!isResolved
+  }, [activeSession, myParticipant, closeModal])
 
   return <></>
 }
