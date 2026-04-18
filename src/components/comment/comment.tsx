@@ -1,5 +1,5 @@
 import { Pencil, Trash2 } from 'lucide-react'
-import { IconButton } from '../common'
+import { IconButton, RelativeTime } from '../common'
 import { useModals } from '@/hooks/use-modals'
 import { useCommentsActions } from '@/providers/comments-sidebar'
 import type { CommentProps } from './types'
@@ -38,13 +38,24 @@ export function Comment({ comment, hasEdit = true }: Readonly<CommentProps>) {
   }
 
   return (
-    <div className='relative bg-paper border border-tertiary rounded-lg p-2 flex flex-col gap-1'>
+    <div className='relative bg-card border border-border-light rounded-lg p-2 flex flex-col gap-1'>
       <div className='text-text-secondary flex justify-between align-center'>
-        <p>{comment.createdBy}</p>
+        <div className='flex items-baseline gap-2'>
+          <p>{comment.createdBy}</p>
+          <RelativeTime
+            date={comment.updatedAt}
+            className='text-xs text-text-secondary/60'
+          />
+        </div>
         {hasEdit && (
           <div className='flex items-center'>
-            <IconButton icon={Pencil} onClick={handleEdit} />
-            <IconButton icon={Trash2} onClick={handleDelete} intent='danger' />
+            <IconButton size='sm' icon={Pencil} onClick={handleEdit} />
+            <IconButton
+              size='sm'
+              icon={Trash2}
+              onClick={handleDelete}
+              intent='danger'
+            />
           </div>
         )}
       </div>

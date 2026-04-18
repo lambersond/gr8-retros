@@ -34,9 +34,7 @@ export function DiceGameLog() {
     const noResult: RollResult = { isComplete: false, winner: undefined }
     if (!activeSession || participants.length === 0) return noResult
 
-    const allResolved = participants.every(
-      p => p.result !== undefined || p.dnr,
-    )
+    const allResolved = participants.every(p => p.result !== undefined || p.dnr)
     if (!allResolved) return noResult
 
     let best: DiceParticipant | undefined
@@ -126,15 +124,10 @@ function ParticipantResult({
     )
   }
   if (p.result === undefined) {
-    return (
-      <Loader size={16} className='animate-spin text-text-primary/40' />
-    )
+    return <Loader size={16} className='animate-spin text-text-primary/40' />
   }
   return (
-    <span
-      className='text-lg font-bold'
-      style={{ color: p.color ?? 'inherit' }}
-    >
+    <span className='text-lg font-bold' style={{ color: p.color ?? 'inherit' }}>
       {p.result}
     </span>
   )

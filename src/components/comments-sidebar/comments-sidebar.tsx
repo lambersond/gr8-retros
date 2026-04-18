@@ -1,4 +1,5 @@
-import { SidebarCloseIcon } from 'lucide-react'
+import { useCallback, useEffect, useRef, useState } from 'react'
+import { ArrowDown, SidebarCloseIcon } from 'lucide-react'
 import { Comment } from '../comment'
 import { Sidebar, SidebarItem } from '../common'
 import { AddCommentForm } from '../forms/add-comment-form'
@@ -9,6 +10,8 @@ import {
   useCommentsSidebarActions,
 } from '@/providers/comments-sidebar'
 import { useBoardPermissions } from '@/providers/retro-board/board-settings/hooks/use-board-permissions'
+
+const SCROLL_THRESHOLD = 40
 
 export function CommentsSidebar() {
   const { closeSidebar } = useCommentsSidebarActions()
@@ -21,6 +24,60 @@ export function CommentsSidebar() {
 
   const isGroupMode = !!groupId
   const comments = isGroupMode ? groupComments : cardComments
+
+  const scrollRef = useRef<HTMLElement>(null)
+  const bottomRef = useRef<HTMLDivElement>(null)
+  const isAtBottomRef = useRef(true)
+  const [isAtBottom, setIsAtBottom] = useState(true)
+  const [newCount, setNewCount] = useState(0)
+  const prevCountRef = useRef(comments?.length ?? 0)
+
+  const scrollToBottom = useCallback(() => {
+    bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
+    setNewCount(0)
+    setIsAtBottom(true)
+    isAtBottomRef.current = true
+  }, [])
+
+  const handleScroll = useCallback(() => {
+    const el = scrollRef.current
+    if (!el) return
+    const atBottom =
+      el.scrollHeight - el.scrollTop - el.clientHeight < SCROLL_THRESHOLD
+    isAtBottomRef.current = atBottom
+    setIsAtBottom(atBottom)
+    if (atBottom) setNewCount(0)
+  }, [])
+
+  // Track new comments
+  useEffect(() => {
+    const currentCount = comments?.length ?? 0
+    const added = currentCount - prevCountRef.current
+
+    if (added > 0) {
+      // Use the ref — it captures scroll position *before* React rendered the new comment
+      if (isAtBottomRef.current) {
+        requestAnimationFrame(() => scrollToBottom())
+      } else {
+        setNewCount(prev => prev + added)
+      }
+    }
+
+    prevCountRef.current = currentCount
+  }, [comments?.length, scrollToBottom])
+
+  // Reset when sidebar opens or card changes
+  useEffect(() => {
+    setNewCount(0)
+    setIsAtBottom(true)
+    isAtBottomRef.current = true
+    prevCountRef.current = comments?.length ?? 0
+    if (sidebarOpen) {
+      requestAnimationFrame(() => {
+        bottomRef.current?.scrollIntoView()
+      })
+    }
+  }, [sidebarOpen, cardId, groupId])
 
   const handleAddComment = (content: string, targetCardId?: string) => {
     const resolvedCardId = targetCardId ?? cardId
@@ -48,7 +105,11 @@ export function CommentsSidebar() {
             <SidebarCloseIcon className='size-10 p-2 transform rotate-180 text-text-secondary hover:text-text-primary hover:bg-hover rounded-full cursor-pointer' />
           </SidebarItem>
         </section>
-        <section className='flex flex-col gap-2 overflow-y-auto'>
+        <section
+          ref={scrollRef}
+          onScroll={handleScroll}
+          className='flex flex-col gap-2 overflow-y-auto'
+        >
           {comments?.map(comment => (
             <Comment key={comment.id} comment={comment} />
           ))}
@@ -57,7 +118,18 @@ export function CommentsSidebar() {
               No comments yet.
             </p>
           )}
+          <div ref={bottomRef} />
         </section>
+        {newCount > 0 && !isAtBottom && (
+          <button
+            type='button'
+            onClick={scrollToBottom}
+            className='sticky bottom-16 mx-auto flex cursor-pointer items-center gap-1.5 rounded-full bg-primary px-3 py-1.5 text-sm font-semibold text-text-primary shadow-lg'
+          >
+            <ArrowDown size={14} />
+            {newCount} new {newCount === 1 ? 'comment' : 'comments'}
+          </button>
+        )}
         <div className='flex-1' id='spacer' />
         {canComment && (
           <AddCommentForm

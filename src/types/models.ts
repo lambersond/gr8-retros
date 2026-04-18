@@ -99,6 +99,7 @@ export type Board = {
       cardId: string
       content: string
       createdAt: Date
+      updatedAt: Date
       createdBy: string
       creatorId: string
     }[]
