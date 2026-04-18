@@ -2,8 +2,9 @@
 
 import { useEffect, useRef } from 'react'
 import * as Ably from 'ably'
-import Objects from 'ably/objects'
+import { LiveObjects } from 'ably/liveobjects'
 import { AblyProvider as AProvider } from 'ably/react'
+import PropTypes from 'prop-types'
 
 const RECOVERY_KEY = 'ably-recovery-key'
 export const ABLY_RECONNECTED_EVENT = 'ably:reconnected'
@@ -18,15 +19,13 @@ function createClient() {
 
   return new Ably.Realtime({
     authUrl: `${process.env.NEXT_PUBLIC_SITE_URL}/api/ably/token`,
-    plugins: { Objects },
+    plugins: { LiveObjects },
     ...(recoveryKey ? { recover: recoveryKey } : {}),
   })
 }
 
-export function AblyProvider({
-  children,
-}: Readonly<{ children: React.ReactNode }>) {
-  const clientRef = useRef<Ably.Realtime | null>(null)
+export function AblyProvider({ children }) {
+  const clientRef = useRef(null)
   clientRef.current ??= createClient()
   const client = clientRef.current
 
@@ -48,7 +47,7 @@ export function AblyProvider({
       if (key) sessionStorage.setItem(RECOVERY_KEY, key)
     }
 
-    const handleConnected = (stateChange: Ably.ConnectionStateChange) => {
+    const handleConnected = stateChange => {
       const wasOffline =
         stateChange.previous === 'disconnected' ||
         stateChange.previous === 'suspended'
@@ -73,4 +72,8 @@ export function AblyProvider({
   }, [client])
 
   return <AProvider client={client}>{children}</AProvider>
+}
+
+AblyProvider.propTypes = {
+  children: PropTypes.node,
 }

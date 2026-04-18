@@ -1,10 +1,8 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
-import * as Ably from 'ably'
 import { useAbly } from 'ably/react'
 import { VotingMode, VotingState } from '@/enums'
 
-const BOARD_CONTROLS_KEY = 'boardControlsV4'
-type BoardControlsKey = typeof BOARD_CONTROLS_KEY
+const BOARD_CONTROLS_KEY = 'boardControlsV5'
 
 type BoardControls = {
   timer: {
@@ -30,34 +28,42 @@ type BoardControls = {
   }
 }
 
-type BoardControlsMap = {
-  [BOARD_CONTROLS_KEY]: BoardControls
+const DEFAULT_BOARD_CONTROLS: BoardControls = {
+  timer: {
+    startedAt: undefined,
+    remaining: undefined,
+    isPlaying: false,
+    isCompleted: false,
+  },
+  music: {
+    shouldPlay: false,
+    isPlaying: false,
+    trackId: undefined,
+  },
+  voting: {
+    state: VotingState.IDLE,
+    mode: VotingMode.SINGLE,
+    limit: 0,
+    collectedVotes: {},
+    results: {},
+  },
+  facilitatorMode: {
+    isActive: false,
+  },
 }
 
-const DEFAULT_BOARD_CONTROLS: BoardControlsMap = {
-  [BOARD_CONTROLS_KEY]: {
-    timer: {
-      startedAt: undefined,
-      remaining: undefined,
-      isPlaying: false,
-      isCompleted: false,
-    },
-    music: {
-      shouldPlay: false,
-      isPlaying: false,
-      trackId: undefined,
-    },
-    voting: {
-      state: VotingState.IDLE,
-      mode: VotingMode.SINGLE,
-      limit: 0,
-      collectedVotes: {},
-      results: {},
-    },
-    facilitatorMode: {
-      isActive: false,
-    },
-  },
+/**
+ * Minimal shape of the LiveObjects PathObject API used by this hook.
+ * The full types live in ably/liveobjects but that module's .d.mts export
+ * has resolution issues in some IDE TS servers, so we declare just what we need.
+ */
+interface PathObject {
+  get(key: string): PathObject
+  set(key: string, value: unknown): Promise<void>
+  compact(): unknown
+  subscribe(listener: (event: { object: PathObject }) => void): {
+    unsubscribe(): void
+  }
 }
 
 type UseBoardControlsLiveMapParams = {
@@ -75,10 +81,10 @@ export function useBoardControlsLiveMap({
   defaultVotingLimit = 3,
   onLoad,
 }: UseBoardControlsLiveMapParams) {
-  const [map, setMap] = useState<Ably.LiveMap<BoardControlsMap>>()
-  const [boardControls, setBoardControls] = useState<
-    BoardControlsMap[BoardControlsKey]
-  >(DEFAULT_BOARD_CONTROLS[BOARD_CONTROLS_KEY])
+  const [root, setRoot] = useState<PathObject>()
+  const [boardControls, setBoardControls] = useState<BoardControls>(
+    DEFAULT_BOARD_CONTROLS,
+  )
   const [error, setError] = useState<Error>()
   const ably = useAbly()
   const isSetup = useRef(false)
@@ -87,17 +93,19 @@ export function useBoardControlsLiveMap({
     const channel = ably.channels.get(channelName)
     async function setup() {
       try {
-        // Get the root map for this channel
-        const root = await channel.objects.getRoot<{
-          [BOARD_CONTROLS_KEY]: Ably.LiveMap<BoardControlsMap> | undefined
-        }>()
+        // channel.object is added at runtime by the LiveObjects plugin
+        const rootObj = await (
+          channel as unknown as { object: { get(): Promise<PathObject> } }
+        ).object.get()
 
-        // Try to get existing players map
-        let boardControlsMap = root.get(BOARD_CONTROLS_KEY)
+        // Check if the controls already exist
+        const existing = rootObj.get(BOARD_CONTROLS_KEY).compact() as
+          | BoardControls
+          | undefined
 
-        // If it doesn't exist yet, create it and store
-        if (!boardControlsMap) {
-          const initialControls = {
+        // If it doesn't exist yet, initialize it
+        if (!existing) {
+          await rootObj.set(BOARD_CONTROLS_KEY, {
             timer: {
               startedAt: undefined,
               remaining: defaultTimerDuration,
@@ -119,28 +127,20 @@ export function useBoardControlsLiveMap({
             facilitatorMode: {
               isActive: false,
             },
-          }
-          boardControlsMap = await channel.objects.createMap<BoardControlsMap>({
-            [BOARD_CONTROLS_KEY]: initialControls,
           })
-          await root.set(BOARD_CONTROLS_KEY, boardControlsMap)
         }
 
-        boardControlsMap.subscribe(({ update }) => {
-          if (update[BOARD_CONTROLS_KEY] === 'updated') {
-            const updatedMap = root.get(BOARD_CONTROLS_KEY)
-            setBoardControls(
-              updatedMap?.get(BOARD_CONTROLS_KEY) ||
-                DEFAULT_BOARD_CONTROLS[BOARD_CONTROLS_KEY],
-            )
-          }
+        rootObj.get(BOARD_CONTROLS_KEY).subscribe(({ object }) => {
+          const value = object.compact() as BoardControls | undefined
+          setBoardControls(value ?? DEFAULT_BOARD_CONTROLS)
         })
 
-        setMap(boardControlsMap)
+        setRoot(rootObj)
 
         const initialBoardControls =
-          boardControlsMap.get(BOARD_CONTROLS_KEY) ||
-          DEFAULT_BOARD_CONTROLS[BOARD_CONTROLS_KEY]
+          (rootObj.get(BOARD_CONTROLS_KEY).compact() as
+            | BoardControls
+            | undefined) ?? DEFAULT_BOARD_CONTROLS
         setBoardControls(initialBoardControls)
         onLoad?.(initialBoardControls)
 
@@ -156,20 +156,20 @@ export function useBoardControlsLiveMap({
   }, [channelName])
 
   const updateBoardControls = useCallback(
-    (updates: Partial<BoardControlsMap[BoardControlsKey]>) => {
-      if (!map) return
+    (updates: Partial<BoardControls>) => {
+      if (!root) return
 
       const current =
-        map.get(BOARD_CONTROLS_KEY) ||
-        DEFAULT_BOARD_CONTROLS[BOARD_CONTROLS_KEY]
+        (root.get(BOARD_CONTROLS_KEY).compact() as BoardControls | undefined) ??
+        DEFAULT_BOARD_CONTROLS
       const newControls = {
         ...current,
         ...updates,
       }
-      map.set(BOARD_CONTROLS_KEY, newControls)
+      root.set(BOARD_CONTROLS_KEY, newControls)
     },
-    [map],
+    [root],
   )
 
-  return { map, boardControls, error, updateBoardControls }
+  return { boardControls, error, updateBoardControls }
 }

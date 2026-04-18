@@ -29,7 +29,7 @@
     "@react-pdf/renderer": "^4.3.2",
     "@vercel/analytics": "^2.0.1",
     "@vercel/speed-insights": "^2.0.0",
-    "ably": "2.15.0",
+    "ably": "2.21.0",
     "ai": "^6.0.156",
     "canvas-confetti": "^1.9.4",
     "clsx": "^2.1.1",
