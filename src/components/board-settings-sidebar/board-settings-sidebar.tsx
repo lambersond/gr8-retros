@@ -55,8 +55,8 @@ export function BoardSettingsSidebar() {
           <UpvoteSettings />
           <ActionItemsSettings />
           <CommentsSettings />
-          <VotingSettings />
           <DragAndDropSettings />
+          <VotingSettings />
           <FacilitatorModeSettings />
           <AiSummarySettings />
           <DangerZoneSettings />

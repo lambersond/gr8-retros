@@ -25,10 +25,13 @@ export function NewBoardButton({
   return (
     <Tooltip
       title={
-        isAtLimit
-          ? `You've reached your limit of ${boardLimit} boards`
-          : undefined
+        isAtLimit ? (
+          <p>
+            You&apos;ve reached your limit of <b>{boardLimit}</b> boards
+          </p>
+        ) : undefined
       }
+      asChild
     >
       <button
         className='cursor-pointer flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-xs font-medium text-white bg-primary/80 hover:not-disabled:bg-primary transition-colors disabled:cursor-not-allowed disabled:opacity-50 hover:not-disabled:shadow-sm'

@@ -68,7 +68,7 @@ export function RetroActions({ id }: Readonly<{ id: string }>) {
 
   const { user } = useBoardPermissions()
 
-  const showAdminActions = !isClaimed || user.hasFacilitator
+  const showFacilitatorActions = !isClaimed || user.hasFacilitator
   const showSettingsButton = (isAuthenticated && !isClaimed) || user.hasMember
   const showFilterButton = hasVotingResults
 
@@ -293,7 +293,7 @@ export function RetroActions({ id }: Readonly<{ id: string }>) {
           size='lg'
         />
       </Popover>
-      {showAdminActions && (
+      {showFacilitatorActions && (
         <Popover
           modal
           placement='bottom-start'

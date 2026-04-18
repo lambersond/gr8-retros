@@ -90,6 +90,7 @@ export const PLANS = new Map<PlanId, Plan>([
         { label: 'Enable / disable voting' },
         { label: 'Restrict comments, actions, music & timer' },
         { label: 'Assign Member & Facilitator roles' },
+        { label: 'Facilitator Mode' },
         { label: 'Assign action items to members' },
         { label: 'Boards retained for 60 days' },
         { label: 'Cards retained for 14 days' },
@@ -130,7 +131,6 @@ export const PLANS = new Map<PlanId, Plan>([
         { label: 'Own up to 10 boards' },
         { label: 'Custom board columns' },
         { label: 'Assign admin roles' },
-        { label: 'Facilitator Mode' },
         { label: 'Group cards via drag-and-drop' },
         { label: 'Export as PDF' },
         { label: 'Boards retained for 180 days' },
@@ -162,7 +162,6 @@ export const PLANS = new Map<PlanId, Plan>([
           live: 'https://buy.stripe.com/8x2aEXfhI2nf58z5YB8k804',
         },
       },
-      highlight: true,
       inheritLabel: 'Everything in Supporter',
       accentColor: 'border-amber-400',
       badgeColor:

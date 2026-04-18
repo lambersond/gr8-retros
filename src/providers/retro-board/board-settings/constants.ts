@@ -217,7 +217,7 @@ export const BASE_SETTINGS: BoardSettingsWithPermissionsNoIcons = {
     render: true,
     canEdit: false,
     enabled: false,
-    isUnlocked: false,
+    isUnlocked: true,
     key: 'isFacilitatorModeEnabled',
     title: 'Facilitator Mode',
   },
