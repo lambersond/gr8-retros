@@ -25,6 +25,7 @@ export function GoogleButton({ redirectTo }: Readonly<GoogleButtonProps>) {
         height={20}
         width={20}
         aria-hidden='true'
+        className='h-auto'
       />
       Continue with Google
     </button>

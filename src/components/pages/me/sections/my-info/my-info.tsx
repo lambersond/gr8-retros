@@ -1,7 +1,8 @@
 import Image from 'next/image'
 import Link from 'next/link'
-import { initials } from './utils'
+import { LinkedAccounts } from './linked-accounts'
 import { ManageSubscriptionButton } from './manage-subscription-button'
+import { initials } from './utils'
 import { PaymentTierBadge } from '@/components/badges'
 import { SectionCard } from '@/components/section-card'
 import { PaymentTier } from '@/enums'
@@ -52,6 +53,7 @@ export async function MyInfo({ myInfo }: Readonly<MyInfoProps>) {
         <p className='text-sm text-text-secondary truncate mt-0.5'>
           {data?.email}
         </p>
+        <LinkedAccounts />
       </div>
     </SectionCard>
   )

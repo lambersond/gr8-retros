@@ -51,6 +51,11 @@ export const MODALS = {
       default: module.PDFPreviewerModal,
     })),
   ),
+  SignInModal: lazy(() =>
+    import('./components/modals').then(module => ({
+      default: module.SignInModal,
+    })),
+  ),
   TransferBoardModal: lazy(() =>
     import('./components/modals').then(module => ({
       default: module.TransferBoardModal,

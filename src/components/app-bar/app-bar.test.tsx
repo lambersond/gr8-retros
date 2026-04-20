@@ -12,19 +12,18 @@ jest.mock('./auth', () => ({
 }))
 
 describe('components/app-bar', () => {
-  it('should show nav links when not on a retro page', () => {
+  it('should show desktop nav links', () => {
     mockUsePathname.mockReturnValue('/')
     const { getByText } = render(<AppBar />)
 
     expect(getByText('Plans')).toBeInTheDocument()
-    expect(getByText('Me')).toBeInTheDocument()
+    expect(getByText('Boards')).toBeInTheDocument()
   })
 
-  it('should not show nav links on a retro page', () => {
-    mockUsePathname.mockReturnValue('/retro/some-id')
-    const { queryByText } = render(<AppBar />)
+  it('should show mobile sidebar trigger', () => {
+    mockUsePathname.mockReturnValue('/')
+    const { getByTestId } = render(<AppBar />)
 
-    expect(queryByText('Plans')).not.toBeInTheDocument()
-    expect(queryByText('Me')).not.toBeInTheDocument()
+    expect(getByTestId('sidebar__button')).toBeInTheDocument()
   })
 })
