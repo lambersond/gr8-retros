@@ -15,6 +15,13 @@ export default function GettingStarted() {
         To get started, sign in with your preferred provider and create a new
         retrospective board from your dashboard.
       </p>
+
+      <h2>Privacy & Data</h2>
+      <p>
+        Gr8 Retros is committed to your privacy. We do not show ads or collect
+        and sell your personal data. Your retrospective data is yours and we
+        respect that.
+      </p>
     </>
   )
 }

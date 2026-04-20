@@ -55,7 +55,6 @@ export function CommentsSidebar() {
     const added = currentCount - prevCountRef.current
 
     if (added > 0) {
-      // Use the ref — it captures scroll position *before* React rendered the new comment
       if (isAtBottomRef.current) {
         requestAnimationFrame(() => scrollToBottom())
       } else {
@@ -66,7 +65,6 @@ export function CommentsSidebar() {
     prevCountRef.current = currentCount
   }, [comments?.length, scrollToBottom])
 
-  // Reset when sidebar opens or card changes
   useEffect(() => {
     setNewCount(0)
     setIsAtBottom(true)

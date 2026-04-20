@@ -39,14 +39,14 @@ export function AddCommentForm({
 
   return (
     <form
-      className='flex flex-col mt-4 border border-tertiary rounded-lg w-full bg-page/40'
+      className='flex flex-col mt-4 rounded-lg w-full bg-appbar px-1'
       onSubmit={handleSubmit(handleOnSubmit)}
     >
       {memberCards && memberCards.length > 0 && (
         <select
           value={selectedCardId}
           onChange={e => setSelectedCardId(e.target.value)}
-          className='mx-2 mt-2 px-2 py-1 text-xs rounded border border-tertiary bg-page text-text-primary truncate'
+          className='mr-12 mt-2 pr-4 py-1 text-xs rounded border border-tertiary bg-page text-text-primary truncate'
         >
           {memberCards.map(card => (
             <option key={card.id} value={card.id}>
@@ -57,10 +57,11 @@ export function AddCommentForm({
           ))}
         </select>
       )}
-      <div className='relative p-2'>
+      <div className='relative'>
         <EmojiTextArea
           {...rhfRest}
           ref={rhfRef}
+          hideError
           id='add_comment'
           placeholder='Add a comment...'
           className='w-full pr-10 focus:outline-none resize-none'
@@ -74,7 +75,7 @@ export function AddCommentForm({
           }
           onKeyDown={handleKeyDown}
         />
-        <div className='absolute right-3 bottom-12'>
+        <div className='absolute right-3 bottom-4.5'>
           <IconButton icon={SendHorizonal} intent='text-secondary' />
         </div>
       </div>

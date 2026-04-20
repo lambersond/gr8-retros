@@ -3,7 +3,7 @@ import { CreateRetroButton } from '@/components/create-retro-button'
 
 export default function HomePage() {
   return (
-    <div className='bg-page h-full overflow-y-scroll'>
+    <div className='bg-page h-full overflow-hidden'>
       {/* Hero Section */}
       <section className='flex-1 flex flex-col items-center justify-center px-4 py-10 sm:py-16'>
         <div className='max-w-5xl w-full flex flex-col-reverse md:flex-row items-center justify-center gap-8'>

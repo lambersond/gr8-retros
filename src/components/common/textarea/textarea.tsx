@@ -1,5 +1,5 @@
-import clsx from 'clsx'
 import { forwardRef } from 'react'
+import clsx from 'clsx'
 import type { TextAreaProps } from './types'
 
 export const TextArea = forwardRef<HTMLTextAreaElement, TextAreaProps>(
@@ -11,6 +11,7 @@ export const TextArea = forwardRef<HTMLTextAreaElement, TextAreaProps>(
       className = '',
       name = 'textarea',
       registerOptions,
+      hideError = false,
       ...props
     },
     ref,
@@ -39,7 +40,9 @@ export const TextArea = forwardRef<HTMLTextAreaElement, TextAreaProps>(
           {...register?.(name, registerOptions)}
           {...props}
         />
-        <p className='text-danger text-xs italic h-4 mb-2'>{error}</p>
+        {!hideError && error && (
+          <p className='text-danger text-xs italic h-4 mb-2'>{error}</p>
+        )}
       </div>
     )
   },
