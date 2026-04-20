@@ -81,7 +81,13 @@ export function LinkedAccounts() {
             title={meta.label}
           >
             {meta.icon && (
-              <Image src={meta.icon} alt={meta.label} height={16} width={16} className='h-auto' />
+              <Image
+                src={meta.icon}
+                alt={meta.label}
+                height={16}
+                width={16}
+                className={`h-auto${account.provider === 'github' ? ' dark:invert' : ''}`}
+              />
             )}
             {accounts.length > 1 && (
               <button
