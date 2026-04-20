@@ -25,7 +25,7 @@ function ensureContainer() {
 /* eslint-disable camelcase -- library config uses snake_case keys */
 const DICE_BOX_CONFIG = {
   assetPath: '/assets/dice-box-threejs/',
-  sounds: false,
+  sounds: true,
   shadows: true,
   theme_surface: 'green-felt',
   theme_colorset: 'white',
