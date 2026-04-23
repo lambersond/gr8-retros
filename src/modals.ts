@@ -6,6 +6,11 @@ export const MODALS = {
       default: module.ConfirmModal,
     })),
   ),
+  GoodRetroModal: lazy(() =>
+    import('./components/modals').then(module => ({
+      default: module.GoodRetroModal,
+    })),
+  ),
   CreateBoardModal: lazy(() =>
     import('./components/modals').then(module => ({
       default: module.CreateBoardModal,
@@ -14,6 +19,11 @@ export const MODALS = {
   CreateCardGroupModal: lazy(() =>
     import('./components/modals').then(module => ({
       default: module.CreateCardGroupModal,
+    })),
+  ),
+  GroupUpvoteModal: lazy(() =>
+    import('./components/modals').then(module => ({
+      default: module.GroupUpvoteModal,
     })),
   ),
   DiceColorPickerModal: lazy(() =>

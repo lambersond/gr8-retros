@@ -59,7 +59,7 @@ export function UpsertActionItemForm({
         autoFocus
       />
       {availableUsers.length > 0 && (
-        <div className='-mt-3 mb-6'>
+        <div className='mt-2 mb-6'>
           <Controller
             name='assignedToId'
             control={control}

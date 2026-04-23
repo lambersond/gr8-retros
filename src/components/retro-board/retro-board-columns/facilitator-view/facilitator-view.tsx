@@ -1,6 +1,7 @@
 'use client'
 
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { SkipForward } from 'lucide-react'
 import { useTheme } from 'next-themes'
 import { ExitingOverlay } from './exiting-overlay'
 import { StackPeekLayers } from './stack-peek-layers'
@@ -19,6 +20,7 @@ export function FacilitatorView() {
   const { resolvedTheme } = useTheme()
   const isDark = resolvedTheme === 'dark'
   const [exitingItem, setExitingItem] = useState<FacilitatorItem>()
+  const [skippedIds, setSkippedIds] = useState<Set<string>>(new Set())
   const prevTopIdRef = useRef<string | undefined>(undefined)
 
   const columnMap = useMemo(() => {
@@ -51,8 +53,12 @@ export function FacilitatorView() {
     const undiscussed = allItems.filter(
       item => !isItemDiscussed(item, boardCards.cards),
     )
-    return sortItems(undiscussed, boardCards.sort, boardCards.cards)
-  }, [allItems, boardCards.cards, boardCards.sort])
+    const base = sortItems(undiscussed, boardCards.sort, boardCards.cards)
+    if (skippedIds.size === 0) return base
+    const unskipped = base.filter(item => !skippedIds.has(getItemId(item)))
+    const skipped = base.filter(item => skippedIds.has(getItemId(item)))
+    return [...unskipped, ...skipped]
+  }, [allItems, boardCards.cards, boardCards.sort, skippedIds])
 
   // Detect when the top card is discussed for exit animation
   useEffect(() => {
@@ -78,6 +84,11 @@ export function FacilitatorView() {
   const topItem = sorted[0]
   const remainingCount = Math.max(0, sorted.length - 1)
 
+  const handleSkip = useCallback(() => {
+    if (!topItem) return
+    setSkippedIds(prev => new Set(prev).add(getItemId(topItem)))
+  }, [topItem])
+
   return (
     <div className='flex-1 min-h-0 overflow-hidden flex flex-col items-center justify-start py-6 px-3'>
       <div className='w-full max-w-lg relative'>
@@ -91,6 +102,15 @@ export function FacilitatorView() {
         )}
         {topItem && (
           <>
+            {remainingCount > 0 && (
+              <button
+                onClick={handleSkip}
+                className='mb-3 mx-auto flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-medium text-text-secondary border border-border-light hover:bg-hover transition-colors cursor-pointer'
+              >
+                <SkipForward className='size-3.5' />
+                Skip
+              </button>
+            )}
             <TopCard
               key={getItemId(topItem)}
               item={topItem}

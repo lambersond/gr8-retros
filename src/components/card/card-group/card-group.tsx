@@ -37,7 +37,10 @@ export function CardGroup({
   onRemoveCard,
   votes,
 }: Readonly<CardGroupProps>) {
-  const [expanded, setExpanded] = useState(false)
+  const isFacilitatorMode = useBoardControlsState(
+    s => s.boardControls.facilitatorMode.isActive,
+  )
+  const [expanded, setExpanded] = useState(isFacilitatorMode)
   const { cards: allCards } = useBoardCards()
   const dispatch = useBoardCardsDispatch()
   const { settings } = useBoardSettings()
@@ -45,10 +48,6 @@ export function CardGroup({
   const { openModal } = useModals()
   const { id: boardId } = useParams() satisfies { id: string }
   const { publish } = useChannel(boardId)
-
-  const isFacilitatorMode = useBoardControlsState(
-    s => s.boardControls.facilitatorMode.isActive,
-  )
   const { openGroupSidebar } = useCommentsSidebarActions()
   const canUpvote = userPermissions['upvoting.restricted.canUpvote']
   const isDragEnabled = settings.dragAndDrop.enabled && !isFacilitatorMode
@@ -152,6 +151,37 @@ export function CardGroup({
     [group.id, onRemoveCard],
   )
 
+  const handleUpvote = useCallback(
+    (e: React.MouseEvent<HTMLButtonElement>) => {
+      e.stopPropagation()
+      openModal('GroupUpvoteModal', {
+        cards: memberCards.map(c => ({
+          id: c.id,
+          content: c.content,
+          upvotes: c.upvotedBy?.length ?? 0,
+          isUpvoted: c.upvotedBy?.includes(currentUserId ?? ''),
+        })),
+        onUpvote: async (cardId: string) => {
+          const resp = await fetch('/api/card/upvote', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
+            body: JSON.stringify({ cardId }),
+          })
+          if (resp.ok && currentUserId) {
+            publish({
+              data: {
+                type: BoardCardsMessageType.TOGGLE_UPVOTE,
+                payload: { cardId, userId: currentUserId },
+              },
+            })
+          }
+        },
+      })
+    },
+    [memberCards, currentUserId, openModal, publish],
+  )
+
   const handleOpenComments = useCallback(() => {
     openGroupSidebar(group.id, boardId)
   }, [group.id, boardId, openGroupSidebar])
@@ -248,16 +278,15 @@ export function CardGroup({
         </div>
       </div>
 
-      {!expanded && (
-        <CardGroupActions
-          aggregates={aggregates}
-          canUpvote={canUpvote}
-          votes={votes}
-          settings={settings}
-          onMarkAllDiscussed={handleMarkAllDiscussed}
-          onOpenComments={handleOpenComments}
-        />
-      )}
+      <CardGroupActions
+        aggregates={aggregates}
+        canUpvote={canUpvote}
+        votes={votes}
+        settings={settings}
+        onMarkAllDiscussed={handleMarkAllDiscussed}
+        onUpvote={handleUpvote}
+        onOpenComments={handleOpenComments}
+      />
 
       {aggregates.allActionItems.length > 0 && (
         <div className='mt-2 flex flex-col gap-1 bg-ai-bg p-2 border-t border-ai-border rounded-b'>

@@ -10,6 +10,7 @@ export function CardGroupActions({
   votes,
   settings,
   onMarkAllDiscussed,
+  onUpvote,
   onOpenComments,
 }: Readonly<CardGroupActionsProps>) {
   return (
@@ -38,6 +39,7 @@ export function CardGroupActions({
             />
           }
           text={`Upvote${aggregates.totalUpvotes === 1 ? '' : 's'}`}
+          onClick={canUpvote ? onUpvote : undefined}
           buttonClasses={clsx({
             'bg-transparent cursor-not-allowed': !canUpvote,
             'bg-success/10 hover:bg-success/20 cursor-pointer':

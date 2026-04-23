@@ -1,27 +1,24 @@
-export default function GettingStarted() {
+import Cookies from 'js-cookie'
+import { Modal } from '@/components/common'
+import { COOKIE_KEY_RETRO_TIPS_ACK } from '@/constants/cookies'
+import { useModals } from '@/hooks/use-modals'
+import type { GoodRetroModalProps } from './types'
+
+export function GoodRetroModal({ open = true }: Readonly<GoodRetroModalProps>) {
+  const { closeModal } = useModals()
+
+  const onClose = () => {
+    Cookies.set(COOKIE_KEY_RETRO_TIPS_ACK, 'true', { expires: 365 })
+    closeModal('GoodRetroModal')
+  }
+
   return (
-    <>
-      <h1 className='pt-8'>Getting Started</h1>
-      <p>Welcome to Gr8 Retros! This guide will help you get up and running.</p>
-
-      <h2>What is Gr8 Retros?</h2>
-      <p>
-        Gr8 Retros is a simple and effective retrospective tool for teams. It
-        helps you run productive retrospectives and track action items.
-      </p>
-
-      <h2>Creating Your First Board</h2>
-      <p>
-        To get started, sign in with your preferred provider and create a new
-        retrospective board from your dashboard.
-      </p>
-
-      <h2>What Makes a Good Retro?</h2>
-      <p>
+    <Modal title='What Makes a Good Retro?' isOpen={open} onClose={onClose}>
+      <p className='text-text-secondary text-sm mb-4'>
         The best retrospectives are focused and constructive. Here are a few
         tips to keep yours productive:
       </p>
-      <ul>
+      <ul className='flex flex-col gap-3 text-sm text-text-primary'>
         <li>
           <b>Pick a specific topic.</b> Instead of a general &ldquo;how did the
           sprint go?&rdquo;, zoom in on something concrete like code quality,
@@ -47,13 +44,14 @@ export default function GettingStarted() {
           was wasted.
         </li>
       </ul>
-
-      <h2>Privacy & Data</h2>
-      <p>
-        Gr8 Retros is committed to your privacy. We do not show ads or collect
-        and sell your personal data. Your retrospective data is yours and we
-        respect that.
-      </p>
-    </>
+      <div className='flex justify-end mt-6'>
+        <button
+          onClick={onClose}
+          className='bg-primary/85 py-2 px-4 hover:bg-primary rounded-xl text-lg text-text-primary uppercase text-center font-bold cursor-pointer'
+        >
+          Got it
+        </button>
+      </div>
+    </Modal>
   )
 }

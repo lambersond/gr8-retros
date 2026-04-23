@@ -26,10 +26,10 @@ export function IAmDoneButton({
   return (
     <button
       className={clsx(
-        'flex gap-2 items-center px-2 py-1 bg-success text-white rounded-md hover:bg-success/90 active:bg-success/80 transition tracking-tight text-xs font-small fixed left-1/2 transform -translate-x-1/2 mt-1 z-20 cursor-pointer',
-        {
-          'animate-bounce fade-in': showBounceAnimation,
-        },
+        'flex gap-2 items-center px-4 py-2 text-sm font-bold bg-success text-white rounded-md hover:bg-success/90 active:bg-success/80 tracking-tight fixed left-1/2 -translate-x-1/2 mt-1 z-20 cursor-pointer origin-center duration-500 ease-out',
+        showBounceAnimation
+          ? 'scale-125 animate-bounce fade-in shadow-lg shadow-success/30 ring-2 ring-success/50 ring-offset-2 ring-offset-transparent'
+          : 'scale-75',
       )}
       onClick={e => {
         e.stopPropagation()
@@ -37,7 +37,8 @@ export function IAmDoneButton({
         submitVotes()
       }}
     >
-      <Check className='size-4' /> I&apos;m done
+      <Check className='size-5' />
+      I&apos;m done
     </button>
   )
 }

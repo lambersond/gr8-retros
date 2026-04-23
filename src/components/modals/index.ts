@@ -1,5 +1,7 @@
 export { ConfirmModal } from './confirm-modal'
+export { GoodRetroModal } from './good-retro-modal'
 export { CreateBoardModal } from './create-board-modal'
+export { GroupUpvoteModal } from './group-upvote-modal'
 export { CreateCardGroupModal } from './create-card-group-modal'
 export { DiceColorPickerModal } from './dice-color-picker-modal'
 export { EditCardGroupModal } from './edit-card-group-modal'
