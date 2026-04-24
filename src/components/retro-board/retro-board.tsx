@@ -23,18 +23,23 @@ export function RetroBoard({ board }: Readonly<{ board: Board }>) {
   const isGuest = searchParams.get('guest') === 'true'
   const [continueAnyway, setContinueAnyway] = useState(isGuest)
 
+  const shouldShowGate =
+    status === 'unauthenticated' && !isAuthenticated && !continueAnyway
+
   useEffect(() => {
-    if (status !== 'loading' && !Cookies.get(COOKIE_KEY_RETRO_TIPS_ACK)) {
+    if (shouldShowGate) return
+    if (isAuthenticated && !Cookies.get(COOKIE_KEY_RETRO_TIPS_ACK)) {
       openModal('GoodRetroModal', { isAuthenticated })
+    } else if (isAuthenticated && Cookies.get(COOKIE_KEY_RETRO_TIPS_ACK)) {
+      return
+    } else {
+      openModal('GoodRetroModal', { isAuthenticated: false })
     }
-  }, [status, isAuthenticated, openModal])
+  }, [status, isAuthenticated, continueAnyway, openModal])
 
   if (status === 'loading') {
     return <div className='h-full w-screen' />
   }
-
-  const shouldShowGate =
-    status === 'unauthenticated' && !isAuthenticated && !continueAnyway
 
   if (shouldShowGate) {
     return (
