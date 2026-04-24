@@ -1,3 +1,5 @@
 import type { ModalProps } from '../types'
 
-export type GoodRetroModalProps = ModalProps
+export interface GoodRetroModalProps extends ModalProps {
+  isAuthenticated?: boolean
+}

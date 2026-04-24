@@ -24,10 +24,10 @@ export function RetroBoard({ board }: Readonly<{ board: Board }>) {
   const [continueAnyway, setContinueAnyway] = useState(isGuest)
 
   useEffect(() => {
-    if (isAuthenticated && !Cookies.get(COOKIE_KEY_RETRO_TIPS_ACK)) {
-      openModal('GoodRetroModal', {})
+    if (status !== 'loading' && !Cookies.get(COOKIE_KEY_RETRO_TIPS_ACK)) {
+      openModal('GoodRetroModal', { isAuthenticated })
     }
-  }, [isAuthenticated, openModal])
+  }, [status, isAuthenticated, openModal])
 
   if (status === 'loading') {
     return <div className='h-full w-screen' />
