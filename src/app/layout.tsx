@@ -54,6 +54,11 @@ export default function RootLayout({
           {`
             window.$sleek=[];
             window.SLEEK_PRODUCT_ID=910381374;
+            window.$sleek.sso=function(cb){
+              fetch('/api/sleekplan-sso')
+                .then(function(r){return r.json()})
+                .then(function(d){if(d.token)cb({token:d.token})});
+            };
             (function(){
             d=document;
             s=d.createElement("script");
