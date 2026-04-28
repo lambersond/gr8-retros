@@ -2,6 +2,16 @@ import * as Ably from 'ably'
 import { NextResponse } from 'next/server'
 import { getSessionUserIdOrCookie } from '@/lib/auth-handlers'
 
+const corsHeaders = {
+  'Access-Control-Allow-Origin': 'https://gr8-retros.app',
+  'Access-Control-Allow-Methods': 'GET, OPTIONS',
+  'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+}
+
+export async function OPTIONS() {
+  return new NextResponse(undefined, { status: 204, headers: corsHeaders })
+}
+
 export async function GET() {
   const apiKey = process.env.ABLY_API_KEY
   if (!apiKey) {
@@ -15,5 +25,5 @@ export async function GET() {
     clientId,
   })
 
-  return NextResponse.json(tokenRequest)
+  return NextResponse.json(tokenRequest, { headers: corsHeaders })
 }
