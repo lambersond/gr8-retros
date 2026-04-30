@@ -489,6 +489,7 @@ export function RetroBoardControlsProvider({
     updateBoardControls({
       facilitatorMode: {
         isActive: !boardControls.facilitatorMode.isActive,
+        skippedIds: [],
       },
     })
   }, [boardControls.facilitatorMode.isActive, updateBoardControls])

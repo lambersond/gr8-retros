@@ -22,6 +22,7 @@ export type RetroBoardControls = {
   }
   facilitatorMode: {
     isActive: boolean
+    skippedIds: string[]
   }
 }
 

@@ -1,26 +1,40 @@
 'use client'
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { SkipForward } from 'lucide-react'
+import { useChannel } from 'ably/react'
+import { CircleCheckBig, SkipForward } from 'lucide-react'
 import { useTheme } from 'next-themes'
+import { useParams } from 'next/navigation'
 import { ExitingOverlay } from './exiting-overlay'
 import { StackPeekLayers } from './stack-peek-layers'
 import { TopCard } from './top-card'
 import { getItemId, isItemDiscussed, sortItems } from './utils'
 import { useAuth } from '@/hooks/use-auth'
-import { useBoardCards } from '@/providers/retro-board/cards'
+import { useBoardCards, BoardCardsMessageType } from '@/providers/retro-board/cards'
 import { filterCardsBy } from '@/providers/retro-board/cards/utils'
 import { useBoardColumns } from '@/providers/retro-board/columns'
+import {
+  useBoardControlsActions,
+  useBoardControlsState,
+} from '@/providers/retro-board/controls'
 import type { ColumnInfo, FacilitatorItem } from './types'
 
 export function FacilitatorView() {
   const { user } = useAuth()
   const boardCards = useBoardCards()
   const { columns } = useBoardColumns()
+  const { id } = useParams() satisfies { id: string }
+  const { publish } = useChannel(id)
   const { resolvedTheme } = useTheme()
   const isDark = resolvedTheme === 'dark'
   const [exitingItem, setExitingItem] = useState<FacilitatorItem>()
-  const [skippedIds, setSkippedIds] = useState<Set<string>>(new Set())
+  const skippedIdsArray = useBoardControlsState(
+    s => s.boardControls.facilitatorMode.skippedIds ?? [],
+  )
+  const skippedIds = useMemo(() => new Set(skippedIdsArray), [skippedIdsArray])
+  const updateBoardControls = useBoardControlsActions(
+    a => a.updateBoardControls,
+  )
   const prevTopIdRef = useRef<string | undefined>(undefined)
 
   const columnMap = useMemo(() => {
@@ -84,10 +98,41 @@ export function FacilitatorView() {
   const topItem = sorted[0]
   const remainingCount = Math.max(0, sorted.length - 1)
 
+  const handleMarkDiscussed = useCallback(async () => {
+    if (!topItem) return
+    const cardIds =
+      topItem.kind === 'card' ? [topItem.data.id] : topItem.data.cardIds
+    await Promise.all(
+      cardIds.map(cardId =>
+        fetch('/api/card/discussed', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
+          body: JSON.stringify({ cardId, isDiscussed: true }),
+        }).then(resp => {
+          if (resp.ok) {
+            publish({
+              data: {
+                type: BoardCardsMessageType.UPDATE_CARD,
+                payload: { cardId, patch: { isDiscussed: true } },
+              },
+            })
+          }
+        }),
+      ),
+    )
+  }, [topItem, publish])
+
   const handleSkip = useCallback(() => {
     if (!topItem) return
-    setSkippedIds(prev => new Set(prev).add(getItemId(topItem)))
-  }, [topItem])
+    const newSkippedIds = [...skippedIdsArray, getItemId(topItem)]
+    updateBoardControls({
+      facilitatorMode: {
+        isActive: true,
+        skippedIds: newSkippedIds,
+      },
+    })
+  }, [topItem, skippedIdsArray, updateBoardControls])
 
   return (
     <div className='flex-1 min-h-0 overflow-hidden flex flex-col items-center justify-start py-6 px-3'>
@@ -102,15 +147,24 @@ export function FacilitatorView() {
         )}
         {topItem && (
           <>
-            {remainingCount > 0 && (
+            <div className='mb-3 mx-auto flex items-center justify-center gap-2'>
               <button
-                onClick={handleSkip}
-                className='mb-3 mx-auto flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-medium text-text-secondary border border-border-light hover:bg-hover transition-colors cursor-pointer'
+                onClick={handleMarkDiscussed}
+                className='flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-medium text-text-secondary border border-border-light hover:bg-hover transition-colors cursor-pointer'
               >
-                <SkipForward className='size-3.5' />
-                Skip
+                <CircleCheckBig className='size-3.5' />
+                Mark Discussed
               </button>
-            )}
+              {remainingCount > 0 && (
+                <button
+                  onClick={handleSkip}
+                  className='flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-medium text-text-secondary border border-border-light hover:bg-hover transition-colors cursor-pointer'
+                >
+                  <SkipForward className='size-3.5' />
+                  Skip
+                </button>
+              )}
+            </div>
             <TopCard
               key={getItemId(topItem)}
               item={topItem}
