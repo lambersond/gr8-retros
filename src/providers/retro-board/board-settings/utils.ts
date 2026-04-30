@@ -1,6 +1,7 @@
 import {
   ArrowBigUp,
   Clock,
+  EyeOff,
   MessageSquare,
   MessageSquareWarning,
   Move,
@@ -27,6 +28,7 @@ const getBaseSettings = (): BoardSettingsWithPermissions => {
   const baseSettings = structuredClone(BASE_SETTINGS) as any
 
   baseSettings.private.icon = UserLock
+  baseSettings.cardAuthoring.icon = EyeOff
   baseSettings.comments.icon = MessageSquare
   baseSettings.music.icon = Music
   baseSettings.timer.icon = Clock
@@ -61,6 +63,13 @@ export function getSettingsWithPermissions(
   )
   baseSettings.private.subsettings.cardRetention.value =
     settings.privateCardRetention
+
+  // Card Authoring Settings
+  baseSettings.cardAuthoring.enabled = settings.isCardAuthoringEnabled
+  baseSettings.cardAuthoring.canEdit = userHasPermission(
+    'cardAuthoring',
+    userRole,
+  )
 
   // Comments Settings
   baseSettings.comments.enabled = settings.isCommentsEnabled
@@ -218,6 +227,7 @@ function getStaticBoardPermissions(userRole: BoardRole) {
   return {
     private: userHasPermission('private', userRole),
     'private.openAccess': userHasPermission('private.openAccess', userRole),
+    cardAuthoring: userHasPermission('cardAuthoring', userRole),
     'private.createLink': userHasPermission('private.createLink', userRole),
     'private.copyLink': userHasPermission('private.copyLink', userRole),
     'private.revokeLink': userHasPermission('private.revokeLink', userRole),

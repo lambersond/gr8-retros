@@ -95,6 +95,7 @@ interface DragAndDropSetting extends Setting {
 
 export type BoardSettingsWithPermissions = {
   private: PrivateSetting
+  cardAuthoring: Setting
   comments: CommentSetting
   music: MusicSetting
   timer: TimerSetting
@@ -109,6 +110,7 @@ export type BoardSettingsWithPermissions = {
 export type BoardSettingsWithPermissionsNoIcons = Omit<
   BoardSettingsWithPermissions,
   | 'private'
+  | 'cardAuthoring'
   | 'comments'
   | 'music'
   | 'timer'
@@ -120,6 +122,7 @@ export type BoardSettingsWithPermissionsNoIcons = Omit<
   | 'aiSummary'
 > & {
   private: Omit<PrivateSetting, 'icon'>
+  cardAuthoring: Omit<Setting, 'icon'>
   comments: Omit<CommentSetting, 'icon'>
   music: Omit<MusicSetting, 'icon'>
   timer: Omit<TimerSetting, 'icon'>

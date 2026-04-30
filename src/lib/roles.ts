@@ -31,6 +31,7 @@ export type PermissionKey =
   | 'dragAndDrop'
   | 'dragAndDrop.grouping'
   | 'dragAndDrop.grouping.aiNaming'
+  | 'cardAuthoring'
   | 'facilitatorMode'
   | 'aiSummary'
 
@@ -51,6 +52,7 @@ export const SETTINGS_ROLE_MAP: Record<string, PermissionKey> = {
   isPrivate: 'private',
   privateOpenAccess: 'private.openAccess',
   privateCardRetention: 'private.retention.cards',
+  isCardAuthoringEnabled: 'cardAuthoring',
   isCommentsEnabled: 'comments',
   commentsAnytime: 'comments.anytime',
   commentsRestricted: 'comments.restricted',
@@ -90,6 +92,7 @@ const PERMISSIONS_MAP: Record<PermissionKey, BoardRole> &
   private: BoardRole.OWNER,
   'private.retention.cards': BoardRole.ADMIN,
   'private.openAccess': BoardRole.ADMIN,
+  cardAuthoring: BoardRole.ADMIN,
   'private.createLink': BoardRole.FACILITATOR,
   'private.copyLink': BoardRole.FACILITATOR,
   'private.revokeLink': BoardRole.FACILITATOR,

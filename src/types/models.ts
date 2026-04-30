@@ -14,6 +14,7 @@ export type Board = {
     boardTier: PaymentTier
     isActionItemsEnabled: boolean
     isAiSummaryEnabled: boolean
+    isCardAuthoringEnabled: boolean
     isCommentsEnabled: boolean
     isDragAndDropEnabled: boolean
     isFacilitatorModeEnabled: boolean

@@ -6,6 +6,7 @@ import {
   AiSummarySettings,
   BoardCustomizationSettings,
   BoardMembers,
+  CardAuthoringSettings,
   ClaimBoard,
   CommentsSettings,
   DangerZoneSettings,
@@ -49,6 +50,7 @@ export function BoardSettingsSidebar() {
         <section className='flex flex-col gap-4 pb-4'>
           <BoardMembers />
           <BoardCustomizationSettings />
+          <CardAuthoringSettings />
           <PrivateSettings />
           <TimerSettings />
           <MusicSettings />

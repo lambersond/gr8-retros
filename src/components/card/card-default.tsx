@@ -211,7 +211,9 @@ export function CardDefault({
             </>
           )}
         </div>
-        <span className='text-xs text-text-secondary italic'>{createdBy}</span>
+        {settings.cardAuthoring.enabled && (
+          <span className='text-xs text-text-secondary italic'>{createdBy}</span>
+        )}
       </div>
       {isMergeTarget && (
         <div className='px-2 pb-1 text-xs font-semibold text-warning tracking-wide'>

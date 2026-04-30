@@ -203,6 +203,7 @@ export async function resetBoardSettings(settingsId: string, ownerId: string) {
         isActionItemsEnabled: true,
         actionItemsAnytime: true,
         actionItemsRestricted: false,
+        isCardAuthoringEnabled: true,
         isVotingEnabled: false,
         votingMode: 'MULTI',
         votingLimit: 3,

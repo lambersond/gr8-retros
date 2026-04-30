@@ -120,7 +120,9 @@ export function CardCollapsed({
             />
           )}
         </div>
-        <span className='text-xs text-text-secondary italic'>{createdBy}</span>
+        {settings.cardAuthoring.enabled && (
+          <span className='text-xs text-text-secondary italic'>{createdBy}</span>
+        )}
       </div>
     </div>
   )

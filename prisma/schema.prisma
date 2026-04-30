@@ -152,6 +152,8 @@ model BoardSettings {
   actionItemsAnytime       Boolean    @default(true)
   actionItemsRestricted    Boolean    @default(false)
 
+  isCardAuthoringEnabled   Boolean    @default(true) // TIER = FREE
+
   isVotingEnabled          Boolean    @default(false) // TIER = FREE
   votingMode               VotingMode @default(MULTI)
   votingLimit              Int        @default(3)

@@ -27,6 +27,14 @@ export const BASE_SETTINGS: BoardSettingsWithPermissionsNoIcons = {
       },
     },
   },
+  cardAuthoring: {
+    render: true,
+    canEdit: false,
+    enabled: true,
+    isUnlocked: true,
+    key: 'isCardAuthoringEnabled',
+    title: 'Show Card Author',
+  },
   comments: {
     render: false,
     canEdit: false,
