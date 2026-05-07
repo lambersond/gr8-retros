@@ -45,7 +45,7 @@ export function ConfirmModal({
 const colorMap = {
   confirm: {
     primary:
-      'bg-primary/85 py-2 px-4 hover:bg-primary rounded-xl text-lg text-text-secondary uppercase text-center font-bold cursor-pointer flex items-center justify-center gap-2',
+      'bg-primary/85 py-2 px-4 hover:bg-primary rounded-xl text-lg text-text-primary uppercase text-center font-bold cursor-pointer flex items-center justify-center gap-2',
     danger:
       'px-4 py-2 bg-danger/90 text-white/90 hover:text-white hover:bg-danger cursor-pointer rounded-lg text-lg font-bold uppercase',
   },

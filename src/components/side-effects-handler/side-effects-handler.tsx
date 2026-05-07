@@ -8,9 +8,13 @@ import {
   BoardCardsInternalActionType,
   BoardCardsMessageType,
   BoardCardsSortOptions,
+  useBoardCards,
   useBoardCardsDispatch,
 } from '@/providers/retro-board/cards'
-import { useBoardControlsState } from '@/providers/retro-board/controls'
+import {
+  useBoardControlsActions,
+  useBoardControlsState,
+} from '@/providers/retro-board/controls'
 import {
   useFacilitatorDiceActions,
   useFacilitatorDiceState,
@@ -92,6 +96,57 @@ export function SideEffectsHandler() {
     }
     wasResolvedRef.current = !!isResolved
   }, [activeSession, myParticipant, closeModal])
+
+  // Inform users when voting is non-idle and the board appears empty after the
+  // current voting filters are applied (e.g. all cards from a prior retro were
+  // discussed and cleaned up, or voting was left CLOSED with no votes cast on
+  // the remaining cards).
+  const { cards, groups } = useBoardCards()
+  const { resetVoting } = useBoardControlsActions(a => ({
+    resetVoting: a.resetVoting,
+  }))
+  const hasShownVotingNotResetModalRef = useRef(false)
+
+  useEffect(() => {
+    if (hasShownVotingNotResetModalRef.current) return
+    if (votingState === VotingState.IDLE) return
+
+    const allCards = Object.values(cards)
+    const allGroups = Object.values(groups)
+
+    let hasVisibleItem = false
+    if (votingState === VotingState.OPEN) {
+      hasVisibleItem =
+        allCards.some(card => !card.cardGroupId && !card.isDiscussed) ||
+        allGroups.some(group => {
+          const memberCards = group.cardIds.map(id => cards[id]).filter(Boolean)
+          return (
+            memberCards.length === 0 || memberCards.some(c => !c.isDiscussed)
+          )
+        })
+    } else if (votingState === VotingState.CLOSED) {
+      hasVisibleItem =
+        allCards.some(card => !card.cardGroupId && (card.votes ?? 0) > 0) ||
+        allGroups.some(group => {
+          const memberVotes = group.cardIds
+            .map(id => cards[id])
+            .filter(Boolean)
+            .reduce((sum, c) => sum + (c.votes ?? 0), 0)
+          return (group.votes ?? 0) + memberVotes > 0
+        })
+    }
+    if (hasVisibleItem) return
+
+    hasShownVotingNotResetModalRef.current = true
+    openModal('ConfirmModal', {
+      title: 'Voting Still In Progress',
+      message:
+        'A voting session from a previous retro is still active and there are no cards to display. Would you like to reset voting now so you can start a new retro?',
+      confirmButtonText: 'Reset Voting',
+      cancelButtonText: 'Not Now',
+      onConfirm: resetVoting,
+    })
+  }, [votingState, cards, groups, openModal, resetVoting])
 
   return <></>
 }

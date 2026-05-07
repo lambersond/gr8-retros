@@ -1,7 +1,7 @@
 import clsx from 'clsx'
-import { Plus } from 'lucide-react'
+import { Info, Plus } from 'lucide-react'
 import { useTheme } from 'next-themes'
-import { IconButton } from '../../../common'
+import { IconButton, Tooltip } from '../../../common'
 import { useColumn } from '../../hooks/use-column'
 import { useColumnDragDrop } from '../../hooks/use-column-drag-drop'
 import { getTitleStyles, getWrapperStyles } from './utils'
@@ -22,10 +22,13 @@ export function Column({ type, columnConfig }: Readonly<ColumnProps>) {
   const colors = isDark ? activeStyle.dark : activeStyle.light
   const label = [activeStyle.emoji, activeStyle.label].filter(Boolean).join(' ')
 
-  const { isVoteOpen, votingResults } = useBoardControlsState(s => ({
-    isVoteOpen: s.boardControls.voting.state === VotingState.OPEN,
-    votingResults: s.boardControls.voting.results,
-  }))
+  const { isVoteOpen, isVotingIdle, votingResults } = useBoardControlsState(
+    s => ({
+      isVoteOpen: s.boardControls.voting.state === VotingState.OPEN,
+      isVotingIdle: s.boardControls.voting.state === VotingState.IDLE,
+      votingResults: s.boardControls.voting.results,
+    }),
+  )
 
   const {
     dropState,
@@ -55,8 +58,8 @@ export function Column({ type, columnConfig }: Readonly<ColumnProps>) {
       >
         {label}
       </p>
-      {!isVoteOpen && (
-        <div className='absolute top-1 right-1'>
+      <div className='absolute top-1 right-1'>
+        {isVotingIdle ? (
           <IconButton
             icon={Plus}
             tooltip='Add Card'
@@ -64,8 +67,16 @@ export function Column({ type, columnConfig }: Readonly<ColumnProps>) {
             intent='text-primary'
             onClick={handleAddCard}
           />
-        </div>
-      )}
+        ) : (
+          <Tooltip
+            title='Cards cannot be added while voting is in progress'
+            placement='bottom'
+            asChild
+          >
+            <Info className='size-7 p-1 text-text-tertiary' />
+          </Tooltip>
+        )}
+      </div>
       <div
         ref={bodyRef}
         className='flex-1 min-h-0 flex flex-col gap-3 p-3 overflow-y-auto scrollbar-thin scrollbar-thumb-rounded scrollbar-thumb-gray-700/10 scrollbar-track-transparent'
