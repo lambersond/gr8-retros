@@ -125,15 +125,13 @@ export function SideEffectsHandler() {
           )
         })
     } else if (votingState === VotingState.CLOSED) {
-      hasVisibleItem =
-        allCards.some(card => !card.cardGroupId && (card.votes ?? 0) > 0) ||
-        allGroups.some(group => {
-          const memberVotes = group.cardIds
-            .map(id => cards[id])
-            .filter(Boolean)
-            .reduce((sum, c) => sum + (c.votes ?? 0), 0)
-          return (group.votes ?? 0) + memberVotes > 0
-        })
+      // Read votingResults directly: the CLOSE_VOTING_RESULTS reducer copies
+      // these onto cards/groups asynchronously, so checking card.votes here
+      // races with that dispatch on the first render after page load.
+      hasVisibleItem = Object.entries(votingResults).some(([id, votes]) => {
+        if (votes.length === 0) return false
+        return Boolean(cards[id]) || Boolean(groups[id])
+      })
     }
     if (hasVisibleItem) return
 
@@ -146,7 +144,7 @@ export function SideEffectsHandler() {
       cancelButtonText: 'Not Now',
       onConfirm: resetVoting,
     })
-  }, [votingState, cards, groups, openModal, resetVoting])
+  }, [votingState, votingResults, cards, groups, openModal, resetVoting])
 
   return <></>
 }
