@@ -18,7 +18,7 @@ import {
   type Option as MenuOption,
   type GroupOption as MenuGroupOption,
 } from '@/components/common'
-import { D20Icon, PdfIcon } from '@/components/common/icons'
+import { PdfIcon } from '@/components/common/icons'
 import {
   calculateStatsForPDF,
   formatColumnDataForPDF,
@@ -38,7 +38,6 @@ import {
 } from '@/providers/retro-board/cards'
 import { useBoardColumns } from '@/providers/retro-board/columns'
 import { useBoardControlsState } from '@/providers/retro-board/controls'
-import { useFacilitatorDiceActions } from '@/providers/retro-board/facilitator-dice'
 import { useSessionStats } from '@/providers/retro-board/session-stats'
 import { generateSessionSummary } from '@/server/ai/generate-session-summary'
 import type { ReportSessionData } from '@/components/pdf-views/report-details'
@@ -54,8 +53,7 @@ export function RetroActions({ id }: Readonly<{ id: string }>) {
     hasVotingResults: s.boardControls.voting.state === VotingState.CLOSED,
   }))
   const { openSidebar } = useBoardSettingsActions()
-  const { isClaimed, isAiSummaryEnabled, settings } = useBoardSettings()
-  const isFacilitatorModeEnabled = settings.facilitatorMode.enabled
+  const { isClaimed, isAiSummaryEnabled } = useBoardSettings()
   const { isAuthenticated } = useAuth()
   const { openModal } = useModals()
   const data = useBoardCards()
@@ -64,18 +62,12 @@ export function RetroActions({ id }: Readonly<{ id: string }>) {
   const formattedData = formatColumnDataForPDF(data, columns)
   const sessionStats = useSessionStats()
   const [isGeneratingSummary, setIsGeneratingSummary] = useState(false)
-  const { startSession, submitRoll, submitDnr } = useFacilitatorDiceActions()
 
   const { user } = useBoardPermissions()
 
   const showFacilitatorActions = !isClaimed || user.hasFacilitator
   const showSettingsButton = (isAuthenticated && !isClaimed) || user.hasMember
   const showFilterButton = hasVotingResults
-
-  const handleChooseFacilitator = useCallback(() => {
-    startSession()
-    openModal('DiceColorPickerModal', { submitRoll, onDnr: submitDnr })
-  }, [startSession, openModal, submitRoll, submitDnr])
 
   const handleExportReport = useCallback(() => {
     openModal('PDFPreviewerModal', {
@@ -183,24 +175,8 @@ export function RetroActions({ id }: Readonly<{ id: string }>) {
       },
     ]
 
-    if (isFacilitatorModeEnabled) {
-      options.unshift({
-        label: 'Choose Facilitator',
-        onClick: handleChooseFacilitator,
-        icon: (
-          <D20Icon
-            height={16}
-            width={16}
-            className='transition-transform duration-1000 ease-in-out group-hover:rotate-[360deg]'
-          />
-        ),
-        className: 'group',
-      })
-    }
-
     if (user.hasAdmin) {
-      const insertIdx = isFacilitatorModeEnabled ? 1 : 0
-      options.splice(insertIdx, 0, {
+      options.unshift({
         label: 'Clear All Cards',
         onClick: handleClearBoard,
         color: 'danger',
@@ -210,13 +186,11 @@ export function RetroActions({ id }: Readonly<{ id: string }>) {
     return options
   }, [
     user,
-    handleChooseFacilitator,
     handleClearBoard,
     handleClearCompleted,
     handleExportReport,
     handleExportAiSummary,
     isAiSummaryEnabled,
-    isFacilitatorModeEnabled,
     isGeneratingSummary,
   ])
 

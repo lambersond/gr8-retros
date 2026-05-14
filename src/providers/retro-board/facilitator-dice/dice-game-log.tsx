@@ -1,10 +1,11 @@
 'use client'
 
-import { useMemo } from 'react'
+import { useEffect, useMemo, useRef } from 'react'
 import { Loader, Trophy, X } from 'lucide-react'
 import { D20Icon } from '@/components/common/icons'
 import { useAuth } from '@/hooks/use-auth'
 import { useModals } from '@/hooks/use-modals'
+import { useBoardControlsActions } from '@/providers/retro-board/controls'
 import {
   FacilitatorDiceInternalAction,
   useFacilitatorDiceActions,
@@ -30,6 +31,10 @@ export function DiceGameLog() {
     winner: DiceParticipant | undefined
   }
 
+  const updateBoardControls = useBoardControlsActions(
+    a => a.updateBoardControls,
+  )
+
   const { isComplete, winner } = useMemo((): RollResult => {
     const noResult: RollResult = { isComplete: false, winner: undefined }
     if (!activeSession || participants.length === 0) return noResult
@@ -46,6 +51,14 @@ export function DiceGameLog() {
     }
     return { isComplete: true, winner: best }
   }, [activeSession, participants])
+
+  const persistedSessionRef = useRef<string | undefined>(undefined)
+  useEffect(() => {
+    if (!activeSession || !isComplete || !winner) return
+    if (persistedSessionRef.current === activeSession.sessionId) return
+    persistedSessionRef.current = activeSession.sessionId
+    updateBoardControls({ chosenFacilitatorId: winner.clientId })
+  }, [activeSession, isComplete, winner, updateBoardControls])
 
   if (!activeSession) return
 

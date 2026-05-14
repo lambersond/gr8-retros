@@ -486,11 +486,15 @@ export function RetroBoardControlsProvider({
   // Facilitator mode actions
   // ---------------------------------------------------------------------------
   const toggleFacilitatorMode = useCallback(() => {
+    const willBeActive = !boardControls.facilitatorMode.isActive
     updateBoardControls({
       facilitatorMode: {
-        isActive: !boardControls.facilitatorMode.isActive,
+        isActive: willBeActive,
         skippedIds: [],
       },
+      // Releasing the chosen facilitator when ending a session avoids carrying
+      // over a stale choice into the next retro.
+      ...(willBeActive ? {} : { chosenFacilitatorId: undefined }),
     })
   }, [boardControls.facilitatorMode.isActive, updateBoardControls])
 

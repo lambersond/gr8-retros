@@ -36,6 +36,11 @@ export const MODALS = {
       default: module.CustomizeBoardColumnsModal,
     })),
   ),
+  ChooseFacilitatorModal: lazy(() =>
+    import('./components/modals').then(module => ({
+      default: module.ChooseFacilitatorModal,
+    })),
+  ),
   EditCardGroupModal: lazy(() =>
     import('./components/modals').then(module => ({
       default: module.EditCardGroupModal,

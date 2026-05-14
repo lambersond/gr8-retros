@@ -27,6 +27,7 @@ type BoardControls = {
     isActive: boolean
     skippedIds: string[]
   }
+  chosenFacilitatorId: string | undefined
 }
 
 const DEFAULT_BOARD_CONTROLS: BoardControls = {
@@ -52,6 +53,7 @@ const DEFAULT_BOARD_CONTROLS: BoardControls = {
     isActive: false,
     skippedIds: [],
   },
+  chosenFacilitatorId: undefined,
 }
 
 /**
@@ -130,6 +132,7 @@ export function useBoardControlsLiveMap({
               isActive: false,
               skippedIds: [],
             },
+            chosenFacilitatorId: undefined,
           })
         }
 

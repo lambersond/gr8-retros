@@ -24,6 +24,7 @@ export type RetroBoardControls = {
     isActive: boolean
     skippedIds: string[]
   }
+  chosenFacilitatorId: string | undefined
 }
 
 export type RetroBoardControlsState = {
