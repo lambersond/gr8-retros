@@ -26,7 +26,11 @@ import {
 import { MoreVertIcon } from '../icons'
 import type { PopoverOptions, PopoverProps, PopoverTriggerProps } from './types'
 
-function usePopoverState({ placement = 'bottom', modal }: PopoverOptions = {}) {
+function usePopoverState({
+  placement = 'bottom',
+  modal,
+  trigger = 'click',
+}: PopoverOptions = {}) {
   const [open, setOpen] = useState(false)
   const [labelId, setLabelId] = useState<string | undefined>()
   const [descriptionId, setDescriptionId] = useState<string | undefined>()
@@ -50,7 +54,7 @@ function usePopoverState({ placement = 'bottom', modal }: PopoverOptions = {}) {
   const context = data.context
 
   const click = useClick(context, {
-    enabled: true,
+    enabled: trigger === 'click',
   })
   const dismiss = useDismiss(context)
   const role = useRole(context)
@@ -64,12 +68,13 @@ function usePopoverState({ placement = 'bottom', modal }: PopoverOptions = {}) {
       ...interactions,
       ...data,
       modal,
+      trigger,
       labelId,
       descriptionId,
       setLabelId,
       setDescriptionId,
     }),
-    [open, setOpen, interactions, data, modal, labelId, descriptionId],
+    [open, setOpen, interactions, data, modal, trigger, labelId, descriptionId],
   )
 }
 
@@ -111,6 +116,14 @@ const PopoverTrigger = forwardRef<
   const childrenRef = (children as any).ref
   const ref = useMergeRefs([context.refs.setReference, propRef, childrenRef])
 
+  const isContextMenu = context.trigger === 'contextmenu'
+  const onContextMenuHandler = isContextMenu
+    ? (e: React.MouseEvent) => {
+        e.preventDefault()
+        context.setOpen(true)
+      }
+    : undefined
+
   if (asChild && isValidElement(children)) {
     return cloneElement(
       children,
@@ -119,6 +132,7 @@ const PopoverTrigger = forwardRef<
         ...props,
         ...(children.props as Record<string, any>),
         onClick: (e: React.MouseEvent) => e.stopPropagation(),
+        onContextMenu: onContextMenuHandler,
         'data-state': context.open ? 'open' : 'closed',
       } as any),
     )
@@ -128,6 +142,7 @@ const PopoverTrigger = forwardRef<
     <div
       ref={ref}
       data-state={context.open ? 'open' : 'closed'}
+      onContextMenu={onContextMenuHandler}
       {...context.getReferenceProps(props)}
     >
       {children}
@@ -169,13 +184,14 @@ export function Popover({
   asKabab,
   children,
   hidePopover,
+  trigger,
 }: Readonly<PopoverProps>) {
   if (hidePopover) {
     return <>{children}</>
   }
 
   return (
-    <PopoverContainer placement={placement} modal={modal}>
+    <PopoverContainer placement={placement} modal={modal} trigger={trigger}>
       <PopoverTrigger asChild={asChild}>
         {asKabab ? <Kebab /> : children}
       </PopoverTrigger>

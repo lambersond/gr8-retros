@@ -1,9 +1,9 @@
 'use client'
 
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback } from 'react'
 import { Crown } from 'lucide-react'
 import Image from 'next/image'
-import { Tooltip } from '@/components/common'
+import { Popover, Tooltip } from '@/components/common'
 import { D20Icon } from '@/components/common/icons'
 import { BoardRole } from '@/enums'
 import { useModals } from '@/hooks/use-modals'
@@ -44,22 +44,6 @@ export function ViewingMembers() {
   // again if the facilitator has left the board or none has been chosen.
   const showChooseFacilitator =
     isFacilitatorModeEnabled && canManageFacilitator && !facilitatorEntry
-
-  const [contextMenu, setContextMenu] = useState<{
-    x: number
-    y: number
-  }>()
-
-  useEffect(() => {
-    if (!contextMenu) return
-    const close = () => setContextMenu(undefined)
-    document.addEventListener('click', close)
-    document.addEventListener('contextmenu', close)
-    return () => {
-      document.removeEventListener('click', close)
-      document.removeEventListener('contextmenu', close)
-    }
-  }, [contextMenu])
 
   const handleChooseFacilitator = useCallback(() => {
     const candidates = Object.entries(viewingMembers)
@@ -113,33 +97,41 @@ export function ViewingMembers() {
       )}
       {facilitatorEntry && (
         <>
-          <div
-            className='relative flex items-center transition-all duration-200 hover:z-10 hover:scale-110'
-            onContextMenu={
-              canManageFacilitator
-                ? e => {
-                    e.preventDefault()
-                    setContextMenu({ x: e.clientX, y: e.clientY })
-                  }
-                : undefined
+          <Popover
+            asChild
+            trigger='contextmenu'
+            placement='bottom-start'
+            hidePopover={!canManageFacilitator}
+            content={
+              <div className='rounded-md border border-border-light bg-paper shadow-lg py-1'>
+                <button
+                  type='button'
+                  onClick={handleChooseFacilitator}
+                  className='block w-full text-left px-3 py-1.5 text-sm text-text-primary hover:bg-hover cursor-pointer whitespace-nowrap'
+                >
+                  Re-choose Facilitator
+                </button>
+              </div>
             }
           >
-            <Tooltip title={`${facilitatorEntry[1].name} (Facilitator)`}>
-              <div className='relative'>
-                <Image
-                  src={facilitatorEntry[1].image}
-                  alt={facilitatorEntry[1].name}
-                  width={32}
-                  height={32}
-                  className='w-8 h-8 rounded-full border-2 border-primary shadow-sm'
-                />
-                <Crown
-                  className='absolute -top-2 -right-1 size-3.5 text-primary fill-primary'
-                  strokeWidth={1.5}
-                />
-              </div>
-            </Tooltip>
-          </div>
+            <div className='relative flex items-center transition-all duration-200 hover:z-10 hover:scale-110'>
+              <Tooltip title={`${facilitatorEntry[1].name} (Facilitator)`}>
+                <div className='relative'>
+                  <Image
+                    src={facilitatorEntry[1].image}
+                    alt={facilitatorEntry[1].name}
+                    width={32}
+                    height={32}
+                    className='w-8 h-8 rounded-full border-2 border-primary shadow-sm'
+                  />
+                  <Crown
+                    className='absolute -top-2 -right-1 size-3.5 text-primary fill-primary'
+                    strokeWidth={1.5}
+                  />
+                </div>
+              </Tooltip>
+            </div>
+          </Popover>
           <div className='h-6 w-px bg-border-light' />
         </>
       )}
@@ -161,23 +153,6 @@ export function ViewingMembers() {
           </div>
         ))}
       </div>
-      {contextMenu && (
-        <div
-          className='fixed z-[1100] rounded-md border border-border-light bg-paper shadow-lg py-1'
-          style={{ left: contextMenu.x, top: contextMenu.y }}
-        >
-          <button
-            type='button'
-            onClick={() => {
-              setContextMenu(undefined)
-              handleChooseFacilitator()
-            }}
-            className='block w-full text-left px-3 py-1.5 text-sm text-text-primary hover:bg-hover cursor-pointer whitespace-nowrap'
-          >
-            Re-choose Facilitator
-          </button>
-        </div>
-      )}
     </div>
   )
 }

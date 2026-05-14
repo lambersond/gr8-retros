@@ -25,4 +25,5 @@ export interface PopoverTriggerProps {
 export interface PopoverOptions {
   placement?: Placement
   modal?: boolean
+  trigger?: 'click' | 'contextmenu'
 }

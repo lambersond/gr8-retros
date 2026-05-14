@@ -10,8 +10,12 @@ import { useModals } from '@/hooks/use-modals'
 
 export function Auth() {
   const { user, isAuthenticated, signOut } = useAuth()
-  const redirectTo = usePathname()
+  const pathname = usePathname()
   const { openModal } = useModals()
+
+  // Stay on the retro page when signing in from a board; otherwise default
+  // to the user's home so they land somewhere actionable after auth.
+  const signInRedirectTo = pathname?.startsWith('/retro/') ? pathname : '/me'
 
   return (
     <Sidebar
@@ -32,7 +36,9 @@ export function Auth() {
         {!isAuthenticated && (
           <button
             type='button'
-            onClick={() => openModal('SignInModal', { redirectTo } as any)}
+            onClick={() =>
+              openModal('SignInModal', { redirectTo: signInRedirectTo } as any)
+            }
             className='inline-flex items-center cursor-pointer justify-center gap-3 rounded-md border border-transparent bg-black/80 px-4 py-2.5 text-base font-medium text-white hover:border-primary hover:bg-black focus:outline-none focus:ring-2 focus:ring-white/60'
           >
             <LogInIcon className='size-5' />
@@ -45,7 +51,7 @@ export function Auth() {
           <section className='p-2'>
             <SidebarItem>
               <button
-                onClick={() => signOut({ redirectTo })}
+                onClick={() => signOut({ redirectTo: pathname })}
                 className='w-full flex gap-2 cursor-pointer w-full items-start'
               >
                 <LogOutIcon className='text-danger/80 size-6 mb-2' />

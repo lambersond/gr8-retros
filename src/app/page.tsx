@@ -1,7 +1,14 @@
 import Image from 'next/image'
+import { redirect } from 'next/navigation'
+import { auth } from '@/auth'
 import { CreateRetroButton } from '@/components/create-retro-button'
 
-export default function HomePage() {
+export default async function HomePage() {
+  const session = await auth()
+  if (session?.user) {
+    redirect('/me')
+  }
+
   return (
     <div className='bg-page h-full overflow-hidden'>
       {/* Hero Section */}
