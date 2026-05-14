@@ -7,6 +7,7 @@ import { BoardSettingsSidebar } from '../board-settings-sidebar'
 import { CommentsSidebar } from '../comments-sidebar'
 import { SideEffectsHandler } from '../side-effects-handler'
 import { SignInGate } from '../signin-gate'
+import { BoardShareButton } from './board-share-button'
 import { RetroBoardColumns } from './retro-board-columns'
 import { RetroBoardHeader } from './retro-board-header'
 import { RetroBoardProviders } from './retro-board-providers'
@@ -53,6 +54,7 @@ export function RetroBoard({ board }: Readonly<{ board: Board }>) {
   return (
     <AblyChannelProvider channel={board.id}>
       <RetroBoardProviders board={board}>
+        <BoardShareButton id={board.id} />
         <RetroBoardHeader id={board.id} />
         <RetroBoardColumns />
         <CommentsSidebar />

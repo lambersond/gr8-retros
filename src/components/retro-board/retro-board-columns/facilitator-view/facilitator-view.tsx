@@ -2,15 +2,18 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useChannel } from 'ably/react'
-import { CircleCheckBig, SkipForward } from 'lucide-react'
-import { useTheme } from 'next-themes'
+import { CircleCheckBig, LogOut, SkipForward } from 'lucide-react'
 import { useParams } from 'next/navigation'
+import { useTheme } from 'next-themes'
 import { ExitingOverlay } from './exiting-overlay'
 import { StackPeekLayers } from './stack-peek-layers'
 import { TopCard } from './top-card'
 import { getItemId, isItemDiscussed, sortItems } from './utils'
 import { useAuth } from '@/hooks/use-auth'
-import { useBoardCards, BoardCardsMessageType } from '@/providers/retro-board/cards'
+import {
+  useBoardCards,
+  BoardCardsMessageType,
+} from '@/providers/retro-board/cards'
 import { filterCardsBy } from '@/providers/retro-board/cards/utils'
 import { useBoardColumns } from '@/providers/retro-board/columns'
 import {
@@ -31,10 +34,17 @@ export function FacilitatorView() {
   const skippedIdsArray = useBoardControlsState(
     s => s.boardControls.facilitatorMode.skippedIds ?? [],
   )
-  const skippedIds = useMemo(() => new Set(skippedIdsArray), [skippedIdsArray])
-  const updateBoardControls = useBoardControlsActions(
-    a => a.updateBoardControls,
-  )
+  const { updateBoardControls, toggleFacilitatorMode, resetVoting } =
+    useBoardControlsActions(a => ({
+      updateBoardControls: a.updateBoardControls,
+      toggleFacilitatorMode: a.toggleFacilitatorMode,
+      resetVoting: a.resetVoting,
+    }))
+
+  const handleEndFacilitation = useCallback(() => {
+    resetVoting()
+    toggleFacilitatorMode()
+  }, [resetVoting, toggleFacilitatorMode])
   const prevTopIdRef = useRef<string | undefined>(undefined)
 
   const columnMap = useMemo(() => {
@@ -68,11 +78,12 @@ export function FacilitatorView() {
       item => !isItemDiscussed(item, boardCards.cards),
     )
     const base = sortItems(undiscussed, boardCards.sort, boardCards.cards)
-    if (skippedIds.size === 0) return base
-    const unskipped = base.filter(item => !skippedIds.has(getItemId(item)))
-    const skipped = base.filter(item => skippedIds.has(getItemId(item)))
-    return [...unskipped, ...skipped]
-  }, [allItems, boardCards.cards, boardCards.sort, skippedIds])
+    if (skippedIdsArray.length === 0) return base
+    const skippedSet = new Set(skippedIdsArray)
+    // Skipped items are removed from the queue entirely; once every item has
+    // been skipped (or discussed) the end-of-facilitation view is shown.
+    return base.filter(item => !skippedSet.has(getItemId(item)))
+  }, [allItems, boardCards.cards, boardCards.sort, skippedIdsArray])
 
   // Detect when the top card is discussed for exit animation
   useEffect(() => {
@@ -125,7 +136,11 @@ export function FacilitatorView() {
 
   const handleSkip = useCallback(() => {
     if (!topItem) return
-    const newSkippedIds = [...skippedIdsArray, getItemId(topItem)]
+    const itemId = getItemId(topItem)
+    const newSkippedIds = [
+      ...skippedIdsArray.filter(id => id !== itemId),
+      itemId,
+    ]
     updateBoardControls({
       facilitatorMode: {
         isActive: true,
@@ -155,15 +170,13 @@ export function FacilitatorView() {
                 <CircleCheckBig className='size-3.5' />
                 Mark Discussed
               </button>
-              {remainingCount > 0 && (
-                <button
-                  onClick={handleSkip}
-                  className='flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-medium text-text-secondary border border-border-light hover:bg-hover transition-colors cursor-pointer'
-                >
-                  <SkipForward className='size-3.5' />
-                  Skip
-                </button>
-              )}
+              <button
+                onClick={handleSkip}
+                className='flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-medium text-text-secondary border border-border-light hover:bg-hover transition-colors cursor-pointer'
+              >
+                <SkipForward className='size-3.5' />
+                Skip
+              </button>
             </div>
             <TopCard
               key={getItemId(topItem)}
@@ -180,8 +193,17 @@ export function FacilitatorView() {
           </>
         )}
         {!topItem && !exitingItem && (
-          <div className='text-center text-text-secondary py-8'>
-            All cards have been discussed
+          <div className='flex flex-col items-center gap-4 py-8'>
+            <p className='text-center text-text-secondary'>
+              All cards have been discussed
+            </p>
+            <button
+              onClick={handleEndFacilitation}
+              className='flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-medium text-text-secondary border border-border-light hover:bg-hover transition-colors cursor-pointer'
+            >
+              <LogOut className='size-3.5' />
+              End Facilitation
+            </button>
           </div>
         )}
       </div>

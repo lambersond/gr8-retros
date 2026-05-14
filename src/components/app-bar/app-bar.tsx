@@ -76,7 +76,7 @@ export function AppBar() {
           ))}
         </nav>
       </div>
-      <div className='ml-auto mr-3'>
+      <div className='ml-auto mr-20'>
         {' '}
         <ColorModeToggle />
       </div>
