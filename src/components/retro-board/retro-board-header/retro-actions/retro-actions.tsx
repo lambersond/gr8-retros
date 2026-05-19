@@ -13,6 +13,7 @@ import { useRetroActions } from './use-retro-actions'
 import {
   Menu,
   Popover,
+  Tooltip,
   type Option as MenuOption,
   type GroupOption as MenuGroupOption,
 } from '@/components/common'
@@ -276,23 +277,27 @@ type LabeledTriggerButtonProps = {
   label: string
   icon: React.ElementType
   onClick?: () => void
+  ref?: React.Ref<HTMLButtonElement>
 }
 
 function LabeledTriggerButton({
   label,
   icon: Icon,
   onClick,
+  ref,
   ...rest
 }: Readonly<LabeledTriggerButtonProps>) {
   return (
-    <button
-      type='button'
-      onClick={onClick}
-      className='flex items-center gap-1.5 px-2 py-1 rounded cursor-pointer text-text-primary hover:bg-text-primary/10'
-      {...rest}
-    >
-      <span className='hidden md:inline text-sm font-medium'>{label}</span>
-      <Icon className='size-5' />
-    </button>
+    <Tooltip title={label} placement='bottom' asChild>
+      <button
+        ref={ref}
+        type='button'
+        onClick={onClick}
+        className='flex items-center justify-center p-1 rounded cursor-pointer text-text-primary hover:bg-text-primary/10'
+        {...rest}
+      >
+        <Icon className='size-5' />
+      </button>
+    </Tooltip>
   )
 }

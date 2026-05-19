@@ -147,6 +147,13 @@ export async function getBoardByName(id: string) {
   })
 }
 
+export async function updateBoardName(id: string, name: string) {
+  return prisma.retroSession.update({
+    where: { id },
+    data: { name },
+  })
+}
+
 export async function createBoard(data: CreateBoardProps) {
   const { boardName, ownerId } = data
   const boardId = encodeURIComponent(boardName)

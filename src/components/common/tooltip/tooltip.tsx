@@ -105,16 +105,19 @@ const TooltipTrigger = forwardRef<
   React.HTMLProps<HTMLElement> & { asChild?: boolean }
 >(function TooltipTrigger({ children, asChild = false, ...props }, propRef) {
   const context = useTooltipContext()
-  const childrenRef = (children as any).ref
+  // React 19 removed element.ref; refs are now regular props on the element.
+  const childrenRef = isValidElement(children)
+    ? (children.props as { ref?: React.Ref<HTMLElement> }).ref
+    : undefined
   const ref = useMergeRefs([context.refs.setReference, propRef, childrenRef])
 
   if (asChild && isValidElement(children)) {
     return cloneElement(
       children,
       context.getReferenceProps({
-        ref,
         ...props,
         ...(children.props as Record<string, any>),
+        ref,
         'data-state': context.open ? 'open' : 'closed',
       } as any),
     )

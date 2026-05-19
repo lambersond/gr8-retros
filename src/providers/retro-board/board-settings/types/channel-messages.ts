@@ -13,6 +13,10 @@ export type BoardSettingsMessageData =
       Partial<BoardSettings>
     >
   | MessageStructRequiredPayload<
+      BoardSettingsMessageType.UPDATE_BOARD_NAME,
+      { name: string }
+    >
+  | MessageStructRequiredPayload<
       BoardSettingsMessageType.CREATE_INVITATION_LINK,
       BoardInvite
     >

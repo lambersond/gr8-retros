@@ -43,6 +43,29 @@ export function useBoardSettingsActions() {
     }
   }
 
+  async function updateBoardName(name: string) {
+    const trimmed = name.trim()
+    if (!trimmed) return
+
+    const resp = await fetch(`/api/board/${boardId}/name`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name: trimmed, settingsId: id }),
+    })
+
+    if (!resp.ok) {
+      throw new Error('Failed to update board name')
+    }
+
+    const updated: { name: string } = await resp.json()
+    publish({
+      data: {
+        type: BoardSettingsMessageType.UPDATE_BOARD_NAME,
+        payload: { name: updated.name },
+      },
+    })
+  }
+
   async function claimBoardSettings() {
     const resp = await fetch(`/api/board-settings/${id}/claim`, {
       method: 'PUT',
@@ -105,6 +128,7 @@ export function useBoardSettingsActions() {
     openSidebar: openSidebarWithSettings,
     closeSidebar,
     updateBoardSetting,
+    updateBoardName,
     claimBoardSettings,
     createInvitationLink,
     revokeInvitationLink,

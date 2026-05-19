@@ -113,7 +113,10 @@ const PopoverTrigger = forwardRef<
   React.HTMLProps<HTMLElement> & PopoverTriggerProps
 >(function PopoverTrigger({ children, asChild = false, ...props }, propRef) {
   const context = usePopover()
-  const childrenRef = (children as any).ref
+  // React 19 removed element.ref; refs are now regular props on the element.
+  const childrenRef = isValidElement(children)
+    ? (children.props as { ref?: React.Ref<HTMLElement> }).ref
+    : undefined
   const ref = useMergeRefs([context.refs.setReference, propRef, childrenRef])
 
   const isContextMenu = context.trigger === 'contextmenu'
@@ -128,9 +131,9 @@ const PopoverTrigger = forwardRef<
     return cloneElement(
       children,
       context.getReferenceProps({
-        ref,
         ...props,
         ...(children.props as Record<string, any>),
+        ref,
         onClick: (e: React.MouseEvent) => e.stopPropagation(),
         onContextMenu: onContextMenuHandler,
         'data-state': context.open ? 'open' : 'closed',

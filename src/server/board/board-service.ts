@@ -1,7 +1,10 @@
 'use server'
 
 import * as repository from './board-repository'
+import { BoardRole } from '@/enums'
 import { getSessionUserIdOrCookie } from '@/lib/auth-handlers'
+import { hasMinimumRole } from '@/lib/roles'
+import { userService } from '@/server/user'
 import type { CreateBoardProps } from './types'
 
 export async function getBoardById(id: string) {
@@ -55,4 +58,31 @@ export async function checkBoardAvailability(boardId: string) {
 
 export async function createBoard(data: CreateBoardProps) {
   return repository.createBoard(data)
+}
+
+export async function updateBoardName(
+  boardId: string,
+  settingsId: string,
+  userId: string,
+  name: string,
+) {
+  const trimmed = name.trim()
+  if (!trimmed) {
+    return { error: 'INVALID_NAME', message: 'Board name cannot be empty' }
+  }
+
+  const userBoardRole = await userService.getUserBoardRole(userId, settingsId)
+  if (!hasMinimumRole(BoardRole.ADMIN, userBoardRole)) {
+    return {
+      error: 'INSUFFICIENT_PERMISSIONS',
+      message: 'User does not have permission to rename this board',
+    }
+  }
+
+  try {
+    const updated = await repository.updateBoardName(boardId, trimmed)
+    return { name: updated.name }
+  } catch {
+    return { error: 'UPDATE_FAILED', message: 'Failed to update board name' }
+  }
 }

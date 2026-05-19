@@ -21,6 +21,12 @@ export function useBoardSettingsMessageHandlers() {
           payload: data.payload,
         })
       },
+      [BoardSettingsMessageType.UPDATE_BOARD_NAME]: data => {
+        dispatch({
+          type: BoardSettingsMessageType.UPDATE_BOARD_NAME,
+          payload: data.payload,
+        })
+      },
       [BoardSettingsMessageType.CREATE_INVITATION_LINK]: data => {
         dispatch({
           type: BoardSettingsMessageType.CREATE_INVITATION_LINK,

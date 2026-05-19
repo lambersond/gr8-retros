@@ -48,6 +48,11 @@ export const boardCardActionHandlers = {
     }
   },
 
+  [BoardSettingsMessageType.UPDATE_BOARD_NAME]: (state, action) => ({
+    ...state,
+    boardName: action.payload.name,
+  }),
+
   [BoardSettingsMessageType.CREATE_INVITATION_LINK]: (state, action) => {
     const invite = action.payload
     return {
