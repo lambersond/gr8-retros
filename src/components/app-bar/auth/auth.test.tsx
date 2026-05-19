@@ -8,12 +8,24 @@ jest.mock('@/hooks/use-auth', () => ({
   useAuth: () => mockUseAuth(),
 }))
 
-jest.mock('@/components/sidebars/account-sidebar', () => ({
-  AccountSidebar: () => <div data-testid='account-sidebar' />,
+jest.mock('next/navigation', () => ({
+  usePathname: () => '/',
+}))
+
+// The badges package transitively imports prisma-backed enums, which the test
+// runtime doesn't populate. Stub it out so the auth tree mounts cleanly.
+jest.mock('@/components/badges', () => ({
+  PaymentTierBadge: () => null,
+  BoardRoleBadge: () => null,
+}))
+
+// Same reason — bypass the prisma-enum chain pulled in by the memberships provider.
+jest.mock('@/providers/board-memberships', () => ({
+  useBoardMemberships: () => ({ boards: [] }),
 }))
 
 describe('components/app-bar/auth', () => {
-  it('should render login button if not authenticated', () => {
+  it('renders a sign-in trigger when not authenticated', () => {
     mockUseAuth.mockReturnValue({
       isEnabled: true,
       isAuthenticated: false,
@@ -21,25 +33,30 @@ describe('components/app-bar/auth', () => {
       user: { name: 'Guest' },
     })
 
-    const { getByText } = render(<Auth />, {
+    const { getByRole } = render(<Auth />, {
       wrapper: ModalProvider,
     })
 
-    expect(getByText(/Sign In/)).toBeInTheDocument()
+    expect(getByRole('button')).toBeInTheDocument()
   })
 
-  it('should render logout button if authenticated', () => {
+  it('renders the account avatar trigger when authenticated', () => {
     mockUseAuth.mockReturnValue({
       isEnabled: true,
       isAuthenticated: true,
       signOut: jest.fn(),
-      user: { name: 'User' },
+      user: {
+        name: 'User',
+        email: 'user@example.com',
+        image: '/no-image.jpg',
+        paymentTier: 'FREE',
+      },
     })
 
-    const { getByTestId } = render(<Auth />, {
+    const { getByLabelText } = render(<Auth />, {
       wrapper: ModalProvider,
     })
 
-    expect(getByTestId('account-sidebar')).toBeInTheDocument()
+    expect(getByLabelText('Account menu')).toBeInTheDocument()
   })
 })

@@ -28,7 +28,7 @@ export function BoardShareButton({ id }: Readonly<{ id: string }>) {
   if (!showShareButton) return
 
   return (
-    <div className='fixed top-3 right-16 z-50'>
+    <div className='fixed top-3.5 right-16 z-50'>
       <IconButton
         icon={Share2}
         actionIcon={Check}

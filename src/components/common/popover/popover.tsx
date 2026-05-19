@@ -164,6 +164,7 @@ const PopoverContent = forwardRef<
       <FloatingFocusManager context={floatingContext} modal={context.modal}>
         <div
           ref={ref}
+          className='z-1000'
           style={{ ...context.floatingStyles, ...style }}
           aria-labelledby={context.labelId}
           aria-describedby={context.descriptionId}

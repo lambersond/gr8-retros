@@ -1,66 +1,173 @@
 'use client'
 
-import { LogInIcon, LogOutIcon, Menu, SidebarCloseIcon } from 'lucide-react'
+import { useState } from 'react'
+import clsx from 'clsx'
+import {
+  BookOpen,
+  ChevronDown,
+  LogInIcon,
+  LogOutIcon,
+  MessageCircleQuestion,
+  UserCircle,
+} from 'lucide-react'
+import Image from 'next/image'
+import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { BoardSection } from './boards-section'
-import { UserSection } from './user-secton'
-import { IconButton, Sidebar, SidebarItem } from '@/components/common'
+import ColorModeToggle from '../color-mode-toggle'
+import { BoardRoleBadge, PaymentTierBadge } from '@/components/badges'
+import { IconButton, Popover } from '@/components/common'
 import { useAuth } from '@/hooks/use-auth'
 import { useModals } from '@/hooks/use-modals'
+import { useBoardMemberships } from '@/providers/board-memberships'
+
+function openSupport() {
+  // Sleekplan is bootstrapped in src/app/layout.tsx — its SDK attaches an
+  // `open()` method onto window.$sleek after the script loads.
+  ;(globalThis as any).$sleek?.open?.()
+}
 
 export function Auth() {
   const { user, isAuthenticated, signOut } = useAuth()
   const pathname = usePathname()
   const { openModal } = useModals()
 
-  // Stay on the retro page when signing in from a board; otherwise default
-  // to the user's home so they land somewhere actionable after auth.
-  const signInRedirectTo = pathname?.startsWith('/retro/') ? pathname : '/me'
+  if (!isAuthenticated) {
+    const signInRedirectTo = pathname?.startsWith('/retro/') ? pathname : '/me'
+    return (
+      <IconButton
+        icon={LogInIcon}
+        size='xl'
+        intent='primary'
+        tooltip='Sign In'
+        onClick={() =>
+          openModal('SignInModal', { redirectTo: signInRedirectTo } as any)
+        }
+      />
+    )
+  }
 
   return (
-    <Sidebar
-      side='right'
-      trigger={<IconButton icon={Menu} size='xl' />}
-      className='w-full sm:w-sm shadow-xl'
-    >
-      <div className='flex flex-col gap-3 px-2 h-full'>
-        <section className='flex items-start justify-between sticky top-0 bg-appbar z-10 -mb-3'>
-          <div className='flex flex-col'>
-            <p className='text-2xl font-bold'>Account</p>
+    <Popover
+      asChild
+      placement='bottom-end'
+      content={
+        <div className='w-72 rounded-xl border border-border-light bg-paper shadow-xl overflow-hidden'>
+          <div className='relative flex flex-col items-center px-4 pt-4 pb-3 border-b border-border-light'>
+            <div className='absolute top-2 left-2'>
+              <PaymentTierBadge tier={user.paymentTier} redirectToPlans />
+            </div>
+            <Image
+              src={user.image}
+              alt={user.name}
+              width={72}
+              height={72}
+              className='rounded-full border border-border-light'
+            />
+            <p className='mt-2 font-semibold text-text-primary'>{user.name}</p>
           </div>
-          <SidebarItem>
-            <SidebarCloseIcon className='size-10 p-2 transform rotate-180 text-text-secondary hover:text-text-primary hover:bg-hover rounded-full cursor-pointer' />
-          </SidebarItem>
-        </section>
-        <UserSection user={user} isAuthenticated={isAuthenticated} />
-        {!isAuthenticated && (
-          <button
-            type='button'
-            onClick={() =>
-              openModal('SignInModal', { redirectTo: signInRedirectTo } as any)
-            }
-            className='inline-flex items-center cursor-pointer justify-center gap-3 rounded-md border border-transparent bg-black/80 px-4 py-2.5 text-base font-medium text-white hover:border-primary hover:bg-black focus:outline-none focus:ring-2 focus:ring-white/60'
-          >
-            <LogInIcon className='size-5' />
-            Sign In
-          </button>
-        )}
-        <BoardSection isAuthenticated={isAuthenticated} />
-        <div className='flex-1' id='spacer' />
-        {isAuthenticated && (
-          <section className='p-2'>
-            <SidebarItem>
-              <button
-                onClick={() => signOut({ redirectTo: pathname })}
-                className='w-full flex gap-2 cursor-pointer w-full items-start'
-              >
-                <LogOutIcon className='text-danger/80 size-6 mb-2' />
-                <p className='h-6 text-danger/80 font-bold'>Sign Out</p>
-              </button>
-            </SidebarItem>
-          </section>
-        )}
-      </div>
-    </Sidebar>
+
+          <BoardsSection pathname={pathname} />
+
+          <div className='flex flex-col py-1'>
+            <Link
+              href='/me'
+              className='flex items-center gap-3 px-4 py-2 text-sm text-text-primary hover:bg-hover'
+            >
+              <UserCircle size={18} />
+              My Account
+            </Link>
+            <Link
+              href='/docs'
+              className='flex items-center gap-3 px-4 py-2 text-sm text-text-primary hover:bg-hover'
+            >
+              <BookOpen size={18} />
+              Documentation
+            </Link>
+            <button
+              type='button'
+              onClick={openSupport}
+              className='flex items-center gap-3 px-4 py-2 text-sm text-text-primary hover:bg-hover cursor-pointer text-left'
+            >
+              <MessageCircleQuestion size={18} />
+              Support
+            </button>
+          </div>
+
+          <div className='flex items-center justify-between gap-2 px-3 py-2 border-t border-border-light'>
+            <ColorModeToggle />
+            <button
+              type='button'
+              onClick={() => signOut({ redirectTo: pathname })}
+              className='flex items-center gap-1.5 text-sm font-semibold text-danger/80 hover:text-danger cursor-pointer'
+            >
+              Log out
+              <LogOutIcon size={16} />
+            </button>
+          </div>
+        </div>
+      }
+    >
+      <button
+        type='button'
+        aria-label='Account menu'
+        className='flex items-center cursor-pointer rounded-full focus:outline-none focus:ring-2 focus:ring-primary'
+      >
+        <Image
+          src={user.image}
+          alt={user.name}
+          width={36}
+          height={36}
+          className='rounded-full border border-border-light'
+        />
+      </button>
+    </Popover>
+  )
+}
+
+function BoardsSection({ pathname }: Readonly<{ pathname: string | null }>) {
+  const { boards } = useBoardMemberships()
+  const [expanded, setExpanded] = useState(false)
+
+  if (boards.length === 0) return
+
+  return (
+    <div className='border-b border-border-light'>
+      <button
+        type='button'
+        onClick={() => setExpanded(prev => !prev)}
+        className='w-full flex items-center justify-between px-4 py-2 text-sm font-semibold text-text-primary hover:bg-hover cursor-pointer'
+      >
+        <span>Boards ({boards.length})</span>
+        <ChevronDown
+          size={16}
+          className={clsx('transition-transform', expanded && 'rotate-180')}
+        />
+      </button>
+      {expanded && (
+        <ul className='max-h-60 overflow-y-auto'>
+          {boards.map(({ boardId, boardName, role }) => {
+            const isCurrent = pathname === `/retro/${boardId}`
+            return (
+              <li key={boardId}>
+                <Link
+                  href={`/retro/${boardId}`}
+                  className='flex items-center gap-2 pl-4 pr-3 py-2 text-sm text-text-primary hover:bg-hover'
+                >
+                  <span
+                    aria-hidden
+                    className={clsx(
+                      'shrink-0 size-1.5 rounded-full',
+                      isCurrent ? 'bg-primary' : 'bg-transparent',
+                    )}
+                  />
+                  <span className='flex-1 truncate'>{boardName}</span>
+                  <BoardRoleBadge role={role} variant='simple' />
+                </Link>
+              </li>
+            )
+          })}
+        </ul>
+      )}
+    </div>
   )
 }

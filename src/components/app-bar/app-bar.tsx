@@ -4,7 +4,6 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { Sidebar, SidebarItem } from '../common'
 import { Auth } from './auth'
-import ColorModeToggle from './color-mode-toggle'
 
 const navLinks = [
   { href: '/', label: 'Home' },
@@ -76,11 +75,9 @@ export function AppBar() {
           ))}
         </nav>
       </div>
-      <div className='ml-auto mr-20'>
-        {' '}
-        <ColorModeToggle />
+      <div className='ml-auto'>
+        <Auth />
       </div>
-      <Auth />
     </div>
   )
 }
