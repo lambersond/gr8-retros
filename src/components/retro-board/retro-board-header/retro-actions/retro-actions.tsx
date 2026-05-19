@@ -7,12 +7,10 @@ import {
   Funnel,
   Hammer,
   Loader,
-  Settings,
   Sparkles,
 } from 'lucide-react'
 import { useRetroActions } from './use-retro-actions'
 import {
-  IconButton,
   Menu,
   Popover,
   type Option as MenuOption,
@@ -24,12 +22,10 @@ import {
   formatColumnDataForPDF,
 } from '@/components/pdf-views/utils'
 import { VotingState } from '@/enums'
-import { useAuth } from '@/hooks/use-auth'
 import { useModals } from '@/hooks/use-modals'
 import {
   useBoardPermissions,
   useBoardSettings,
-  useBoardSettingsActions,
 } from '@/providers/retro-board/board-settings'
 import {
   BoardCardsFilterOptions,
@@ -52,9 +48,7 @@ export function RetroActions({ id }: Readonly<{ id: string }>) {
   const { hasVotingResults } = useBoardControlsState(s => ({
     hasVotingResults: s.boardControls.voting.state === VotingState.CLOSED,
   }))
-  const { openSidebar } = useBoardSettingsActions()
   const { isClaimed, isAiSummaryEnabled } = useBoardSettings()
-  const { isAuthenticated } = useAuth()
   const { openModal } = useModals()
   const data = useBoardCards()
   const stats = calculateStatsForPDF(data)
@@ -66,7 +60,6 @@ export function RetroActions({ id }: Readonly<{ id: string }>) {
   const { user } = useBoardPermissions()
 
   const showFacilitatorActions = !isClaimed || user.hasFacilitator
-  const showSettingsButton = (isAuthenticated && !isClaimed) || user.hasMember
   const showFilterButton = hasVotingResults
 
   const handleExportReport = useCallback(() => {
@@ -229,6 +222,7 @@ export function RetroActions({ id }: Readonly<{ id: string }>) {
     <div className='flex gap-2 z-10'>
       {showFilterButton && (
         <Popover
+          asChild
           modal
           placement='bottom-start'
           content={
@@ -253,37 +247,52 @@ export function RetroActions({ id }: Readonly<{ id: string }>) {
             />
           }
         >
-          <IconButton icon={Funnel} intent='text-primary' size='lg' />
+          <LabeledTriggerButton label='Filters' icon={Funnel} />
         </Popover>
       )}
       <Popover
+        asChild
         modal
         placement='bottom-start'
         content={<Menu options={sortOptions} />}
       >
-        <IconButton
-          icon={ArrowDownWideNarrow}
-          intent='text-primary'
-          size='lg'
-        />
+        <LabeledTriggerButton label='Sorts' icon={ArrowDownWideNarrow} />
       </Popover>
       {showFacilitatorActions && (
         <Popover
+          asChild
           modal
           placement='bottom-start'
           content={<Menu options={hammerOptions} />}
         >
-          <IconButton icon={Hammer} intent='text-primary' size='lg' />
+          <LabeledTriggerButton label='Facilitator Actions' icon={Hammer} />
         </Popover>
       )}
-      {showSettingsButton && (
-        <IconButton
-          icon={Settings}
-          intent='text-primary'
-          size='lg'
-          onClick={openSidebar}
-        />
-      )}
     </div>
+  )
+}
+
+type LabeledTriggerButtonProps = {
+  label: string
+  icon: React.ElementType
+  onClick?: () => void
+}
+
+function LabeledTriggerButton({
+  label,
+  icon: Icon,
+  onClick,
+  ...rest
+}: Readonly<LabeledTriggerButtonProps>) {
+  return (
+    <button
+      type='button'
+      onClick={onClick}
+      className='flex items-center gap-1.5 px-2 py-1 rounded cursor-pointer text-text-primary hover:bg-text-primary/10'
+      {...rest}
+    >
+      <span className='hidden md:inline text-sm font-medium'>{label}</span>
+      <Icon className='size-5' />
+    </button>
   )
 }

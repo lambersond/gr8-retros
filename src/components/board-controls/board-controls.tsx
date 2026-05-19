@@ -62,7 +62,7 @@ export function BoardControls() {
 
   if (!shouldRender) return
   return (
-    <div className='w-full flex justify-center absolute top-2 left-0'>
+    <div className='flex justify-center'>
       <div className='relative py-1 px-2 bg-info/20 w-fit rounded-md flex items-center'>
         {settings.music.enabled && <AudioRefs />}
         <Popover

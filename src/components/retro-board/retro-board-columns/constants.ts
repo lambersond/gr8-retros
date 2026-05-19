@@ -2,7 +2,7 @@ import clsx from 'clsx'
 
 export const COLUMN_CONTAINER_CLASSES = clsx(
   'flex-1 min-h-0 overflow-hidden',
-  'flex gap-3 sm:gap-0 overflow-x-auto overflow-y-hidden snap-x snap-mandatory scroll-smooth py-3 [-webkit-overflow-scrolling:touch]',
+  'flex gap-3 sm:gap-0 overflow-x-auto overflow-y-hidden snap-x snap-mandatory scroll-smooth pt-1 pb-3 [-webkit-overflow-scrolling:touch]',
 )
 
 export const COLUMN_CLASSES = clsx(
