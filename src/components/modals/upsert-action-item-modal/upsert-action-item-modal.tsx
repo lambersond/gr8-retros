@@ -13,6 +13,9 @@ export function UpsertActionItemModal({
   onSubmit,
   onDelete,
   assignableUsers = [],
+  cardOptions,
+  defaultCardId,
+  cardSelectionLabel,
 }: Readonly<UpsertActionItemModalProps>) {
   const { closeModal, openModal } = useModals()
 
@@ -39,8 +42,19 @@ export function UpsertActionItemModal({
     ),
   }))
 
-  const handleSubmit = (content: string, assignedToId: string) => {
-    onSubmit({ content, assignedToId })
+  const formattedCardOptions = cardOptions?.map(card => ({
+    id: card.id,
+    value: card.id,
+    label: card.label,
+    searchText: card.label,
+  }))
+
+  const handleSubmit = (
+    content: string,
+    assignedToId: string,
+    cardId?: string,
+  ) => {
+    onSubmit({ content, assignedToId, cardId })
     onClose()
   }
 
@@ -69,6 +83,9 @@ export function UpsertActionItemModal({
         placeholder={placeholder}
         availableUsers={formatedAssignableUsers}
         defaultAssignedToId={assignedToId}
+        cardOptions={formattedCardOptions}
+        defaultCardId={defaultCardId}
+        cardSelectionLabel={cardSelectionLabel}
         showDelete={Boolean(onDelete)}
         onDelete={handleOnDelete}
       />

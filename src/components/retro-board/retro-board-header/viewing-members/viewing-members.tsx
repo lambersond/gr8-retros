@@ -111,6 +111,15 @@ export function ViewingMembers() {
                 >
                   Re-choose Facilitator
                 </button>
+                <button
+                  type='button'
+                  onClick={() =>
+                    updateBoardControls({ chosenFacilitatorId: undefined })
+                  }
+                  className='block w-full text-left px-3 py-1.5 text-sm text-danger hover:bg-hover cursor-pointer whitespace-nowrap'
+                >
+                  Clear Facilitator
+                </button>
               </div>
             }
           >

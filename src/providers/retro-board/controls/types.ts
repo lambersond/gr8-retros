@@ -58,6 +58,7 @@ export type RetroBoardControlsActions = {
   removeMyVote: (itemId: string) => void
   clearMyVotes: () => void
   submitVotes: () => Promise<void>
+  undoVoteSubmission: () => void
 
   // Voting - board-level
   openVoting: () => void

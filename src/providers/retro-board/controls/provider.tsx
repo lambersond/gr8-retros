@@ -466,6 +466,20 @@ export function RetroBoardControlsProvider({
     patchVoting({ state: VotingState.IDLE, results: {}, collectedVotes: {} })
   }, [clearMyVotes, patchVoting])
 
+  const undoVoteSubmission = useCallback(() => {
+    if (boardControls.voting.state !== VotingState.OPEN) return
+    const { [userId]: _omit, ...remaining } =
+      boardControls.voting.collectedVotes
+    patchVoting({ collectedVotes: remaining })
+    clearMyVotes()
+  }, [
+    boardControls.voting.state,
+    boardControls.voting.collectedVotes,
+    userId,
+    patchVoting,
+    clearMyVotes,
+  ])
+
   const setVotingMode = useCallback(
     (mode: VotingMode) => {
       if (boardControls.voting.state === VotingState.OPEN) return
@@ -531,6 +545,7 @@ export function RetroBoardControlsProvider({
       removeMyVote,
       clearMyVotes,
       submitVotes,
+      undoVoteSubmission,
       openVoting,
       closeVoting,
       resetVoting,
@@ -583,6 +598,7 @@ export function RetroBoardControlsProvider({
       removeMyVote,
       clearMyVotes,
       submitVotes,
+      undoVoteSubmission,
       openVoting,
       closeVoting,
       resetVoting,
@@ -602,6 +618,7 @@ export function RetroBoardControlsProvider({
     removeMyVote,
     clearMyVotes,
     submitVotes,
+    undoVoteSubmission,
     openVoting,
     closeVoting,
     resetVoting,

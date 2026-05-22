@@ -2,14 +2,24 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useChannel } from 'ably/react'
-import { CircleCheckBig, LogOut, SkipForward } from 'lucide-react'
+import {
+  CircleCheckBig,
+  LogOut,
+  MessageSquare,
+  MessageSquareWarning,
+  SkipForward,
+} from 'lucide-react'
 import { useParams } from 'next/navigation'
 import { useTheme } from 'next-themes'
 import { ExitingOverlay } from './exiting-overlay'
 import { StackPeekLayers } from './stack-peek-layers'
 import { TopCard } from './top-card'
 import { getItemId, isItemDiscussed, sortItems } from './utils'
+import { VotingState } from '@/enums'
 import { useAuth } from '@/hooks/use-auth'
+import { useModals } from '@/hooks/use-modals'
+import { useCommentsSidebarActions } from '@/providers/comments-sidebar'
+import { useBoardMembers } from '@/providers/retro-board/board-settings'
 import {
   useBoardCards,
   BoardCardsMessageType,
@@ -30,21 +40,40 @@ export function FacilitatorView() {
   const { publish } = useChannel(id)
   const { resolvedTheme } = useTheme()
   const isDark = resolvedTheme === 'dark'
-  const [exitingItem, setExitingItem] = useState<FacilitatorItem>()
-  const skippedIdsArray = useBoardControlsState(
-    s => s.boardControls.facilitatorMode.skippedIds ?? [],
+  const { openModal } = useModals()
+  const { openSidebar, openGroupSidebar } = useCommentsSidebarActions()
+  const boardMembers = useBoardMembers()
+  const assignableUsers = useMemo(
+    () => boardMembers.map(member => member.user),
+    [boardMembers],
   )
-  const { updateBoardControls, toggleFacilitatorMode, resetVoting } =
-    useBoardControlsActions(a => ({
-      updateBoardControls: a.updateBoardControls,
-      toggleFacilitatorMode: a.toggleFacilitatorMode,
-      resetVoting: a.resetVoting,
-    }))
+  const [exitingItem, setExitingItem] = useState<FacilitatorItem>()
+  const { skippedIdsArray, votingObject } = useBoardControlsState(s => ({
+    skippedIdsArray: s.boardControls.facilitatorMode.skippedIds ?? [],
+    votingObject: s.boardControls.voting,
+  }))
+  const { updateBoardControls, clearMyVotes } = useBoardControlsActions(a => ({
+    updateBoardControls: a.updateBoardControls,
+    clearMyVotes: a.clearMyVotes,
+  }))
 
+  // Atomically end facilitation: a single board-control update prevents the
+  // sequential resetVoting + toggleFacilitatorMode pair from racing inside
+  // Ably (each was reading stale state via compact() and republishing,
+  // tripping the channel rate limit).
   const handleEndFacilitation = useCallback(() => {
-    resetVoting()
-    toggleFacilitatorMode()
-  }, [resetVoting, toggleFacilitatorMode])
+    clearMyVotes()
+    updateBoardControls({
+      voting: {
+        ...votingObject,
+        state: VotingState.IDLE,
+        results: {},
+        collectedVotes: {},
+      },
+      facilitatorMode: { isActive: false, skippedIds: [] },
+      chosenFacilitatorId: undefined,
+    })
+  }, [clearMyVotes, updateBoardControls, votingObject])
   const prevTopIdRef = useRef<string | undefined>(undefined)
 
   const columnMap = useMemo(() => {
@@ -134,6 +163,79 @@ export function FacilitatorView() {
     )
   }, [topItem, publish])
 
+  const handleAddActionItem = useCallback(() => {
+    if (!topItem) return
+
+    const sharedSubmit =
+      (targetCardId: string) =>
+      async (data: { content: string; assignedToId?: string }) => {
+        const resp = await fetch(
+          `/api/board/${id}/card/${targetCardId}/action-item`,
+          {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
+            body: JSON.stringify(data),
+          },
+        )
+        if (resp.ok) {
+          const newActionItem = await resp.json()
+          publish({
+            data: {
+              type: BoardCardsMessageType.ADD_ACTION_ITEM,
+              payload: { cardId: targetCardId, actionItem: newActionItem },
+            },
+          })
+        }
+      }
+
+    if (topItem.kind === 'card') {
+      openModal('UpsertActionItemModal', {
+        assignableUsers,
+        title: 'Add Action Item',
+        placeholder: 'Hupperduke will email client getting clarity on...',
+        onSubmit: sharedSubmit(topItem.data.id),
+      })
+      return
+    }
+
+    const groupCards = topItem.data.cardIds
+      .map(cardId => boardCards.cards[cardId])
+      .filter(Boolean)
+    const cardOptions = groupCards.map(card => ({
+      id: card.id,
+      label: card.content,
+    }))
+
+    openModal('UpsertActionItemModal', {
+      assignableUsers,
+      title: 'Add Action Item',
+      placeholder: 'Hupperduke will email client getting clarity on...',
+      cardOptions,
+      cardSelectionLabel: 'Assign to card',
+      onSubmit: (data: {
+        content: string
+        assignedToId?: string
+        cardId?: string
+      }) => {
+        if (!data.cardId) return
+        sharedSubmit(data.cardId)({
+          content: data.content,
+          assignedToId: data.assignedToId,
+        })
+      },
+    })
+  }, [topItem, openModal, assignableUsers, id, publish, boardCards.cards])
+
+  const handleViewComments = useCallback(() => {
+    if (!topItem) return
+    if (topItem.kind === 'card') {
+      openSidebar(topItem.data.id, id)
+    } else {
+      openGroupSidebar(topItem.data.id, id)
+    }
+  }, [topItem, openSidebar, openGroupSidebar, id])
+
   const handleSkip = useCallback(() => {
     if (!topItem) return
     const itemId = getItemId(topItem)
@@ -162,13 +264,27 @@ export function FacilitatorView() {
         )}
         {topItem && (
           <>
-            <div className='mb-3 mx-auto flex items-center justify-center gap-2'>
+            <div className='mb-3 mx-auto flex items-center justify-center gap-2 flex-wrap'>
               <button
                 onClick={handleMarkDiscussed}
                 className='flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-medium text-text-secondary border border-border-light hover:bg-hover transition-colors cursor-pointer'
               >
                 <CircleCheckBig className='size-3.5' />
                 Mark Discussed
+              </button>
+              <button
+                onClick={handleAddActionItem}
+                className='flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-medium text-text-secondary border border-border-light hover:bg-hover transition-colors cursor-pointer'
+              >
+                <MessageSquareWarning className='size-3.5' />
+                Add Action Item
+              </button>
+              <button
+                onClick={handleViewComments}
+                className='flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-medium text-text-secondary border border-border-light hover:bg-hover transition-colors cursor-pointer'
+              >
+                <MessageSquare className='size-3.5' />
+                View Comments
               </button>
               <button
                 onClick={handleSkip}

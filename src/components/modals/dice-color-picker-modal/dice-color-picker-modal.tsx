@@ -21,7 +21,7 @@ export function DiceColorPickerModal({
 
   const onClose = () => {
     closeModal('DiceColorPickerModal')
-    if (!selectedColor) onDnr?.()
+    onDnr?.()
   }
 
   const handleRoll = () => {

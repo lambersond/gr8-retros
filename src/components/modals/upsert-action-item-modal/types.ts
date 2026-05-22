@@ -12,9 +12,13 @@ export interface UpsertActionItemModalProps extends ModalProps {
   title?: string
   onDelete?(): void
   onSubmit: (data: ActionItemSubmissionData) => void
+  cardOptions?: { id: string; label: string }[]
+  defaultCardId?: string
+  cardSelectionLabel?: string
 }
 
 type ActionItemSubmissionData = {
   content: string
   assignedToId?: string
+  cardId?: string
 }

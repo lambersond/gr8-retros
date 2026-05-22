@@ -8,6 +8,7 @@ export const upsertActionItemSchema = z.object({
     .max(255, 'Content cannot exceed 255 characters')
     .optional(),
   assignedToId: z.string().optional(),
+  cardId: z.string().optional(),
 })
 
 export type UpsertActionItemFields = z.infer<typeof upsertActionItemSchema>
