@@ -1,7 +1,7 @@
 'use client'
 
 import { useEffect, useMemo, useRef } from 'react'
-import { Play } from 'lucide-react'
+import { Eraser, Play } from 'lucide-react'
 import { Tooltip } from '@/components/common'
 import { VotingState } from '@/enums'
 import { useAuth } from '@/hooks/use-auth'
@@ -105,8 +105,9 @@ export function PhaseIndicators() {
             <button
               type='button'
               onClick={undoVoteSubmission}
-              className='px-2 py-0.5 text-xs font-medium rounded-full border bg-danger/10 text-danger border-danger/30 hover:bg-danger/20 cursor-pointer'
+              className='flex items-center gap-1 px-2 py-0.5 text-xs font-medium rounded-full border bg-danger/10 text-danger border-danger/30 hover:bg-danger/20 cursor-pointer'
             >
+              <Eraser size={12} />
               Reset My Votes
             </button>
           </Tooltip>
