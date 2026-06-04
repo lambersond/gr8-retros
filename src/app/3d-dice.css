@@ -1,8 +1,0 @@
-#dice-canvas-threejs {
-  opacity: 0;
-  transition: opacity 0.5s ease-out;
-}
-
-#dice-canvas-threejs.show-dice {
-  opacity: 1;
-}

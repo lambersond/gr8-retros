@@ -1,6 +1,5 @@
 @import "tailwindcss";
 @import "./music.css";
-@import "./3d-dice.css";
 
 @plugin 'tailwind-scrollbar' {
     nocompatible: true;

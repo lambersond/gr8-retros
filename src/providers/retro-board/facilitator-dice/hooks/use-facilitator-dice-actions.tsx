@@ -1,4 +1,5 @@
 import { useCallback } from 'react'
+import { executeRoll, toDiceBoxNotation } from '@lambersond/3d-dice-core'
 import { useAbly, useChannel } from 'ably/react'
 import { useParams } from 'next/navigation'
 import { FacilitatorDiceMessageType } from '../enums'
@@ -54,8 +55,15 @@ export function useFacilitatorDiceActions() {
 
   const submitRoll = useCallback(
     async (color: string) => {
-      const results = await roll('1d20', { themeColor: color })
-      const result = results[0] ?? 1
+      // Deterministic roll: decide the value up front with an RNG (guaranteed
+      // and instant) so the dice log always populates and every client syncs to
+      // the same number — then animate the die to that forced landing. The
+      // result never depends on the physics settling.
+      const rolled = executeRoll({
+        pools: [{ sides: 20, count: 1 }],
+        modifier: 0,
+      })
+      const result = rolled.total
 
       dispatch({
         type: FacilitatorDiceMessageType.DICE_ROLL_RESULT,
@@ -75,6 +83,8 @@ export function useFacilitatorDiceActions() {
           },
         },
       })
+
+      await roll(toDiceBoxNotation(rolled), { themeColor: color })
     },
     [user.id, roll, dispatch, publish, ably.connection.id],
   )
