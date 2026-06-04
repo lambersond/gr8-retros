@@ -4,16 +4,13 @@ import { COOKIE_KEY_RETRO_TIPS_ACK } from '@/constants/cookies'
 import { useModals } from '@/hooks/use-modals'
 import type { GoodRetroModalProps } from './types'
 
-export function GoodRetroModal({
-  open = true,
-  isAuthenticated,
-}: Readonly<GoodRetroModalProps>) {
+export function GoodRetroModal({ open = true }: Readonly<GoodRetroModalProps>) {
   const { closeModal } = useModals()
 
   const onClose = () => {
-    if (isAuthenticated) {
-      Cookies.set(COOKIE_KEY_RETRO_TIPS_ACK, 'true', { expires: 28 })
-    }
+    // Persist the acknowledgement for everyone (authenticated or guest) so the
+    // tips don't reappear for 28 days.
+    Cookies.set(COOKIE_KEY_RETRO_TIPS_ACK, 'true', { expires: 28 })
     closeModal('GoodRetroModal')
   }
 

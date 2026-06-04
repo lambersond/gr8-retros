@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import Cookies from 'js-cookie'
 import { useSearchParams } from 'next/navigation'
 import { BoardSettingsSidebar } from '../board-settings-sidebar'
@@ -27,16 +27,17 @@ export function RetroBoard({ board }: Readonly<{ board: Board }>) {
   const shouldShowGate =
     status === 'unauthenticated' && !isAuthenticated && !continueAnyway
 
+  // Show the retro tips at most once per mount, and never once acknowledged
+  // (the cookie is set on close for everyone). The ref guard keeps incidental
+  // re-renders — session refetch, window focus — from re-opening it.
+  const hasPromptedTipsRef = useRef(false)
   useEffect(() => {
-    if (shouldShowGate) return
-    if (isAuthenticated && !Cookies.get(COOKIE_KEY_RETRO_TIPS_ACK)) {
-      openModal('GoodRetroModal', { isAuthenticated })
-    } else if (isAuthenticated && Cookies.get(COOKIE_KEY_RETRO_TIPS_ACK)) {
-      return
-    } else {
-      openModal('GoodRetroModal', { isAuthenticated: false })
-    }
-  }, [status, isAuthenticated, continueAnyway, openModal])
+    if (shouldShowGate || status === 'loading') return
+    if (hasPromptedTipsRef.current) return
+    if (Cookies.get(COOKIE_KEY_RETRO_TIPS_ACK)) return
+    hasPromptedTipsRef.current = true
+    openModal('GoodRetroModal', {})
+  }, [shouldShowGate, status, openModal])
 
   if (status === 'loading') {
     return <div className='h-full w-screen' />
