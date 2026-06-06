@@ -4,6 +4,7 @@ import * as repository from './board-repository'
 import { BoardRole } from '@/enums'
 import { getSessionUserIdOrCookie } from '@/lib/auth-handlers'
 import { hasMinimumRole } from '@/lib/roles'
+import { boardAccessRequestService } from '@/server/board-access-request'
 import { userService } from '@/server/user'
 import type { CreateBoardProps } from './types'
 
@@ -21,9 +22,21 @@ export async function getBoardById(id: string) {
       board.settings?.members.some(member => member?.user.id === userId)
 
     if (!isMember) {
+      const requestStatus =
+        await boardAccessRequestService.getUserRequestStatus(
+          userId,
+          board.settings.id,
+        )
+
       return {
         authorized: false,
         board: undefined,
+        access: {
+          settingsId: board.settings.id,
+          boardId: id,
+          boardName: board.name ?? id,
+          requestStatus,
+        },
       }
     }
   }

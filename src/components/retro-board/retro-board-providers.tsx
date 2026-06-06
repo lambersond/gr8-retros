@@ -1,5 +1,6 @@
 import { MessageOrchestrator } from '../message-orchestrator'
 import { CommentsSidebarProvider } from '@/providers/comments-sidebar'
+import { BoardAccessRequestsProvider } from '@/providers/retro-board/board-access-requests'
 import { BoardSettingsProvider } from '@/providers/retro-board/board-settings'
 import { BoardCardsProvider } from '@/providers/retro-board/cards'
 import { BoardColumnsProvider } from '@/providers/retro-board/columns'
@@ -29,9 +30,11 @@ export function RetroBoardProviders({
               <SessionStatsProvider boardId={board.id}>
                 <CommentsSidebarProvider boardId={board.id}>
                   <FacilitatorDiceProvider>
-                    <MessageOrchestrator boardId={board.id}>
-                      {children}
-                    </MessageOrchestrator>
+                    <BoardAccessRequestsProvider settingsId={board.settings.id}>
+                      <MessageOrchestrator boardId={board.id}>
+                        {children}
+                      </MessageOrchestrator>
+                    </BoardAccessRequestsProvider>
                   </FacilitatorDiceProvider>
                 </CommentsSidebarProvider>
               </SessionStatsProvider>

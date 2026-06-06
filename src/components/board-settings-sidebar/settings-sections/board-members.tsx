@@ -2,6 +2,7 @@ import { useMemo } from 'react'
 import { ChevronRight, Users } from 'lucide-react'
 import { useAuth } from '@/hooks/use-auth'
 import { useModals } from '@/hooks/use-modals'
+import { useBoardAccessRequests } from '@/providers/retro-board/board-access-requests'
 import {
   useBoardMembers,
   useBoardPermissions,
@@ -15,12 +16,15 @@ export function BoardMembers() {
   const { viewingMembers } = useViewingMembers()
   const {
     canClaimBoard,
-    user: { hasAdmin },
+    user: { hasAdmin, hasFacilitator },
   } = useBoardPermissions()
+  const { pending, declined } = useBoardAccessRequests()
   const { openModal } = useModals()
   const {
     user: { id: currentUserId },
   } = useAuth()
+
+  const pendingCount = hasFacilitator ? pending.length : 0
 
   const availableMembers = useMemo(() => {
     const result = []
@@ -44,6 +48,9 @@ export function BoardMembers() {
       settingsId: id,
       hasEdit: hasAdmin,
       enableAdminElection: boardTier !== 'FREE',
+      canManageRequests: hasFacilitator,
+      pendingRequests: pending,
+      declinedRequests: declined,
     })
   }
 
@@ -52,12 +59,17 @@ export function BoardMembers() {
   return (
     <button
       onClick={handleOpenManageUsersModal}
-      disabled={members.length === 0}
+      disabled={members.length === 0 && pendingCount === 0}
       className='group w-full flex items-center justify-between px-4 py-3 bg-paper border border-border-light hover:border-primary rounded-lg transition-colors cursor-pointer'
     >
       <div className='flex items-center gap-2'>
         <Users className='size-5 text-primary' />
         <span className='font-medium text-text-primary'>Board Members</span>
+        {pendingCount > 0 && (
+          <span className='text-xs font-semibold text-warning bg-warning/10 border border-warning/30 rounded-full px-2 py-0.5'>
+            {pendingCount} pending
+          </span>
+        )}
       </div>
       <div className='flex items-center gap-2'>
         <span className='text-sm text-text-secondary'>{members.length}</span>

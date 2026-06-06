@@ -1,4 +1,5 @@
 import { useChannel } from 'ably/react'
+import { useBoardAccessRequestsMessageHandlers } from '@/providers/retro-board/board-access-requests'
 import { useBoardSettingsMessageHandlers } from '@/providers/retro-board/board-settings'
 import { useBoardCardsMessageHandlers } from '@/providers/retro-board/cards'
 import { useBoardColumnsMessageHandlers } from '@/providers/retro-board/columns'
@@ -10,12 +11,14 @@ export function useMessageOrchestrator(channelId: string) {
   const cardsMessageHandlers = useBoardCardsMessageHandlers()
   const columnsMessageHandlers = useBoardColumnsMessageHandlers()
   const diceMessageHandlers = useFacilitatorDiceMessageHandlers()
+  const accessRequestsMessageHandlers = useBoardAccessRequestsMessageHandlers()
 
   const handlers = {
     ...settingsMessageHandlers,
     ...cardsMessageHandlers,
     ...columnsMessageHandlers,
     ...diceMessageHandlers,
+    ...accessRequestsMessageHandlers,
   }
 
   const onMessage = (msg: unknown) => {

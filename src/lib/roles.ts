@@ -8,6 +8,7 @@ export type PermissionKey =
   | 'private.copyLink'
   | 'private.revokeLink'
   | 'private.manageUsers'
+  | 'private.manageRequests'
   | 'actionItems.anytime'
   | 'actionItems.restricted'
   | 'actionItems'
@@ -97,6 +98,7 @@ const PERMISSIONS_MAP: Record<PermissionKey, BoardRole> &
   'private.copyLink': BoardRole.FACILITATOR,
   'private.revokeLink': BoardRole.FACILITATOR,
   'private.manageUsers': BoardRole.ADMIN,
+  'private.manageRequests': BoardRole.FACILITATOR,
   comments: BoardRole.ADMIN,
   'comments.anytime': BoardRole.FACILITATOR,
   'comments.restricted': BoardRole.FACILITATOR,

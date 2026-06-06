@@ -47,6 +47,9 @@ export function RetroBoard({ board }: Readonly<{ board: Board }>) {
     return (
       <SignInGate
         isPrivate={board.settings.isPrivate}
+        guestAccessEnabled={
+          !board.settings.isPrivate || board.settings.privateOpenAccess
+        }
         onContinueAsGuest={() => setContinueAnyway(true)}
       />
     )

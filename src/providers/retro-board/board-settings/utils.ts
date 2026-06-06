@@ -232,6 +232,10 @@ function getStaticBoardPermissions(userRole: BoardRole) {
     'private.copyLink': userHasPermission('private.copyLink', userRole),
     'private.revokeLink': userHasPermission('private.revokeLink', userRole),
     'private.manageUsers': userHasPermission('private.manageUsers', userRole),
+    'private.manageRequests': userHasPermission(
+      'private.manageRequests',
+      userRole,
+    ),
     'private.retention.cards': userHasPermission(
       'private.retention.cards',
       userRole,

@@ -19,6 +19,14 @@ export interface MyBoardsProps {
       }
     }[]
   } | null>
+  myPendingRequests: Promise<
+    {
+      settings: {
+        retroSessionId: string
+        retroSession: { name: string | null }
+      }
+    }[]
+  >
 }
 export interface NewBoardButtonProps {
   boardLimit: number

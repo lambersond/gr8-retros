@@ -1,3 +1,4 @@
+import { RequestAccessScreen } from './request-access-screen'
 import { RetroBoard } from './retro-board'
 import { auth } from '@/auth'
 import { boardService } from '@/server/board'
@@ -5,15 +6,20 @@ import { boardService } from '@/server/board'
 export async function RetroBoardContainer({ id }: Readonly<{ id: string }>) {
   const boardData = boardService.getBoardById(id)
 
-  await auth()
+  const session = await auth()
 
-  const { board } = await boardData
+  const { board, access } = await boardData
 
   if (!board) {
+    if (!access) {
+      return (
+        <p className='flex flex-col w-screen justify-center items-center h-full p-3 text-4xl'>
+          This board is private.
+        </p>
+      )
+    }
     return (
-      <p className='flex flex-col w-screen justify-center items-center h-full p-3 text-4xl'>
-        This board is private.
-      </p>
+      <RequestAccessScreen access={access} isAuthenticated={!!session?.user} />
     )
   }
 

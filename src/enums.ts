@@ -1,4 +1,9 @@
-export { BoardRole, PaymentTier, VotingMode } from '@prisma/client'
+export {
+  BoardRole,
+  PaymentTier,
+  VotingMode,
+  AccessRequestStatus,
+} from '@prisma/client'
 
 export enum SidebarActions {
   OPEN_SIDEBAR = 'OPEN_SIDEBAR',

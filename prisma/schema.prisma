@@ -32,6 +32,11 @@ enum VotingMode {
   MULTI
 }
 
+enum AccessRequestStatus {
+  PENDING
+  REJECTED
+}
+
 // -----------------------
 // User model
 // -----------------------
@@ -52,6 +57,7 @@ model User {
   sessions        Session[]
   actionItems     ActionItem[]
   boards          BoardMember[]
+  accessRequests  BoardAccessRequest[]
 
   createdAt    DateTime      @default(now())
   updatedAt    DateTime      @updatedAt
@@ -175,6 +181,7 @@ model BoardSettings {
   retroSessionId        String       @unique
   retroSession          RetroSession @relation(fields: [retroSessionId], references: [id], onDelete: Cascade)
   members               BoardMember[]
+  accessRequests        BoardAccessRequest[]
 
   invite                BoardInvite?
 
@@ -307,6 +314,22 @@ model BoardMember {
 
   role           BoardRole @default(MEMBER)
   permissionMask BigInt    @default(0)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@id([userId, settingsId])
+  @@index([settingsId])
+}
+
+model BoardAccessRequest {
+  userId     String
+  settingsId String
+
+  user     User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  settings BoardSettings @relation(fields: [settingsId], references: [id], onDelete: Cascade)
+
+  status AccessRequestStatus @default(PENDING)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

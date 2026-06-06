@@ -1,6 +1,13 @@
 import { Suspense } from 'react'
 import { auth } from '@/auth'
-import { MyActionItems, MyBoards, MyInfo } from '@/components/pages/me'
+import {
+  AccessRequestsToReview,
+  MeAccessRequestRefresher,
+  MyActionItems,
+  MyBoards,
+  MyInfo,
+} from '@/components/pages/me'
+import { boardAccessRequestService } from '@/server/board-access-request'
 import { userService } from '@/server/user'
 
 export default async function Me() {
@@ -21,20 +28,34 @@ export default async function Me() {
   const userInfo = userService.getUserInfo(session.user.id)
   const userBoards = userService.getUserBoards(session.user.id)
   const userActionItems = userService.getUserActionItems(session.user.id)
+  const actionableRequests = boardAccessRequestService.getActionableRequests(
+    session.user.id,
+  )
+  const pendingRequests = boardAccessRequestService.getUserPendingRequests(
+    session.user.id,
+  )
 
   return (
     <div className='max-h-[calc(100vh_-_--spacing(23))] min-h-[calc(100vh_-_--spacing(23))] text-text-primary bg-page overflow-y-auto'>
       <div className='relative max-w-[1440px] mx-auto px-4 py-14 flex flex-col gap-5'>
+        <MeAccessRequestRefresher userId={session.user.id} />
         <Suspense fallback={<Skeleton />}>
           <MyInfo myInfo={userInfo} />
         </Suspense>
         <div className='flex flex-col lg:flex-row gap-5'>
           <div className='lg:flex-[1]'>
             <Suspense fallback={<Skeleton />}>
-              <MyBoards myBoards={userBoards} userInfo={userInfo} />
+              <MyBoards
+                myBoards={userBoards}
+                userInfo={userInfo}
+                myPendingRequests={pendingRequests}
+              />
             </Suspense>
           </div>
-          <div className='lg:flex-[2]'>
+          <div className='lg:flex-[2] flex flex-col gap-5'>
+            <Suspense fallback={<></>}>
+              <AccessRequestsToReview requests={actionableRequests} />
+            </Suspense>
             <Suspense fallback={<Skeleton />}>
               <MyActionItems myActionItems={userActionItems} />
             </Suspense>

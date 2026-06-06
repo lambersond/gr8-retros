@@ -6,6 +6,7 @@ import { RetroActions } from './retro-actions'
 import { ViewingMembers } from './viewing-members'
 import { BoardControls } from '@/components/board-controls'
 import { useAuth } from '@/hooks/use-auth'
+import { useBoardAccessRequests } from '@/providers/retro-board/board-access-requests'
 import {
   useBoardPermissions,
   useBoardSettings,
@@ -51,20 +52,28 @@ function BoardSettingsButton() {
   const { isClaimed } = useBoardSettings()
   const { isAuthenticated } = useAuth()
   const { user } = useBoardPermissions()
+  const { pending } = useBoardAccessRequests()
 
   const showSettingsButton = (isAuthenticated && !isClaimed) || user.hasMember
   if (!showSettingsButton) return
+
+  const pendingCount = user.hasFacilitator ? pending.length : 0
 
   return (
     <button
       type='button'
       onClick={openSidebar}
-      className='flex items-center gap-1.5 px-2 py-1 rounded cursor-pointer text-text-primary hover:bg-text-primary/10'
+      className='relative flex items-center gap-1.5 px-2 py-1 rounded cursor-pointer text-text-primary hover:bg-text-primary/10'
     >
       <span className='hidden md:inline text-sm font-medium'>
         Board Settings
       </span>
       <Settings className='size-5' />
+      {pendingCount > 0 && (
+        <span className='absolute -top-1 -right-1 min-w-4 h-4 px-1 flex items-center justify-center rounded-full bg-warning text-white text-[10px] font-semibold'>
+          {pendingCount}
+        </span>
+      )}
     </button>
   )
 }
