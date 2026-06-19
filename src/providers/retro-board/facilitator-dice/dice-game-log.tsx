@@ -4,22 +4,21 @@ import { useEffect, useMemo, useRef } from 'react'
 import { Loader, Trophy, X } from 'lucide-react'
 import { D20Icon } from '@/components/common/icons'
 import { useAuth } from '@/hooks/use-auth'
-import { useModals } from '@/hooks/use-modals'
 import { useBoardControlsActions } from '@/providers/retro-board/controls'
 import {
   FacilitatorDiceInternalAction,
-  useFacilitatorDiceActions,
+  isSessionComplete,
   useFacilitatorDiceDispatch,
   useFacilitatorDiceState,
+  useRerollSelf,
   type DiceParticipant,
 } from '@/providers/retro-board/facilitator-dice'
 
 export function DiceGameLog() {
   const { activeSession } = useFacilitatorDiceState()
   const dispatch = useFacilitatorDiceDispatch()
-  const { submitRoll, submitDnr } = useFacilitatorDiceActions()
+  const rerollSelf = useRerollSelf()
   const { user } = useAuth()
-  const { openModal } = useModals()
 
   const participants = useMemo(() => {
     if (!activeSession) return []
@@ -39,8 +38,7 @@ export function DiceGameLog() {
     const noResult: RollResult = { isComplete: false, winner: undefined }
     if (!activeSession || participants.length === 0) return noResult
 
-    const allResolved = participants.every(p => p.result !== undefined || p.dnr)
-    if (!allResolved) return noResult
+    if (!isSessionComplete(activeSession)) return noResult
 
     let best: DiceParticipant | undefined
     for (const p of participants) {
@@ -66,14 +64,6 @@ export function DiceGameLog() {
     dispatch({ type: FacilitatorDiceInternalAction.CLEAR_SESSION })
   }
 
-  const handleReroll = () => {
-    dispatch({
-      type: FacilitatorDiceInternalAction.CLEAR_DNR,
-      clientId: user.id,
-    })
-    openModal('DiceColorPickerModal', { submitRoll, onDnr: submitDnr })
-  }
-
   return (
     <div className='fixed bottom-4 right-4 z-[1100] w-72 rounded-xl border border-border-light bg-paper shadow-lg'>
       <div className='flex items-center justify-between border-b border-border-light px-4 py-3'>
@@ -97,7 +87,7 @@ export function DiceGameLog() {
               {p.dnr && p.clientId === user.id && (
                 <button
                   type='button'
-                  onClick={handleReroll}
+                  onClick={rerollSelf}
                   className='group cursor-pointer flex-shrink-0 text-text-secondary hover:text-primary'
                   title='Reroll'
                 >

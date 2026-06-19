@@ -6,6 +6,7 @@ export {
 export {
   useFacilitatorDiceActions,
   useFacilitatorDiceMessageHandlers,
+  useRerollSelf,
 } from './hooks'
 export {
   FacilitatorDiceMessageType,
@@ -16,3 +17,4 @@ export type {
   DiceSession,
   FacilitatorDiceState,
 } from './types'
+export { isParticipantResolved, isSessionComplete } from './utils'

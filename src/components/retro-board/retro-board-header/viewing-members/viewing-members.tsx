@@ -6,6 +6,7 @@ import Image from 'next/image'
 import { Popover, Tooltip } from '@/components/common'
 import { D20Icon } from '@/components/common/icons'
 import { BoardRole } from '@/enums'
+import { useAuth } from '@/hooks/use-auth'
 import { useModals } from '@/hooks/use-modals'
 import { hasMinimumRole } from '@/lib/roles'
 import {
@@ -16,7 +17,12 @@ import {
   useBoardControlsActions,
   useBoardControlsState,
 } from '@/providers/retro-board/controls'
-import { useFacilitatorDiceActions } from '@/providers/retro-board/facilitator-dice'
+import {
+  isSessionComplete,
+  useFacilitatorDiceActions,
+  useFacilitatorDiceState,
+  useRerollSelf,
+} from '@/providers/retro-board/facilitator-dice'
 import { useViewingMembers } from '@/providers/viewing-members'
 
 export function ViewingMembers() {
@@ -29,11 +35,24 @@ export function ViewingMembers() {
   )
   const { settings, isClaimed } = useBoardSettings()
   const { user } = useBoardPermissions()
+  const { user: authUser } = useAuth()
   const { openModal } = useModals()
   const { startSession, submitRoll, submitDnr } = useFacilitatorDiceActions()
+  const { activeSession } = useFacilitatorDiceState()
+  const rerollSelf = useRerollSelf()
 
   const isFacilitatorModeEnabled = settings.facilitatorMode.enabled
   const canManageFacilitator = !isClaimed || user.hasFacilitator
+
+  // A roll is "underway" once a session exists but isn't fully resolved. While
+  // underway, the Roll action rerolls only the current user (joins the existing
+  // roll) instead of restarting for everyone; restarting requires dismissing it.
+  const rollInProgress = !!activeSession && !isSessionComplete(activeSession)
+  const myParticipant = activeSession?.participants[authUser.id]
+  const canRoll = rollInProgress
+    ? !!myParticipant && myParticipant.result === undefined
+    : true
+  const rollLabel = rollInProgress ? 'Reroll my die' : 'Roll for Facilitator'
 
   const facilitatorEntry =
     chosenFacilitatorId && viewingMembers[chosenFacilitatorId]
@@ -57,10 +76,16 @@ export function ViewingMembers() {
       }))
     openModal('ChooseFacilitatorModal', {
       candidates,
+      rollDisabled: !canRoll,
+      rollLabel,
       onSelect: clientId => {
         updateBoardControls({ chosenFacilitatorId: clientId })
       },
       onRoll: () => {
+        if (rollInProgress) {
+          rerollSelf()
+          return
+        }
         startSession()
         openModal('DiceColorPickerModal', { submitRoll, onDnr: submitDnr })
       },
@@ -72,6 +97,10 @@ export function ViewingMembers() {
     startSession,
     submitRoll,
     submitDnr,
+    rollInProgress,
+    rerollSelf,
+    canRoll,
+    rollLabel,
   ])
 
   const otherEntries = Object.entries(viewingMembers).filter(

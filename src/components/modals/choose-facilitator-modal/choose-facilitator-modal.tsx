@@ -12,6 +12,8 @@ export function ChooseFacilitatorModal({
   onSelect,
   onRoll,
   candidates = [],
+  rollDisabled = false,
+  rollLabel = 'Roll for Facilitator',
 }: Readonly<ChooseFacilitatorModalProps>) {
   const { closeModal } = useModals()
   const [selectedId, setSelectedId] = useState<string | undefined>()
@@ -87,14 +89,15 @@ export function ChooseFacilitatorModal({
 
         <button
           onClick={handleRoll}
-          className='group flex items-center justify-center gap-2 border border-secondary py-2 px-4 hover:border-primary rounded-xl text-lg text-secondary uppercase text-center font-bold cursor-pointer'
+          disabled={rollDisabled}
+          className='group flex items-center justify-center gap-2 border border-secondary py-2 px-4 hover:border-primary rounded-xl text-lg text-secondary uppercase text-center font-bold cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:border-secondary'
         >
           <D20Icon
             height={20}
             width={20}
             className='transition-transform duration-700 ease-in-out group-hover:rotate-[360deg]'
           />
-          Roll for Facilitator
+          {rollLabel}
         </button>
       </div>
     </Modal>
