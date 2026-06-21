@@ -1,4 +1,6 @@
+import { DiceRendererProvider } from '@lambersond/3d-dice-react'
 import { MessageOrchestrator } from '../message-orchestrator'
+import { RENDERER_CONFIG } from '@/hooks/dice'
 import { CommentsSidebarProvider } from '@/providers/comments-sidebar'
 import { BoardAccessRequestsProvider } from '@/providers/retro-board/board-access-requests'
 import { BoardSettingsProvider } from '@/providers/retro-board/board-settings'
@@ -29,13 +31,17 @@ export function RetroBoardProviders({
             <BoardCardsProvider board={board}>
               <SessionStatsProvider boardId={board.id}>
                 <CommentsSidebarProvider boardId={board.id}>
-                  <FacilitatorDiceProvider>
-                    <BoardAccessRequestsProvider settingsId={board.settings.id}>
-                      <MessageOrchestrator boardId={board.id}>
-                        {children}
-                      </MessageOrchestrator>
-                    </BoardAccessRequestsProvider>
-                  </FacilitatorDiceProvider>
+                  <DiceRendererProvider config={RENDERER_CONFIG}>
+                    <FacilitatorDiceProvider>
+                      <BoardAccessRequestsProvider
+                        settingsId={board.settings.id}
+                      >
+                        <MessageOrchestrator boardId={board.id}>
+                          {children}
+                        </MessageOrchestrator>
+                      </BoardAccessRequestsProvider>
+                    </FacilitatorDiceProvider>
+                  </DiceRendererProvider>
                 </CommentsSidebarProvider>
               </SessionStatsProvider>
             </BoardCardsProvider>

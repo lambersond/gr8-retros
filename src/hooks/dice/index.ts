@@ -1,1 +1,1 @@
-export { useDice } from './use-dice'
+export { RENDERER_CONFIG, useDice } from './use-dice'

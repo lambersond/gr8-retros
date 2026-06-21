@@ -1,12 +1,18 @@
 'use client'
 
 import { useCallback } from 'react'
-import { CUSTOM_COLORSET_KEY, themeToBoxConfig } from '@lambersond/3d-dice-core'
+import {
+  CUSTOM_COLORSET_KEY,
+  themeToBoxConfig,
+  type DiceRendererConfig,
+  type RolledDie,
+} from '@lambersond/3d-dice-core'
 import { useDiceRenderer } from '@lambersond/3d-dice-react'
 
-// Maps onto DiceRendererConfig (camelCase). Textures and sounds are served
-// from /3d-dice/ in the public folder.
-const RENDERER_CONFIG = {
+// Passed to <DiceRendererProvider config={RENDERER_CONFIG}>, which creates the
+// single renderer for the board subtree. Textures and sounds are served from
+// /3d-dice/ in the public folder.
+export const RENDERER_CONFIG = {
   assetPath: '/3d-dice/',
   sounds: true,
   shadows: true,
@@ -16,7 +22,7 @@ const RENDERER_CONFIG = {
   gravityMultiplier: 400,
   lightIntensity: 0.8,
   strength: 1,
-}
+} satisfies DiceRendererConfig
 
 // Dwell before a settled throw fades off the table.
 const REMOVAL_DWELL_MS = 1250
@@ -25,11 +31,11 @@ type DiceNotation = string | string[]
 type RollOptions = { themeColor?: string }
 type UseDice = {
   isInitialized: boolean
-  roll: (notation: DiceNotation, options?: RollOptions) => Promise<number[]>
+  roll: (notation: DiceNotation, options?: RollOptions) => Promise<RolledDie[]>
 }
 
 export function useDice(): UseDice {
-  const renderer = useDiceRenderer(RENDERER_CONFIG)
+  const renderer = useDiceRenderer()
 
   // Per-throw theme replaces the old global updateConfig color race: each roll
   // carries its own custom colorset so concurrent rolls keep their colors.
