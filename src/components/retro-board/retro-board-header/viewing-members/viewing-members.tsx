@@ -4,7 +4,6 @@ import { useCallback } from 'react'
 import { Crown } from 'lucide-react'
 import Image from 'next/image'
 import { Popover, Tooltip } from '@/components/common'
-import { D20Icon } from '@/components/common/icons'
 import { BoardRole } from '@/enums'
 import { useAuth } from '@/hooks/use-auth'
 import { useModals } from '@/hooks/use-modals'
@@ -18,7 +17,7 @@ import {
   useBoardControlsState,
 } from '@/providers/retro-board/controls'
 import {
-  isSessionComplete,
+  allParticipantsRolled,
   useFacilitatorDiceActions,
   useFacilitatorDiceState,
   useRerollSelf,
@@ -44,10 +43,13 @@ export function ViewingMembers() {
   const isFacilitatorModeEnabled = settings.facilitatorMode.enabled
   const canManageFacilitator = !isClaimed || user.hasFacilitator
 
-  // A roll is "underway" once a session exists but isn't fully resolved. While
+  // A roll is "underway" until *everyone* has rolled a value. Anyone still
+  // pending or DNR keeps it underway (a DNR no longer finalizes the roll). While
   // underway, the Roll action rerolls only the current user (joins the existing
-  // roll) instead of restarting for everyone; restarting requires dismissing it.
-  const rollInProgress = !!activeSession && !isSessionComplete(activeSession)
+  // roll) instead of restarting for everyone — use `allParticipantsRolled` here,
+  // not `isSessionComplete`, so a DNR can't make a live roll look "done".
+  const rollInProgress =
+    !!activeSession && !allParticipantsRolled(activeSession)
   const myParticipant = activeSession?.participants[authUser.id]
   const canRoll = rollInProgress
     ? !!myParticipant && myParticipant.result === undefined
@@ -59,10 +61,11 @@ export function ViewingMembers() {
       ? ([chosenFacilitatorId, viewingMembers[chosenFacilitatorId]] as const)
       : undefined
 
-  // Hide the dice when a chosen facilitator is currently present; surface it
-  // again if the facilitator has left the board or none has been chosen.
-  const showChooseFacilitator =
-    isFacilitatorModeEnabled && canManageFacilitator && !facilitatorEntry
+  // The facilitator slot is present whenever facilitator mode is on. It shows a
+  // mystery "?" placeholder (to everyone) until a facilitator is chosen, then
+  // becomes that person's avatar + Crown. Only managers can click the
+  // placeholder to open Choose Facilitator.
+  const showPlaceholder = isFacilitatorModeEnabled && !facilitatorEntry
 
   const handleChooseFacilitator = useCallback(() => {
     const candidates = Object.entries(viewingMembers)
@@ -109,20 +112,29 @@ export function ViewingMembers() {
 
   return (
     <div className='flex items-center gap-3 z-10'>
-      {showChooseFacilitator && (
-        <Tooltip title='Choose Facilitator' placement='bottom' asChild>
-          <button
-            type='button'
-            onClick={handleChooseFacilitator}
-            className='group flex items-center justify-center p-1 rounded cursor-pointer text-text-primary hover:bg-text-primary/10'
-          >
-            <D20Icon
-              height={20}
-              width={20}
-              className='transition-transform duration-1000 ease-in-out group-hover:rotate-[360deg]'
-            />
-          </button>
-        </Tooltip>
+      {showPlaceholder && (
+        <>
+          {canManageFacilitator ? (
+            <Tooltip title='Choose Facilitator' placement='bottom' asChild>
+              <button
+                type='button'
+                onClick={handleChooseFacilitator}
+                className='group flex items-center transition-all duration-200 hover:z-10 hover:scale-110 cursor-pointer'
+              >
+                <span className='flex h-8 w-8 items-center justify-center rounded-full border-2 border-dashed border-secondary text-sm font-bold text-secondary transition-colors group-hover:border-primary group-hover:text-primary'>
+                  ?
+                </span>
+              </button>
+            </Tooltip>
+          ) : (
+            <Tooltip title='Facilitator not chosen yet' placement='bottom'>
+              <span className='flex h-8 w-8 items-center justify-center rounded-full border-2 border-dashed border-secondary text-sm font-bold text-secondary'>
+                ?
+              </span>
+            </Tooltip>
+          )}
+          <div className='h-6 w-px bg-border-light' />
+        </>
       )}
       {facilitatorEntry && (
         <>

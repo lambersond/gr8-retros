@@ -17,4 +17,9 @@ export type {
   DiceSession,
   FacilitatorDiceState,
 } from './types'
-export { isParticipantResolved, isSessionComplete } from './utils'
+export {
+  allParticipantsRolled,
+  hasParticipantRolled,
+  isParticipantResolved,
+  isSessionComplete,
+} from './utils'

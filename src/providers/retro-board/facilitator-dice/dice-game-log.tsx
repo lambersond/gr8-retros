@@ -1,13 +1,20 @@
 'use client'
 
-import { useEffect, useMemo, useRef } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { Loader, Trophy, X } from 'lucide-react'
 import { D20Icon } from '@/components/common/icons'
 import { useAuth } from '@/hooks/use-auth'
-import { useBoardControlsActions } from '@/providers/retro-board/controls'
 import {
+  useBoardPermissions,
+  useBoardSettings,
+} from '@/providers/retro-board/board-settings'
+import {
+  useBoardControlsActions,
+  useBoardControlsState,
+} from '@/providers/retro-board/controls'
+import {
+  allParticipantsRolled,
   FacilitatorDiceInternalAction,
-  isSessionComplete,
   useFacilitatorDiceDispatch,
   useFacilitatorDiceState,
   useRerollSelf,
@@ -19,46 +26,98 @@ export function DiceGameLog() {
   const dispatch = useFacilitatorDiceDispatch()
   const rerollSelf = useRerollSelf()
   const { user } = useAuth()
+  const { isClaimed } = useBoardSettings()
+  const { user: boardUser } = useBoardPermissions()
+  const chosenFacilitatorId = useBoardControlsState(
+    s => s.boardControls.chosenFacilitatorId,
+  )
+  const updateBoardControls = useBoardControlsActions(
+    a => a.updateBoardControls,
+  )
+
+  const canManageFacilitator = !isClaimed || boardUser.hasFacilitator
 
   const participants = useMemo(() => {
     if (!activeSession) return []
     return Object.values(activeSession.participants)
   }, [activeSession])
 
-  type RollResult = {
-    isComplete: boolean
-    winner: DiceParticipant | undefined
-  }
+  // The roll only finalizes automatically once everyone has rolled a value;
+  // DNR/pending participants no longer auto-resolve the session.
+  const allRolled = !!activeSession && allParticipantsRolled(activeSession)
 
-  const updateBoardControls = useBoardControlsActions(
-    a => a.updateBoardControls,
-  )
-
-  const { isComplete, winner } = useMemo((): RollResult => {
-    const noResult: RollResult = { isComplete: false, winner: undefined }
-    if (!activeSession || participants.length === 0) return noResult
-
-    if (!isSessionComplete(activeSession)) return noResult
-
+  // Highest roller so far (participants without a numeric result — DNR and
+  // pending — are skipped). Undefined until at least one person has rolled.
+  const winner = useMemo<DiceParticipant | undefined>(() => {
     let best: DiceParticipant | undefined
     for (const p of participants) {
-      if (p.dnr) continue
-      if (!best || (p.result ?? 0) > (best.result ?? 0)) {
-        best = p
-      }
+      if (p.result === undefined) continue
+      if (!best || p.result > (best.result ?? 0)) best = p
     }
-    return { isComplete: true, winner: best }
-  }, [activeSession, participants])
+    return best
+  }, [participants])
 
-  const persistedSessionRef = useRef<string | undefined>(undefined)
+  // Remember the facilitator chosen when this session first appeared so a stale
+  // prior facilitator (e.g. on a re-choose) isn't read as this roll's winner.
+  const sessionStartRef = useRef<{
+    sessionId?: string
+    chosenAtStart?: string
+  }>({})
+  if (
+    activeSession &&
+    sessionStartRef.current.sessionId !== activeSession.sessionId
+  ) {
+    sessionStartRef.current = {
+      sessionId: activeSession.sessionId,
+      chosenAtStart: chosenFacilitatorId,
+    }
+  }
+
+  // Locally-ended session id, so the manager who clicks End Roll sees the panel
+  // finalize instantly even if the winner equals the prior facilitator.
+  const [endedSessionId, setEndedSessionId] = useState<string | undefined>()
+
+  // Auto-pick the highest roller once everyone has rolled (guarded once per
+  // session). Runs on every client; writes are idempotent and this keeps the
+  // pick working even if the initiator has left the board.
+  const autoPickedRef = useRef<string | undefined>(undefined)
   useEffect(() => {
-    if (!activeSession || !isComplete || !winner) return
-    if (persistedSessionRef.current === activeSession.sessionId) return
-    persistedSessionRef.current = activeSession.sessionId
+    if (!activeSession || !allRolled || !winner) return
+    if (autoPickedRef.current === activeSession.sessionId) return
+    autoPickedRef.current = activeSession.sessionId
     updateBoardControls({ chosenFacilitatorId: winner.clientId })
-  }, [activeSession, isComplete, winner, updateBoardControls])
+  }, [activeSession, allRolled, winner, updateBoardControls])
+
+  const celebrated = useMemo<DiceParticipant | undefined>(() => {
+    const chosen = participants.find(p => p.clientId === chosenFacilitatorId)
+    if (chosen) return chosen
+    return allRolled ? winner : undefined
+  }, [participants, chosenFacilitatorId, allRolled, winner])
 
   if (!activeSession) return
+
+  const chosenIsParticipant =
+    !!chosenFacilitatorId &&
+    participants.some(p => p.clientId === chosenFacilitatorId)
+
+  // The session is "finalized" once everyone rolled (auto), this client ended
+  // it, or a (new) facilitator has been chosen from its participants.
+  const finalized =
+    allRolled ||
+    endedSessionId === activeSession.sessionId ||
+    (chosenIsParticipant &&
+      chosenFacilitatorId !== sessionStartRef.current.chosenAtStart)
+
+  // Managers can end a roll early while people are still pending/DNR; disabled
+  // until at least one person has rolled.
+  const showEndRoll =
+    canManageFacilitator && participants.length > 0 && !allRolled && !finalized
+
+  const handleEndRoll = () => {
+    if (!winner) return
+    setEndedSessionId(activeSession.sessionId)
+    updateBoardControls({ chosenFacilitatorId: winner.clientId })
+  }
 
   const handleDismiss = () => {
     dispatch({ type: FacilitatorDiceInternalAction.CLEAR_SESSION })
@@ -105,13 +164,23 @@ export function DiceGameLog() {
             <ParticipantResult participant={p} />
           </div>
         ))}
-        {isComplete && winner && (
+        {finalized && celebrated && (
           <div className='mt-2 flex items-center gap-2 rounded-lg bg-primary/10 px-3 py-2'>
             <Trophy size={16} className='text-primary' />
             <span className='text-sm font-semibold text-primary'>
-              {winner.name} is the facilitator!
+              {celebrated.name} is the facilitator!
             </span>
           </div>
+        )}
+        {showEndRoll && (
+          <button
+            type='button'
+            onClick={handleEndRoll}
+            disabled={!winner}
+            className='mt-2 rounded-xl bg-primary/85 py-2 px-4 text-center text-sm font-bold uppercase text-text-primary hover:bg-primary cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-primary/85'
+          >
+            End Roll
+          </button>
         )}
       </div>
     </div>
