@@ -1,5 +1,4 @@
 /* eslint-disable unicorn/no-null */
-import { DEFAULT_STATE } from './constants'
 import {
   BoardCardsMessageType,
   BoardCardsInternalActionType,
@@ -40,14 +39,33 @@ export const boardCardActionHandlers: {
     }
   },
   [BoardCardsMessageType.DELETE_COMPLETED_CARDS]: state => {
-    const newState = { ...DEFAULT_STATE, sort: state.sort }
-
+    // Keep cards that aren't completed (not discussed, or with open action items).
+    const newCards: typeof state.cards = {}
     for (const card of Object.values(state.cards)) {
       if (!card.isDiscussed || card.actionItems.some(item => !item.isDone)) {
-        newState.cards[card.id] = card
+        newCards[card.id] = card
       }
     }
-    return newState
+
+    // Reconcile groups against the surviving cards: keep groups with 2+ cards,
+    // disband a group down to 1 card (the survivor becomes standalone), and drop
+    // groups that lost all their cards.
+    const newGroups: typeof state.groups = {}
+    for (const group of Object.values(state.groups)) {
+      const remaining = group.cardIds.filter(id => newCards[id])
+      if (remaining.length >= 2) {
+        newGroups[group.id] = { ...group, cardIds: remaining }
+      } else if (remaining.length === 1) {
+        const survivorId = remaining[0]
+        newCards[survivorId] = {
+          ...newCards[survivorId],
+          cardGroupId: null,
+          position: group.position ?? 0,
+        }
+      }
+    }
+
+    return { ...state, cards: newCards, groups: newGroups }
   },
   [BoardCardsMessageType.UPDATE_CARDS_COLUMN]: (state, action) => {
     const { columnCorrections } = action

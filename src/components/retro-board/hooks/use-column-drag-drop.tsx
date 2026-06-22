@@ -256,10 +256,16 @@ export function useColumnDragDrop(columnType: string) {
     if (group.cardIds.length <= 2) {
       await deleteCardGroup(groupId)
       const remaining = group.cardIds.filter(id => id !== cardId)
-      const restoredCards = remaining.map((id, i) => ({
-        cardId: id,
-        position: group.position + i,
-      }))
+      // Include the dragged card so its cardGroupId is cleared too; otherwise it
+      // stays orphaned (group gone, cardGroupId still set) and is hidden from the
+      // column until a refresh. handleReorder then sets its column/position.
+      const restoredCards = [
+        ...remaining.map((id, i) => ({
+          cardId: id,
+          position: group.position + i,
+        })),
+        { cardId, position: group.position + remaining.length },
+      ]
       dispatch({
         type: BoardCardsMessageType.DELETE_CARD_GROUP,
         groupId,
