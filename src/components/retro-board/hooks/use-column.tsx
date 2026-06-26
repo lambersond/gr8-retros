@@ -1,6 +1,6 @@
 import { useChannel } from 'ably/react'
-import { useParams } from 'next/navigation'
 import { useAuth } from '@/hooks/use-auth'
+import { useBoardId } from '@/hooks/use-board-id'
 import { useModals } from '@/hooks/use-modals'
 import { useColumnItems } from '@/providers/retro-board/cards'
 
@@ -9,7 +9,7 @@ export function useColumn(
   title: string,
   placeholder?: string,
 ) {
-  const { id } = useParams()
+  const id = useBoardId()
   const { user } = useAuth()
   const items = useColumnItems(columnType)
   const { openModal } = useModals()

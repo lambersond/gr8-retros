@@ -2,12 +2,14 @@
 'use server'
 
 import prisma from '@/clients/prisma'
+import { decodeBoardId } from '@/lib/board-id'
 import type { CreateCardGroupParams, EditCardGroupParams } from '@/types'
 
 const cardInclude = { actionItems: true } as const
 const groupInclude = { cards: { include: cardInclude } } as const
 
 export async function createCardGroup(params: CreateCardGroupParams) {
+  const boardId = decodeBoardId(params.boardId)
   return prisma.$transaction(async tx => {
     let groupPosition = params.position ?? undefined
 
@@ -15,14 +17,14 @@ export async function createCardGroup(params: CreateCardGroupParams) {
       const [cardMaxResult, groupMaxResult] = await Promise.all([
         tx.card.aggregate({
           where: {
-            retroSessionId: params.boardId,
+            retroSessionId: boardId,
             column: params.column,
             cardGroupId: null,
           },
           _max: { position: true },
         }),
         tx.cardGroup.aggregate({
-          where: { retroSessionId: params.boardId, column: params.column },
+          where: { retroSessionId: boardId, column: params.column },
           _max: { position: true },
         }),
       ])
@@ -37,7 +39,7 @@ export async function createCardGroup(params: CreateCardGroupParams) {
 
     const group = await tx.cardGroup.create({
       data: {
-        retroSessionId: params.boardId,
+        retroSessionId: boardId,
         column: params.column,
         label: params.label,
         position: groupPosition,
@@ -199,7 +201,7 @@ export async function deleteCardGroupsByIds(groupIds: string[]) {
 
 export async function getCardGroupsWithCardCount(boardId: string) {
   return prisma.cardGroup.findMany({
-    where: { retroSessionId: boardId },
+    where: { retroSessionId: decodeBoardId(boardId) },
     select: {
       id: true,
       _count: { select: { cards: true } },

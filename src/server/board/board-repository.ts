@@ -2,9 +2,11 @@
 
 import { CreateBoardProps } from './types'
 import prisma from '@/clients/prisma'
+import { decodeBoardId } from '@/lib/board-id'
 import { buildDefaultColumnData } from '@/utils/column-utils'
 
-export async function getOrCreateBoardById(id: string) {
+export async function getOrCreateBoardById(rawId: string) {
+  const id = decodeBoardId(rawId)
   const board = await prisma.retroSession.upsert({
     where: { id },
     create: {
@@ -139,10 +141,10 @@ export async function deleteManyBoardsByIds(boardIds: string[]) {
   })
 }
 
-export async function getBoardByName(id: string) {
+export async function getBoardByName(rawId: string) {
   return prisma.retroSession.findUnique({
     where: {
-      id,
+      id: decodeBoardId(rawId),
     },
   })
 }
@@ -156,7 +158,11 @@ export async function updateBoardName(id: string, name: string) {
 
 export async function createBoard(data: CreateBoardProps) {
   const { boardName, ownerId } = data
-  const boardId = encodeURIComponent(boardName)
+  // The id is the raw board name. It must match the URL-decoded route param that
+  // getOrCreateBoardById and the card routes use; pre-encoding it here makes a
+  // name like "My Board" persist as "My%20Board" while the board page operates
+  // on "My Board", so cards target a non-existent session (FK violation).
+  const boardId = boardName
   return prisma.retroSession.create({
     data: {
       id: boardId,

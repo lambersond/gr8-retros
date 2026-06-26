@@ -1,7 +1,7 @@
 'use client'
 
 import { useChannel } from 'ably/react'
-import { useParams } from 'next/navigation'
+import { useBoardId } from '@/hooks/use-board-id'
 import { useModals } from '@/hooks/use-modals'
 import { useCommentsSidebarActions } from '@/providers/comments-sidebar'
 import { useBoardMembers } from '@/providers/retro-board/board-settings'
@@ -15,7 +15,7 @@ export function useCard({
   currentUserId?: string
 }) {
   const { openModal } = useModals()
-  const { id } = useParams() satisfies { id: string }
+  const id = useBoardId()
   const { publish } = useChannel(id)
   const { openSidebar } = useCommentsSidebarActions()
   const members = useBoardMembers()

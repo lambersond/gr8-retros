@@ -2,6 +2,7 @@
 'use server'
 
 import prisma from '@/clients/prisma'
+import { decodeBoardId } from '@/lib/board-id'
 import type {
   AddCardToGroupParams,
   CreateCardParams,
@@ -20,18 +21,19 @@ export async function getCardById(cardId: string) {
 }
 
 export async function createCard(params: CreateCardParams) {
+  const boardId = decodeBoardId(params.boardId)
   return prisma.$transaction(async tx => {
     const [cardMaxResult, groupMaxResult] = await Promise.all([
       tx.card.aggregate({
         where: {
-          retroSessionId: params.boardId,
+          retroSessionId: boardId,
           column: params.column,
           cardGroupId: null,
         },
         _max: { position: true },
       }),
       tx.cardGroup.aggregate({
-        where: { retroSessionId: params.boardId, column: params.column },
+        where: { retroSessionId: boardId, column: params.column },
         _max: { position: true },
       }),
     ])
@@ -43,7 +45,7 @@ export async function createCard(params: CreateCardParams) {
 
     const card = await tx.card.create({
       data: {
-        retroSessionId: params.boardId,
+        retroSessionId: boardId,
         column: params.column,
         content: params.content,
         creatorId: params.creatorId,
@@ -54,7 +56,7 @@ export async function createCard(params: CreateCardParams) {
     })
 
     await tx.retroSession.update({
-      where: { id: params.boardId },
+      where: { id: boardId },
       data: { updatedAt: new Date() },
     })
 
@@ -112,10 +114,11 @@ export async function updateManyCardColumnTypes(
   migrations: { from: string; to: string }[],
 ) {
   if (migrations.length === 0) return
+  const id = decodeBoardId(boardId)
   return Promise.all(
     migrations.map(({ from, to }) =>
       prisma.card.updateMany({
-        where: { retroSessionId: boardId, column: from },
+        where: { retroSessionId: id, column: from },
         data: { column: to },
       }),
     ),
@@ -124,7 +127,7 @@ export async function updateManyCardColumnTypes(
 
 export async function deleteCardsByBoardId(boardId: string) {
   return prisma.card.deleteMany({
-    where: { retroSessionId: boardId },
+    where: { retroSessionId: decodeBoardId(boardId) },
   })
 }
 
@@ -144,7 +147,7 @@ export async function deleteCardsByIds(cardIds: string[]) {
 export async function deleteCompletedCardsByBoardId(boardId: string) {
   return prisma.card.deleteMany({
     where: {
-      retroSessionId: boardId,
+      retroSessionId: decodeBoardId(boardId),
       AND: [
         { isDiscussed: true },
         { actionItems: { every: { isDone: true } } },

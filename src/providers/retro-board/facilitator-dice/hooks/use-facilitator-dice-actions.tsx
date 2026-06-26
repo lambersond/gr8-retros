@@ -5,12 +5,12 @@ import {
   type DieSides,
 } from '@lambersond/3d-dice-core'
 import { useAbly, useChannel } from 'ably/react'
-import { useParams } from 'next/navigation'
 import { FacilitatorDiceMessageType } from '../enums'
 import { useFacilitatorDiceDispatch } from '../provider'
 import { BoardRole } from '@/enums'
 import { useDice } from '@/hooks/dice'
 import { useAuth } from '@/hooks/use-auth'
+import { useBoardId } from '@/hooks/use-board-id'
 import { hasMinimumRole } from '@/lib/roles'
 import { useViewingMembers } from '@/providers/viewing-members'
 import type { DiceParticipant, DiceSession } from '../types'
@@ -25,7 +25,7 @@ const facilitatorDieSides = (email: string): DieSides =>
 // ─── END TEMPORARY EASTER EGG ────────────────────────────────────────────────
 
 export function useFacilitatorDiceActions() {
-  const { id: boardId } = useParams() satisfies { id: string }
+  const boardId = useBoardId()
   const ably = useAbly()
   const { publish } = useChannel(boardId)
   const dispatch = useFacilitatorDiceDispatch()

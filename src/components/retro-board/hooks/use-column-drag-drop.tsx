@@ -2,7 +2,7 @@
 
 import { useCallback, useRef, useState } from 'react'
 import { useChannel } from 'ably/react'
-import { useParams } from 'next/navigation'
+import { useBoardId } from '@/hooks/use-board-id'
 import { useModals } from '@/hooks/use-modals'
 import { useBoardSettings } from '@/providers/retro-board/board-settings'
 import {
@@ -119,7 +119,7 @@ function isDropStateEqual(
 }
 
 export function useColumnDragDrop(columnType: string) {
-  const { id: boardId } = useParams() satisfies { id: string }
+  const boardId = useBoardId()
   const { publish } = useChannel(boardId)
   const dispatch = useBoardCardsDispatch()
   const boardCards = useBoardCards()

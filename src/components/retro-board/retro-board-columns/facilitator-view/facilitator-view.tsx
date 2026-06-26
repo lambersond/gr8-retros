@@ -9,7 +9,6 @@ import {
   MessageSquareWarning,
   SkipForward,
 } from 'lucide-react'
-import { useParams } from 'next/navigation'
 import { useTheme } from 'next-themes'
 import { ExitingOverlay } from './exiting-overlay'
 import { StackPeekLayers } from './stack-peek-layers'
@@ -17,6 +16,7 @@ import { TopCard } from './top-card'
 import { getItemId, isItemDiscussed, sortItems } from './utils'
 import { VotingState } from '@/enums'
 import { useAuth } from '@/hooks/use-auth'
+import { useBoardId } from '@/hooks/use-board-id'
 import { useModals } from '@/hooks/use-modals'
 import { useCommentsSidebarActions } from '@/providers/comments-sidebar'
 import { useBoardMembers } from '@/providers/retro-board/board-settings'
@@ -36,7 +36,7 @@ export function FacilitatorView() {
   const { user } = useAuth()
   const boardCards = useBoardCards()
   const { columns } = useBoardColumns()
-  const { id } = useParams() satisfies { id: string }
+  const id = useBoardId()
   const { publish } = useChannel(id)
   const { resolvedTheme } = useTheme()
   const isDark = resolvedTheme === 'dark'

@@ -3,11 +3,11 @@
 import { useCallback } from 'react'
 import { useChannel } from 'ably/react'
 import { AlertTriangle, Trash2 } from 'lucide-react'
-import { useParams } from 'next/navigation'
 import { useTheme } from 'next-themes'
 import { Card, CardGroup } from '@/components/card'
 import { IconButton } from '@/components/common'
 import { useAuth } from '@/hooks/use-auth'
+import { useBoardId } from '@/hooks/use-board-id'
 import { useModals } from '@/hooks/use-modals'
 import {
   BoardCardsMessageType,
@@ -44,7 +44,7 @@ export function OrphanedColumn({
 }: Readonly<{
   items: OrphanedItem[]
 }>) {
-  const { id: boardId } = useParams() satisfies { id: string }
+  const boardId = useBoardId()
   const { publish } = useChannel(boardId)
   const dispatch = useBoardCardsDispatch()
   const { openModal } = useModals()

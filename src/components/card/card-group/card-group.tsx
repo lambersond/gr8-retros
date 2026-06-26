@@ -10,11 +10,11 @@ import {
   Loader2,
   Pencil,
 } from 'lucide-react'
-import { useParams } from 'next/navigation'
 import { IconButton, Tooltip } from '../../common'
 import { CardGroupActions } from './card-group-actions'
 import { CardGroupExpandedList } from './card-group-expanded-list'
 import { GroupActionItem } from './group-action-item'
+import { useBoardId } from '@/hooks/use-board-id'
 import { useModals } from '@/hooks/use-modals'
 import { useCommentsSidebarActions } from '@/providers/comments-sidebar'
 import {
@@ -46,7 +46,7 @@ export function CardGroup({
   const { settings } = useBoardSettings()
   const { userPermissions } = useBoardPermissions()
   const { openModal } = useModals()
-  const { id: boardId } = useParams() satisfies { id: string }
+  const boardId = useBoardId()
   const { publish } = useChannel(boardId)
   const { openGroupSidebar } = useCommentsSidebarActions()
   const canUpvote = userPermissions['upvoting.restricted.canUpvote']
