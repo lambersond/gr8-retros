@@ -11,7 +11,7 @@ import {
 import { BoardSettingsInternalActionType } from './enums'
 import { reducer } from './reducer'
 import { createInitialState } from './utils'
-import { useBoardMemberships } from '@/providers/board-memberships'
+import { useAuth } from '@/hooks/use-auth'
 import type { BoardSettingsReducerAction, BoardSettingsState } from './types'
 import type { BoardSettings } from '@/types'
 
@@ -23,32 +23,38 @@ const BoardSettingsDispatchCtx = createContext<
 >(undefined)
 
 export function BoardSettingsProvider({
-  boardId,
   boardName,
   children,
   settings,
 }: Readonly<{
-  boardId: string
   boardName: string
   children: ReactNode
   settings: BoardSettings
 }>) {
-  const { getRole } = useBoardMemberships()
+  const { user } = useAuth()
   const [state, dispatch] = useReducer(
     reducer,
     { boardName, settings },
     createInitialState,
   )
 
+  // The role comes from the board's own member list: it is server-rendered with
+  // the board on every load and kept live by the NEW_MEMBER_ADDED /
+  // UPDATE_MEMBER_ROLE / MEMBER_REMOVED / TRANSFER_BOARD reducers. Reading it
+  // from the memberships cache instead left a just-admitted member on the
+  // VIEWER fallback (that cache has a TTL and its provider never remounts), so
+  // they silently could not vote until a manager toggled their role.
   useEffect(() => {
-    const userRole = getRole(boardId)
+    const userRole = state.settings.members.find(
+      member => member.user.id === user?.id,
+    )?.role
     dispatch({
       type: BoardSettingsInternalActionType.UPDATE_PERMISSIONS,
       payload: {
         userRole,
       },
     })
-  }, [state.settings, getRole, boardId])
+  }, [state.settings, user?.id])
 
   return (
     <BoardSettingsCtx.Provider value={state}>

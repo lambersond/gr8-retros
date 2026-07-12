@@ -22,7 +22,6 @@ export function RetroBoardProviders({
   return (
     <BoardSettingsProvider
       settings={board.settings}
-      boardId={board.id}
       boardName={board.name || board.id}
     >
       <ViewingMembersProvider channelName={board.id}>

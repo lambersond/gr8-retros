@@ -67,7 +67,7 @@ export function CardVoting({
         </div>
       )}
 
-      <p className='pointer-events-none'>{content}</p>
+      <p className='pointer-events-none wrap-anywhere'>{content}</p>
 
       <div
         className={clsx(

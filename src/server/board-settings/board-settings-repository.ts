@@ -116,20 +116,24 @@ export async function removeBoardMember(settingsId: string, userId: string) {
   })
 }
 
-export async function deleteBoardSettingById(
-  settingsId: string,
-  userId: string,
-) {
-  return prisma.boardSettings.delete({
-    where: {
-      id: settingsId,
-      members: {
-        some: {
-          userId,
-        },
-      },
-    },
+// Deleting only the BoardSettings row leaves the RetroSession and its cards
+// behind, and getOrCreateBoardById's upsert then re-creates the settings on the
+// next visit (or <Link> prefetch) of /retro/{id} — the board comes back. Delete
+// the RetroSession instead: it cascades to settings (and from there to members,
+// columns, invite and access requests) as well as to cards and card groups.
+export async function deleteBoardBySettingsId(settingsId: string) {
+  const settings = await prisma.boardSettings.findUnique({
+    where: { id: settingsId },
+    select: { retroSessionId: true },
   })
+
+  if (!settings) return
+
+  await prisma.retroSession.delete({
+    where: { id: settings.retroSessionId },
+  })
+
+  return settings.retroSessionId
 }
 
 export async function transferBoardOwnership(

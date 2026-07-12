@@ -6,6 +6,6 @@ export function itemClasses(isDiscussed: boolean) {
       'text-text-secondary line-through group-hover:no-underline': isDiscussed,
       'text-text-primary': !isDiscussed,
     },
-    'lg:text-lg xl:text-xl font-bold flex-1 -mt-1',
+    'lg:text-lg xl:text-xl font-bold flex-1 min-w-0 wrap-anywhere -mt-1',
   )
 }

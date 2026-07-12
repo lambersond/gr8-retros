@@ -247,7 +247,7 @@ export function CardGroup({
           <button
             data-no-drag
             className={clsx(
-              'lg:text-lg xl:text-xl font-bold flex-1 text-left cursor-pointer',
+              'lg:text-lg xl:text-xl font-bold flex-1 min-w-0 wrap-anywhere text-left cursor-pointer',
               aggregates.allDiscussed
                 ? 'text-text-secondary line-through'
                 : 'text-text-primary',

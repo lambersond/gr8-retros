@@ -46,5 +46,9 @@ export type BoardSettingsMessageData =
         settingsPatch: Record<string, boolean>
       }
     >
+  | MessageStructRequiredPayload<
+      BoardSettingsMessageType.BOARD_DELETED,
+      { deletedBy: string }
+    >
 
 export type BoardSettingsMessage = { data: BoardSettingsMessageData }

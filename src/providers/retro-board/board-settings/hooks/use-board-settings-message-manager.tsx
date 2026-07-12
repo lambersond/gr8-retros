@@ -43,6 +43,11 @@ export function useBoardSettingsMessageHandlers() {
           type: BoardSettingsMessageType.NEW_MEMBER_ADDED,
           payload: data.payload,
         })
+        // Permissions come from settings.members (dispatched above), but the
+        // account popover's board list still reads the memberships cache.
+        if (data.payload.user.id === user?.id) {
+          fetchBoards(true)
+        }
       },
       [BoardSettingsMessageType.MEMBER_REMOVED]: data => {
         dispatch({
@@ -60,6 +65,14 @@ export function useBoardSettingsMessageHandlers() {
         })
         if (data.payload.userId === user?.id) {
           fetchBoards(true)
+        }
+      },
+      // The board is gone; anyone still on it has to leave. The deleter routes
+      // itself (to /me) and is skipped here so the two don't fight.
+      [BoardSettingsMessageType.BOARD_DELETED]: data => {
+        fetchBoards(true)
+        if (data.payload?.deletedBy !== user?.id) {
+          router.push('/')
         }
       },
       [BoardSettingsMessageType.TRANSFER_BOARD]: data => {

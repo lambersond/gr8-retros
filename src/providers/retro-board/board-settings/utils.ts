@@ -338,6 +338,7 @@ export function createInitialState({
     boardName,
     settings: settings,
     sidebarOpen: false,
+    userRole: 'VIEWER' as BoardRole,
     boardSettingsWithPermissions: getSettingsWithPermissions(
       settings,
       'VIEWER',

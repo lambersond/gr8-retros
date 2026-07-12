@@ -5,6 +5,7 @@ export function useBoardPermissions() {
   return {
     canClaimBoard: !ctx.settings.isPrivate && !ctx.settings.ownerId,
     user: ctx.user,
+    userRole: ctx.userRole,
     userPermissions: ctx.userPermissions,
   }
 }

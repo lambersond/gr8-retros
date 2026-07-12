@@ -1,8 +1,10 @@
+import { useState } from 'react'
 import { useChannel } from 'ably/react'
 import { TriangleAlert } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { BoardRole } from '@/enums'
 import { useModals } from '@/hooks/use-modals'
+import { useBoardMemberships } from '@/providers/board-memberships'
 import {
   useBoardMembers,
   useBoardPermissions,
@@ -19,7 +21,9 @@ export function DangerZoneSettings() {
   const { openModal } = useModals()
   const router = useRouter()
   const { id, boardId } = useBoardSettings()
+  const { clearCache } = useBoardMemberships()
   const members = useBoardMembers()
+  const [deleteError, setDeleteError] = useState<string>()
   const {
     user: { hasOwner },
   } = useBoardPermissions()
@@ -112,12 +116,25 @@ export function DangerZoneSettings() {
       ),
       confirmButtonText: 'Yes, Delete',
       color: 'danger',
-      onConfirm: () => {
-        fetch(`/api/board-settings/${id}`, {
+      onConfirm: async () => {
+        setDeleteError(undefined)
+
+        const res = await fetch(`/api/board-settings/${id}`, {
           method: 'DELETE',
-        }).then(() => {
-          router.push('/')
         })
+
+        if (!res.ok) {
+          const body = await res.json().catch(() => ({}))
+          setDeleteError(body.message ?? 'Failed to delete the board.')
+          return
+        }
+
+        // Drops the board from the account popover immediately. /me is dynamic,
+        // so the navigation re-runs its board query on its own — deliberately
+        // no router.refresh() here: it can land on the board route we just
+        // deleted, whose getOrCreateBoardById upsert would re-create it.
+        clearCache()
+        router.push('/me')
       },
     })
   }
@@ -148,6 +165,7 @@ export function DangerZoneSettings() {
       >
         Delete Board
       </button>
+      {deleteError && <p className='text-sm font-semibold'>{deleteError}</p>}
     </div>
   )
 }

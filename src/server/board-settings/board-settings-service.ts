@@ -138,12 +138,23 @@ export async function deleteSettingById(settingsId: string, userId: string) {
     }
   }
   try {
-    await repository.deleteBoardSettingById(settingsId, userId)
+    const retroSessionId = await repository.deleteBoardBySettingsId(settingsId)
+
+    if (!retroSessionId) {
+      return { error: 'NOT_FOUND', message: 'Board not found' }
+    }
+
+    await publishMessageToChannel(retroSessionId, {
+      name: 'members-updated',
+      data: { type: 'BOARD_DELETED', payload: { deletedBy: userId } },
+    })
+
     return { success: true }
-  } catch {
+  } catch (error) {
+    console.error('Failed to delete board', error)
     return {
       error: 'DELETE_FAILED',
-      message: 'Failed to delete board settings',
+      message: 'Failed to delete the board',
     }
   }
 }

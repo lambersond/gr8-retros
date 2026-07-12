@@ -41,7 +41,7 @@ export function CardCollapsed({
       <div className='flex items-start gap-2 p-2 pb-0'>
         <p
           className={clsx(
-            'text-sm font-medium flex-1',
+            'text-sm font-medium flex-1 min-w-0 wrap-anywhere',
             isDiscussed
               ? 'text-text-secondary line-through'
               : 'text-text-primary',

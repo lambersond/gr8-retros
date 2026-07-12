@@ -30,6 +30,7 @@ export const boardCardActionHandlers = {
     return {
       ...state,
       boardSettingsWithPermissions,
+      userRole,
       userPermissions: getUserBoardPermissions(userRole, state.settings),
       user: getUserLevels(userRole),
     }
@@ -143,6 +144,10 @@ export const boardCardActionHandlers = {
       },
     }
   },
+
+  // Nothing left to reduce — the board is gone and the message manager routes
+  // everyone off it.
+  [BoardSettingsMessageType.BOARD_DELETED]: state => state,
 } satisfies {
   [K in
     | BoardSettingsMessageType
