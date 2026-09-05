@@ -48,7 +48,7 @@ export function CardDefault({
     handleUpvote,
     openCommentsSidebar,
   } = useCard({ cardId: id, currentUserId })
-  const { userPermissions } = useBoardPermissions()
+  const { user, userPermissions } = useBoardPermissions()
   const { settings } = useBoardSettings()
 
   const isFacilitatorMode = useBoardControlsState(
@@ -129,6 +129,15 @@ export function CardDefault({
             onClick={handleDiscussed(!isDiscussed)}
             buttonClasses='bg-text-secondary/10 cursor-pointer'
             textClasses='text-text-secondary'
+          />
+        )}
+        {isDiscussed && user.hasFacilitator && (
+          <CardAction
+            icon={<DiscussedIcon className='size-4 text-warning' />}
+            text='Undiscuss'
+            onClick={handleDiscussed(false)}
+            buttonClasses='bg-warning/10 cursor-pointer'
+            textClasses='text-warning'
           />
         )}
         {settings.upvoting.enabled && (

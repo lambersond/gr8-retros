@@ -7,6 +7,7 @@ import { MusicStatus, TimeRemaining, VotesRemaining } from './indicators'
 import { AudioRefs, MusicControls, VolumeControl } from './music'
 import { TimerInputs } from './timer'
 import { Voting } from './voting'
+import { VotingProgressBar } from './voting/voting-progress-bar'
 import { VotingState } from '@/enums'
 import {
   useBoardPermissions,
@@ -63,7 +64,7 @@ export function BoardControls() {
   if (!shouldRender) return
   return (
     <div className='flex justify-center'>
-      <div className='relative py-1 px-2 bg-info/20 w-fit rounded-md flex items-center'>
+      <div className='relative overflow-hidden py-1 px-2 bg-info/20 w-fit rounded-md flex items-center'>
         {settings.music.enabled && <AudioRefs />}
         <Popover
           asChild
@@ -112,12 +113,16 @@ export function BoardControls() {
             </div>
           }
         >
-          <div className='text-xl font-mono text-center select-none z-10 flex items-center gap-2'>
+          <div
+            id='board-controls-indicators'
+            className='text-xl font-mono text-center select-none z-10 flex items-center gap-2'
+          >
             {showVoting && canVote && <VotesRemaining />}
             {settings.timer.enabled && <TimeRemaining />}
             {settings.music.enabled && <MusicStatus />}
           </div>
         </Popover>
+        {isVotingOpen && <VotingProgressBar />}
       </div>
     </div>
   )

@@ -27,7 +27,7 @@ export function CardCollapsed({
 }: Readonly<CardProps>) {
   const { handleDiscussed, handleEdit, handleUpvote, openCommentsSidebar } =
     useCard({ cardId: id, currentUserId })
-  const { userPermissions } = useBoardPermissions()
+  const { user, userPermissions } = useBoardPermissions()
   const { settings } = useBoardSettings()
 
   const isFacilitatorMode = useBoardControlsState(
@@ -41,7 +41,7 @@ export function CardCollapsed({
       <div className='flex items-start gap-2 p-2 pb-0'>
         <p
           className={clsx(
-            'text-sm font-medium flex-1 min-w-0 wrap-anywhere',
+            'text-sm font-medium flex-1 min-w-0 wrap-anywhere whitespace-pre-line',
             isDiscussed
               ? 'text-text-secondary line-through'
               : 'text-text-primary',
@@ -58,6 +58,15 @@ export function CardCollapsed({
             onClick={handleDiscussed(!isDiscussed)}
             buttonClasses='bg-text-secondary/10 cursor-pointer'
             textClasses='text-text-secondary'
+          />
+        )}
+        {isDiscussed && user.hasFacilitator && (
+          <CardAction
+            icon={<DiscussedIcon className='size-3.5 text-warning' />}
+            text='Undiscuss'
+            onClick={handleDiscussed(false)}
+            buttonClasses='bg-warning/10 cursor-pointer'
+            textClasses='text-warning'
           />
         )}
         {settings.upvoting.enabled && (

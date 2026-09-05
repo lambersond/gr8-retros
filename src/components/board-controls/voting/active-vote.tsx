@@ -1,12 +1,7 @@
+import { useVotingProgress } from './use-voting-progress'
 import { Info, usePopover } from '@/components/common'
 import { useModals } from '@/hooks/use-modals'
-import { hasMinimumRole } from '@/lib/roles'
-import { useBoardSettings } from '@/providers/retro-board/board-settings'
-import {
-  useBoardControlsActions,
-  useBoardControlsState,
-} from '@/providers/retro-board/controls'
-import { useViewingMembers } from '@/providers/viewing-members'
+import { useBoardControlsActions } from '@/providers/retro-board/controls'
 
 export function ActiveVote() {
   const popover = usePopover()
@@ -14,29 +9,8 @@ export function ActiveVote() {
   const { closeVoting } = useBoardControlsActions(a => ({
     closeVoting: a.closeVoting,
   }))
-  const { membersVoted } = useBoardControlsState(s => ({
-    membersVoted: s.boardControls.voting.collectedVotes,
-  }))
 
-  const {
-    settings: {
-      voting: {
-        subsettings: {
-          restricted: { enabled: membersOnly },
-        },
-      },
-    },
-  } = useBoardSettings()
-
-  const { viewingMembers } = useViewingMembers()
-
-  const votingMembers =
-    Object.values(viewingMembers).filter(
-      m => !membersOnly || hasMinimumRole('MEMBER', m.role),
-    )?.length ?? 0
-  const voted = Object.keys(membersVoted).length
-  const percentage =
-    votingMembers > 0 ? Math.round((voted / votingMembers) * 100) : 0
+  const { voted, votingMembers, percentage } = useVotingProgress()
 
   const handleCloseVotingClick = () => {
     if (voted >= votingMembers) {
