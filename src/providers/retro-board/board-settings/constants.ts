@@ -229,6 +229,14 @@ export const BASE_SETTINGS: BoardSettingsWithPermissionsNoIcons = {
     key: 'isFacilitatorModeEnabled',
     title: 'Facilitator Mode',
   },
+  guidedMode: {
+    render: true,
+    canEdit: false,
+    enabled: false,
+    isUnlocked: false,
+    key: 'isGuidedModeEnabled',
+    title: 'Guided Mode',
+  },
   aiSummary: {
     render: true,
     canEdit: false,

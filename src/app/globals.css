@@ -106,6 +106,40 @@ summary::-webkit-details-marker {
   display: none;
 }
 
+/* Guided Reflect phase: an animated conic-gradient ring around each of the
+   author's own cards, spinning counter-clockwise (negative angle) using the
+   card's own column colors, fed in as --reflect-c1/2/3. */
+@property --reflect-angle {
+  syntax: "<angle>";
+  inherits: false;
+  initial-value: 0deg;
+}
+
+@keyframes reflect-border-spin {
+  to {
+    --reflect-angle: -360deg;
+  }
+}
+
+.reflect-ring {
+  padding: 2px;
+  border-radius: 0.65rem;
+  background: conic-gradient(
+    from var(--reflect-angle),
+    var(--reflect-c1, var(--color-primary)),
+    var(--reflect-c2, var(--color-secondary)),
+    var(--reflect-c3, var(--color-primary)),
+    var(--reflect-c1, var(--color-primary))
+  );
+  animation: reflect-border-spin 4s linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reflect-ring {
+    animation: none;
+  }
+}
+
 /* Docs article prose styles */
 .prose-docs {
   max-width: 80ch;

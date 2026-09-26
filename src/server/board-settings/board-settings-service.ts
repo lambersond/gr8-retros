@@ -17,6 +17,7 @@ const TIER_ORDER: Record<PaymentTier, number> = {
 const TIER_GATED_SETTINGS: Record<string, PaymentTier> = {
   cardGroupingEnabled: PaymentTier.SUPPORTER,
   aiCardGroupNamingEnabled: PaymentTier.BELIEVER,
+  isGuidedModeEnabled: PaymentTier.SUPPORTER,
   isAiSummaryEnabled: PaymentTier.BELIEVER,
 }
 

@@ -1,10 +1,16 @@
 'use client'
 
 import { Settings } from 'lucide-react'
+import {
+  GuidedControls,
+  GuidedResetVotesButton,
+  PhaseTimeline,
+} from '../guided-mode'
 import { PhaseIndicators } from './phase-indicators'
 import { RetroActions } from './retro-actions'
 import { ViewingMembers } from './viewing-members'
 import { BoardControls } from '@/components/board-controls'
+import { GuidedPhase } from '@/enums'
 import { useAuth } from '@/hooks/use-auth'
 import { useBoardAccessRequests } from '@/providers/retro-board/board-access-requests'
 import {
@@ -12,9 +18,19 @@ import {
   useBoardSettings,
   useBoardSettingsActions,
 } from '@/providers/retro-board/board-settings'
+import { useBoardControlsState } from '@/providers/retro-board/controls'
 
 export function RetroBoardHeader({ id }: Readonly<{ id: string }>) {
   const { boardName } = useBoardSettings()
+  // During a guided session the second row's center becomes the phase flow and
+  // its right becomes the guided controls; the top row (name / controls /
+  // settings) is unchanged.
+  const isGuided = useBoardControlsState(
+    s => !!s.boardControls.guided?.isActive,
+  )
+  const guidedPhase = useBoardControlsState(
+    s => s.boardControls.guided?.phase ?? GuidedPhase.REFLECT,
+  )
 
   return (
     <div className='bg-paper/50 px-3 py-2 flex flex-col gap-2'>
@@ -32,17 +48,22 @@ export function RetroBoardHeader({ id }: Readonly<{ id: string }>) {
           <BoardSettingsButton />
         </div>
       </div>
-      <div className='flex items-center gap-3'>
+      <div className='flex items-center gap-3 min-h-9'>
         <div className='flex-1 min-w-0'>
           <ViewingMembers />
         </div>
         <div className='flex-1 flex justify-center min-w-0'>
-          <PhaseIndicators />
+          {isGuided ? (
+            <PhaseTimeline current={guidedPhase} />
+          ) : (
+            <PhaseIndicators />
+          )}
         </div>
         <div className='flex-1 flex justify-end'>
-          <RetroActions id={id} />
+          {isGuided ? <GuidedControls /> : <RetroActions id={id} />}
         </div>
       </div>
+      {isGuided && <GuidedResetVotesButton />}
     </div>
   )
 }

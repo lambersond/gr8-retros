@@ -19,6 +19,7 @@ import { DiscussedIcon } from '../common/icons'
 import { CardAction } from './card-action'
 import { useCard } from './use-card'
 import * as cardUtils from './utils'
+import { GuidedPhase } from '@/enums'
 import {
   useBoardPermissions,
   useBoardSettings,
@@ -53,6 +54,13 @@ export function CardDefault({
 
   const isFacilitatorMode = useBoardControlsState(
     s => s.boardControls.facilitatorMode.isActive,
+  )
+  // In the guided Reflect phase, cards are for writing only: no discuss /
+  // action-item / comment / upvote actions, just the footer edit + delete.
+  const isGuidedReflect = useBoardControlsState(
+    s =>
+      !!s.boardControls.guided?.isActive &&
+      s.boardControls.guided.phase === GuidedPhase.REFLECT,
   )
   const canUpvote = userPermissions['upvoting.restricted.canUpvote']
   const canAddActionItem = userPermissions['actionItems.restricted.canAdd']
@@ -121,81 +129,90 @@ export function CardDefault({
           )}
         </div>
       </div>
-      <div id='card-actions' className='flex items-center py-1 px-2 gap-1'>
-        {!isDiscussed && (
-          <CardAction
-            icon={<DiscussedIcon className='size-4 text-text-secondary' />}
-            text='Discussed'
-            onClick={handleDiscussed(!isDiscussed)}
-            buttonClasses='bg-text-secondary/10 cursor-pointer'
-            textClasses='text-text-secondary'
-          />
-        )}
-        {isDiscussed && user.hasFacilitator && (
-          <CardAction
-            icon={<DiscussedIcon className='size-4 text-warning' />}
-            text='Undiscuss'
-            onClick={handleDiscussed(false)}
-            buttonClasses='bg-warning/10 cursor-pointer'
-            textClasses='text-warning'
-          />
-        )}
-        {settings.upvoting.enabled && (
-          <CardAction
-            amount={upvotes}
-            icon={
-              <ArrowBigUp
-                className={clsx(
-                  {
-                    'text-success group-hover/action:text-warning': isUpvoted,
-                    'text-text-secondary group-hover/action:text-text-primary':
-                      !isUpvoted,
-                  },
-                  'size-4 transition-colors',
-                )}
+      {!isGuidedReflect && (
+        <>
+          <div id='card-actions' className='flex items-center py-1 px-2 gap-1'>
+            {!isDiscussed && (
+              <CardAction
+                icon={<DiscussedIcon className='size-4 text-text-secondary' />}
+                text='Discussed'
+                onClick={handleDiscussed(!isDiscussed)}
+                buttonClasses='bg-text-secondary/10 cursor-pointer'
+                textClasses='text-text-secondary'
               />
-            }
-            text={`Upvote${upvotes === 1 ? '' : 's'}`}
-            onClick={upvoteAction}
-            buttonClasses={clsx({
-              'bg-transparent cursor-not-allowed': !canUpvote,
-              'bg-success/10 hover:bg-success/20 cursor-pointer':
-                canUpvote && isUpvoted,
-              'bg-text-secondary/10 hover:bg-text-secondary/20 cursor-pointer':
-                canUpvote && !isUpvoted,
-            })}
-          />
-        )}
-        {!!votes && (
-          <CardAction
-            icon={<Vote className='size-4 text-primary' />}
-            text={`Vote${votes === 1 ? '' : 's'}`}
-            amount={votes}
-            buttonClasses='bg-primary/10'
-            textClasses='text-primary'
-          />
-        )}
-        {settings.actionItems.enabled && canAddActionItem && (
-          <CardAction
-            icon={<MessageSquareWarning className='size-4 text-ai-checkbox' />}
-            text='Add Action Item'
-            onClick={handleAddActionItem}
-            buttonClasses='bg-ai-bg cursor-pointer'
-            textClasses='text-ai-label'
-          />
-        )}
-        {settings.comments.enabled && (
-          <CardAction
-            icon={<MessageSquareIcon className='size-4 text-text-secondary' />}
-            text={`Comment${comments.length === 1 ? '' : 's'}`}
-            amount={comments.length > 0 ? comments.length : undefined}
-            onClick={openCommentsSidebar}
-            buttonClasses='bg-text-secondary/10 cursor-pointer'
-            textClasses='text-text-secondary'
-          />
-        )}
-      </div>
-      <ActionItems actionItems={actionItems} cardId={id} />
+            )}
+            {isDiscussed && user.hasFacilitator && (
+              <CardAction
+                icon={<DiscussedIcon className='size-4 text-warning' />}
+                text='Undiscuss'
+                onClick={handleDiscussed(false)}
+                buttonClasses='bg-warning/10 cursor-pointer'
+                textClasses='text-warning'
+              />
+            )}
+            {settings.upvoting.enabled && (
+              <CardAction
+                amount={upvotes}
+                icon={
+                  <ArrowBigUp
+                    className={clsx(
+                      {
+                        'text-success group-hover/action:text-warning':
+                          isUpvoted,
+                        'text-text-secondary group-hover/action:text-text-primary':
+                          !isUpvoted,
+                      },
+                      'size-4 transition-colors',
+                    )}
+                  />
+                }
+                text={`Upvote${upvotes === 1 ? '' : 's'}`}
+                onClick={upvoteAction}
+                buttonClasses={clsx({
+                  'bg-transparent cursor-not-allowed': !canUpvote,
+                  'bg-success/10 hover:bg-success/20 cursor-pointer':
+                    canUpvote && isUpvoted,
+                  'bg-text-secondary/10 hover:bg-text-secondary/20 cursor-pointer':
+                    canUpvote && !isUpvoted,
+                })}
+              />
+            )}
+            {!!votes && (
+              <CardAction
+                icon={<Vote className='size-4 text-primary' />}
+                text={`Vote${votes === 1 ? '' : 's'}`}
+                amount={votes}
+                buttonClasses='bg-primary/10'
+                textClasses='text-primary'
+              />
+            )}
+            {settings.actionItems.enabled && canAddActionItem && (
+              <CardAction
+                icon={
+                  <MessageSquareWarning className='size-4 text-ai-checkbox' />
+                }
+                text='Add Action Item'
+                onClick={handleAddActionItem}
+                buttonClasses='bg-ai-bg cursor-pointer'
+                textClasses='text-ai-label'
+              />
+            )}
+            {settings.comments.enabled && (
+              <CardAction
+                icon={
+                  <MessageSquareIcon className='size-4 text-text-secondary' />
+                }
+                text={`Comment${comments.length === 1 ? '' : 's'}`}
+                amount={comments.length > 0 ? comments.length : undefined}
+                onClick={openCommentsSidebar}
+                buttonClasses='bg-text-secondary/10 cursor-pointer'
+                textClasses='text-text-secondary'
+              />
+            )}
+          </div>
+          <ActionItems actionItems={actionItems} cardId={id} />
+        </>
+      )}
       <div
         id='footer'
         className='flex items-center gap-2 justify-between p-2 border-t border-tertiary'
@@ -221,7 +238,9 @@ export function CardDefault({
           )}
         </div>
         {settings.cardAuthoring.enabled && (
-          <span className='text-xs text-text-secondary italic'>{createdBy}</span>
+          <span className='text-xs text-text-secondary italic'>
+            {createdBy}
+          </span>
         )}
       </div>
       {isMergeTarget && (

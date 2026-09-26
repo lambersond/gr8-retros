@@ -104,6 +104,7 @@ export type BoardSettingsWithPermissions = {
   voting: VotingSetting
   dragAndDrop: DragAndDropSetting
   facilitatorMode: Setting
+  guidedMode: Setting
   aiSummary: Setting
 }
 
@@ -119,6 +120,7 @@ export type BoardSettingsWithPermissionsNoIcons = Omit<
   | 'voting'
   | 'dragAndDrop'
   | 'facilitatorMode'
+  | 'guidedMode'
   | 'aiSummary'
 > & {
   private: Omit<PrivateSetting, 'icon'>
@@ -131,5 +133,6 @@ export type BoardSettingsWithPermissionsNoIcons = Omit<
   voting: Omit<VotingSetting, 'icon'>
   dragAndDrop: Omit<DragAndDropSetting, 'icon'>
   facilitatorMode: Omit<Setting, 'icon'>
+  guidedMode: Omit<Setting, 'icon'>
   aiSummary: Omit<Setting, 'icon'>
 }

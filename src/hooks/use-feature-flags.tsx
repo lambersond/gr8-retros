@@ -9,9 +9,8 @@ type FeatureFlagsResponse = {
 let cachedFlags: FeatureFlags | undefined
 let inflight: Promise<FeatureFlags> | undefined
 
-async function fetchFlags(signal?: AbortSignal): Promise<FeatureFlags> {
+async function fetchFlags(): Promise<FeatureFlags> {
   const res = await fetch('/api/feature-flags', {
-    signal,
     headers: { Accept: 'application/json' },
     cache: 'no-store', // remove if you want browser caching
   })
@@ -30,10 +29,12 @@ export function useFeatureFlags() {
   useEffect(() => {
     if (cachedFlags) return
 
-    const controller = new AbortController()
-
-    // Reuse the same request across all hook consumers.
-    inflight ??= fetchFlags(controller.signal)
+    // A single shared request across all consumers. It is deliberately NOT tied
+    // to an AbortController: this promise is shared, so one consumer unmounting
+    // (e.g. React StrictMode's mount/unmount/mount in dev) must not abort it —
+    // doing so rejected the shared promise for the surviving mount too, leaving
+    // flags empty forever and making the whole app look logged-out.
+    inflight ??= fetchFlags()
       .then(result => {
         cachedFlags = result
         return result
@@ -42,22 +43,24 @@ export function useFeatureFlags() {
         inflight = undefined
       })
 
+    let active = true
     setIsLoading(true)
     inflight
       .then(result => {
+        if (!active) return
         setFlags(result)
         setError(undefined)
       })
       .catch(error_ => {
-        // Ignore abort errors
-        if (controller.signal.aborted) return
-        setError(error_)
+        if (active) setError(error_)
       })
       .finally(() => {
-        if (!controller.signal.aborted) setIsLoading(false)
+        if (active) setIsLoading(false)
       })
 
-    return () => controller.abort()
+    return () => {
+      active = false
+    }
   }, [])
 
   const api = useMemo(() => {

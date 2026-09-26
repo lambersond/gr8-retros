@@ -1,5 +1,5 @@
 import type { DropdownOption } from '@/components/common'
-import type { VotingMode, VotingState } from '@/enums'
+import type { GuidedPhase, VotingMode, VotingState } from '@/enums'
 
 export type RetroBoardControls = {
   timer: {
@@ -23,6 +23,10 @@ export type RetroBoardControls = {
   facilitatorMode: {
     isActive: boolean
     skippedIds: string[]
+  }
+  guided: {
+    isActive: boolean
+    phase: GuidedPhase
   }
   chosenFacilitatorId: string | undefined
 }
@@ -69,6 +73,11 @@ export type RetroBoardControlsActions = {
 
   // Facilitator mode
   toggleFacilitatorMode: () => void
+
+  // Guided (Parabol-style) mode
+  startGuidedRetro: () => void
+  setGuidedPhase: (phase: GuidedPhase) => void
+  endGuidedRetro: () => void
 
   updateBoardControls: (updates: Partial<RetroBoardControls>) => void
 }

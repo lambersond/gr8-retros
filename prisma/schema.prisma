@@ -172,6 +172,8 @@ model BoardSettings {
 
   isFacilitatorModeEnabled Boolean    @default(false) // TIER = BELIEVER
 
+  isGuidedModeEnabled      Boolean    @default(false) // TIER = SUPPORTER
+
   // Not implemented yet
   isAiSummaryEnabled       Boolean    @default(false) // TIER = SUPPORTER
 

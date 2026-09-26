@@ -3,12 +3,13 @@
 import { Popover } from '../common'
 import { BoardControlItem } from './board-control-item'
 import { FacilitateSessionButton } from './facilitate'
+import { StartGuidedRetroButton } from './guided'
 import { MusicStatus, TimeRemaining, VotesRemaining } from './indicators'
 import { AudioRefs, MusicControls, VolumeControl } from './music'
 import { TimerInputs } from './timer'
 import { Voting } from './voting'
 import { VotingProgressBar } from './voting/voting-progress-bar'
-import { VotingState } from '@/enums'
+import { GuidedPhase, VotingState } from '@/enums'
 import {
   useBoardPermissions,
   useBoardSettings,
@@ -22,11 +23,13 @@ const getHeaderLabel = (
   timerEnabled: boolean,
   musicEnabled: boolean,
   votingEnabled = false,
+  guidedEnabled = false,
 ) => {
   const parts = [
     timerEnabled && 'Timer',
     musicEnabled && 'Music',
     votingEnabled && 'Voting',
+    guidedEnabled && 'Guided',
   ].filter(Boolean) as string[]
 
   if (parts.length === 0) return ''
@@ -37,28 +40,51 @@ const getHeaderLabel = (
 export function BoardControls() {
   const { user, userPermissions } = useBoardPermissions()
   const { settings } = useBoardSettings()
-  const { isFacilitatorMode, votingState } = useBoardControlsState(s => ({
-    isFacilitatorMode: s.boardControls.facilitatorMode.isActive,
-    votingState: s.boardControls.voting.state,
-  }))
-  const toggleFacilitatorMode = useBoardControlsActions(
-    a => a.toggleFacilitatorMode,
+  const { isFacilitatorMode, votingState, guidedActive, guidedPhase } =
+    useBoardControlsState(s => ({
+      isFacilitatorMode: s.boardControls.facilitatorMode.isActive,
+      votingState: s.boardControls.voting.state,
+      guidedActive: !!s.boardControls.guided?.isActive,
+      guidedPhase: s.boardControls.guided?.phase,
+    }))
+  const { toggleFacilitatorMode, startGuidedRetro } = useBoardControlsActions(
+    a => ({
+      toggleFacilitatorMode: a.toggleFacilitatorMode,
+      startGuidedRetro: a.startGuidedRetro,
+    }),
   )
   const canFacilitate = user.hasFacilitator
   const isVotingOpen = votingState === VotingState.OPEN
-  const showVoting = settings.voting.enabled && !isFacilitatorMode
+  // Timer and music stay available in every phase. During a guided session the
+  // guided flow drives voting (only surfaced here in the Vote phase) and hides
+  // the manual Facilitate / Start Guided buttons.
+  const showVoting =
+    settings.voting.enabled &&
+    !isFacilitatorMode &&
+    (!guidedActive || guidedPhase === GuidedPhase.VOTE)
   const showFacilitate =
-    canFacilitate && !isVotingOpen && settings.facilitatorMode.enabled
+    !guidedActive &&
+    canFacilitate &&
+    !isVotingOpen &&
+    settings.facilitatorMode.enabled
+  const showGuided =
+    !guidedActive &&
+    canFacilitate &&
+    !isVotingOpen &&
+    !isFacilitatorMode &&
+    settings.guidedMode.enabled
   const shouldRender =
     settings.timer.enabled ||
     settings.music.enabled ||
     showVoting ||
-    showFacilitate
+    showFacilitate ||
+    showGuided
   const showPopover =
     settings.music.enabled ||
     (settings.timer.enabled &&
       userPermissions['timer.restricted.canControl']) ||
-    showFacilitate
+    showFacilitate ||
+    showGuided
   const canVote = userPermissions['voting.restricted.canVote']
 
   if (!shouldRender) return
@@ -77,6 +103,7 @@ export function BoardControls() {
                     settings.timer.enabled,
                     settings.music.enabled,
                     showVoting,
+                    showGuided,
                   )}
                 </p>
               </BoardControlItem>
@@ -108,6 +135,11 @@ export function BoardControls() {
                     isFacilitatorMode={isFacilitatorMode}
                     onToggle={toggleFacilitatorMode}
                   />
+                </BoardControlItem>
+              )}
+              {showGuided && (
+                <BoardControlItem className='flex items-center gap-2'>
+                  <StartGuidedRetroButton onStart={startGuidedRetro} />
                 </BoardControlItem>
               )}
             </div>

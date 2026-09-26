@@ -10,6 +10,7 @@ import {
   Sparkles,
   UserLock,
   Vote,
+  Waypoints,
 } from 'lucide-react'
 import { BASE_SETTINGS } from './constants'
 import {
@@ -37,6 +38,7 @@ const getBaseSettings = (): BoardSettingsWithPermissions => {
   baseSettings.voting.icon = Vote
   baseSettings.dragAndDrop.icon = Move
   baseSettings.facilitatorMode.icon = Presentation
+  baseSettings.guidedMode.icon = Waypoints
   baseSettings.aiSummary.icon = Sparkles
 
   return baseSettings
@@ -176,6 +178,10 @@ export function getSettingsWithPermissions(
     userRole,
   )
 
+  // Guided Mode Settings
+  baseSettings.guidedMode.enabled = settings.isGuidedModeEnabled
+  baseSettings.guidedMode.canEdit = userHasPermission('guidedMode', userRole)
+
   // AI Summary Settings
   baseSettings.aiSummary.enabled = settings.isAiSummaryEnabled
   baseSettings.aiSummary.canEdit = userHasPermission('aiSummary', userRole)
@@ -270,6 +276,7 @@ function getStaticBoardPermissions(userRole: BoardRole) {
       userRole,
     ),
     facilitatorMode: userHasPermission('facilitatorMode', userRole),
+    guidedMode: userHasPermission('guidedMode', userRole),
     aiSummary: userHasPermission('aiSummary', userRole),
   } satisfies Record<PermissionKey, boolean>
 }

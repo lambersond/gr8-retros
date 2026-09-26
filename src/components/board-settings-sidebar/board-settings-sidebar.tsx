@@ -15,6 +15,7 @@ import {
   DangerZoneSettings,
   DragAndDropSettings,
   FacilitatorModeSettings,
+  GuidedModeSettings,
   MusicSettings,
   PrivateSettings,
   TimerSettings,
@@ -55,6 +56,7 @@ export function BoardSettingsSidebar() {
           <PrivateSettings />
           <VotingSettings />
           <FacilitatorModeSettings />
+          <GuidedModeSettings />
           <DragAndDropSettings />
           <AiSummarySettings />
           <AdvancedSettings />

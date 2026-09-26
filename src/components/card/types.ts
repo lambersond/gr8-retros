@@ -5,6 +5,7 @@ export interface CardProps {
   column: string
   content: string
   createdBy?: string
+  creatorId?: string
   currentUserId?: string
   id: string
   isDiscussed?: boolean

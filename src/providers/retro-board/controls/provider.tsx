@@ -13,7 +13,7 @@ import {
 } from './context'
 import { createStore } from './store'
 import { elapsedSeconds } from './utils'
-import { VotingMode, VotingState } from '@/enums'
+import { GuidedPhase, VotingMode, VotingState } from '@/enums'
 import { useAuth } from '@/hooks/use-auth'
 import { useBoardControlsLiveMap } from '@/hooks/use-channel-state'
 import { useCountdownTimer } from '@/hooks/use-countdown-timer'
@@ -480,20 +480,23 @@ export function RetroBoardControlsProvider({
     clearMyVotes,
   ])
 
+  // Adjustable even while a vote is open: the guided Vote phase opens voting
+  // automatically, so the facilitator sets the allowance/mode during the open
+  // vote. In the manual flow these are only surfaced while IDLE, so allowing
+  // OPEN here changes nothing there. Changing the limit only moves the per-user
+  // cap; already-submitted votes are untouched.
   const setVotingMode = useCallback(
     (mode: VotingMode) => {
-      if (boardControls.voting.state === VotingState.OPEN) return
       patchVoting({ mode })
     },
-    [boardControls.voting.state, patchVoting],
+    [patchVoting],
   )
 
   const setVotingLimit = useCallback(
     (limit: number) => {
-      if (boardControls.voting.state === VotingState.OPEN) return
       patchVoting({ limit })
     },
-    [boardControls.voting.state, patchVoting],
+    [patchVoting],
   )
 
   // ---------------------------------------------------------------------------
@@ -511,6 +514,99 @@ export function RetroBoardControlsProvider({
       ...(willBeActive ? {} : { chosenFacilitatorId: undefined }),
     })
   }, [boardControls.facilitatorMode.isActive, updateBoardControls])
+
+  // ---------------------------------------------------------------------------
+  // Guided (Parabol-style) mode actions
+  //
+  // Each phase transition writes the phase's full canonical snapshot in ONE
+  // updateBoardControls call. Every call is a separate Ably `set` that re-reads
+  // state via compact(); chaining openVoting()/closeVoting()/toggleFacilitatorMode()
+  // in a tick races on that stale read and trips the channel rate limit (see
+  // handleEndFacilitation in facilitator-view.tsx). Batching keeps Next/Back
+  // atomic and makes them symmetric, so entering a phase from either direction
+  // just re-applies that phase's snapshot.
+  // ---------------------------------------------------------------------------
+  const applyGuidedPhase = useCallback(
+    (phase: GuidedPhase, isActive: boolean) => {
+      const base = boardControls
+
+      if (phase === GuidedPhase.VOTE) {
+        // Fresh voting session each time Vote is entered.
+        updateBoardControls({
+          guided: { isActive, phase },
+          voting: {
+            ...base.voting,
+            state: VotingState.OPEN,
+            results: {},
+            collectedVotes: {},
+          },
+          facilitatorMode: { isActive: false, skippedIds: [] },
+        })
+      } else if (phase === GuidedPhase.DISCUSS) {
+        // Tally submitted votes into results, then hand off to the facilitator
+        // stack view (mirrors closeVoting + starting facilitator mode).
+        const results = {} as Record<string, string[]>
+        for (const [voterId, userVotes] of Object.entries(
+          base.voting.collectedVotes,
+        )) {
+          for (const vote of userVotes) {
+            if (!results[vote]) {
+              results[vote] = []
+            }
+            results[vote].push(voterId)
+          }
+        }
+        updateBoardControls({
+          guided: { isActive, phase },
+          voting: { ...base.voting, state: VotingState.CLOSED, results },
+          facilitatorMode: { isActive: true, skippedIds: [] },
+        })
+      } else {
+        // Reflect / Group: no voting, no facilitation.
+        updateBoardControls({
+          guided: { isActive, phase },
+          voting: {
+            ...base.voting,
+            state: VotingState.IDLE,
+            results: {},
+            collectedVotes: {},
+          },
+          facilitatorMode: { isActive: false, skippedIds: [] },
+        })
+      }
+
+      // Local votes/hasVoted are cleared by useVoting's own effect when the
+      // voting state leaves OPEN. Clearing them eagerly here reset hasVoted a
+      // frame before the synced state caught up, briefly flashing the "I'm
+      // done" button when stepping back out of the Vote phase.
+    },
+    [boardControls, updateBoardControls],
+  )
+
+  const startGuidedRetro = useCallback(() => {
+    applyGuidedPhase(GuidedPhase.REFLECT, true)
+  }, [applyGuidedPhase])
+
+  const setGuidedPhase = useCallback(
+    (phase: GuidedPhase) => {
+      applyGuidedPhase(phase, true)
+    },
+    [applyGuidedPhase],
+  )
+
+  const endGuidedRetro = useCallback(() => {
+    updateBoardControls({
+      guided: { isActive: false, phase: GuidedPhase.REFLECT },
+      voting: {
+        ...boardControls.voting,
+        state: VotingState.IDLE,
+        results: {},
+        collectedVotes: {},
+      },
+      facilitatorMode: { isActive: false, skippedIds: [] },
+      chosenFacilitatorId: undefined,
+    })
+  }, [boardControls.voting, updateBoardControls])
 
   // ---------------------------------------------------------------------------
   // Stores
@@ -552,6 +648,9 @@ export function RetroBoardControlsProvider({
       setVotingMode,
       setVotingLimit,
       toggleFacilitatorMode,
+      startGuidedRetro,
+      setGuidedPhase,
+      endGuidedRetro,
     }),
   )
 
@@ -605,6 +704,9 @@ export function RetroBoardControlsProvider({
       setVotingMode,
       setVotingLimit,
       toggleFacilitatorMode,
+      startGuidedRetro,
+      setGuidedPhase,
+      endGuidedRetro,
     })
   }, [
     togglePlay,
@@ -625,6 +727,9 @@ export function RetroBoardControlsProvider({
     setVotingMode,
     setVotingLimit,
     toggleFacilitatorMode,
+    startGuidedRetro,
+    setGuidedPhase,
+    endGuidedRetro,
   ])
 
   // ---------------------------------------------------------------------------

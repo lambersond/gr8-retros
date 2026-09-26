@@ -5,8 +5,13 @@ import { IconButton, Tooltip } from '../../../common'
 import { useColumn } from '../../hooks/use-column'
 import { useColumnDragDrop } from '../../hooks/use-column-drag-drop'
 import { getTitleStyles, getWrapperStyles } from './utils'
-import { Card, CardGroup, CardGroupVoting } from '@/components/card'
-import { VotingState } from '@/enums'
+import {
+  Card,
+  CardGroup,
+  CardGroupVoting,
+  ReflectingStack,
+} from '@/components/card'
+import { GuidedPhase, VotingState } from '@/enums'
 import { useBoardControlsState } from '@/providers/retro-board/controls'
 import type { ColumnProps } from './types'
 
@@ -22,13 +27,34 @@ export function Column({ type, columnConfig }: Readonly<ColumnProps>) {
   const colors = isDark ? activeStyle.dark : activeStyle.light
   const label = [activeStyle.emoji, activeStyle.label].filter(Boolean).join(' ')
 
-  const { isVoteOpen, isVotingIdle, votingResults } = useBoardControlsState(
-    s => ({
+  const { isVoteOpen, isVotingIdle, votingResults, guidedReflect } =
+    useBoardControlsState(s => ({
       isVoteOpen: s.boardControls.voting.state === VotingState.OPEN,
       isVotingIdle: s.boardControls.voting.state === VotingState.IDLE,
       votingResults: s.boardControls.voting.results,
-    }),
-  )
+      guidedReflect:
+        !!s.boardControls.guided?.isActive &&
+        s.boardControls.guided.phase === GuidedPhase.REFLECT,
+    }))
+
+  // In the guided Reflect phase, only the current user's own cards are shown
+  // (at the top); everyone else's are collapsed into a single hidden stack.
+  const ownItems = guidedReflect
+    ? items.filter(
+        item => item.kind === 'group' || item.data.creatorId === user?.id,
+      )
+    : items
+  const hiddenReflectionCount = guidedReflect
+    ? items.length - ownItems.length
+    : 0
+
+  // The hidden-reflections stack gets an animated color ring in this column's
+  // palette (see .reflect-ring in globals.css).
+  const ringStyle = {
+    ['--reflect-c1']: colors.border,
+    ['--reflect-c2']: colors.titleBg,
+    ['--reflect-c3']: colors.titleText,
+  } as React.CSSProperties
 
   const {
     dropState,
@@ -83,7 +109,7 @@ export function Column({ type, columnConfig }: Readonly<ColumnProps>) {
       >
         {isOverInsert && dropState.index === 0 && <InsertionLine />}
 
-        {items.map((item, i: number) => (
+        {ownItems.map((item, i: number) => (
           <div key={`${item.kind}-${item.data.id}`}>
             {item.kind === 'card' && (
               <Card
@@ -93,6 +119,7 @@ export function Column({ type, columnConfig }: Readonly<ColumnProps>) {
                 column={item.data.column}
                 id={item.data.id}
                 currentUserId={user?.id}
+                creatorId={item.data.creatorId}
                 isDiscussed={item.data.isDiscussed}
                 createdBy={item.data.createdBy}
                 content={item.data.content}
@@ -122,6 +149,12 @@ export function Column({ type, columnConfig }: Readonly<ColumnProps>) {
             {isOverInsert && dropState.index === i + 1 && <InsertionLine />}
           </div>
         ))}
+        {hiddenReflectionCount > 0 && (
+          <ReflectingStack
+            count={hiddenReflectionCount}
+            ringStyle={ringStyle}
+          />
+        )}
       </div>
     </summary>
   )

@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { useAbly } from 'ably/react'
-import { VotingMode, VotingState } from '@/enums'
+import { GuidedPhase, VotingMode, VotingState } from '@/enums'
 
 const BOARD_CONTROLS_KEY = 'boardControlsV5'
 
@@ -27,6 +27,10 @@ type BoardControls = {
     isActive: boolean
     skippedIds: string[]
   }
+  guided: {
+    isActive: boolean
+    phase: GuidedPhase
+  }
   chosenFacilitatorId: string | undefined
 }
 
@@ -52,6 +56,10 @@ const DEFAULT_BOARD_CONTROLS: BoardControls = {
   facilitatorMode: {
     isActive: false,
     skippedIds: [],
+  },
+  guided: {
+    isActive: false,
+    phase: GuidedPhase.REFLECT,
   },
   chosenFacilitatorId: undefined,
 }
@@ -131,6 +139,10 @@ export function useBoardControlsLiveMap({
             facilitatorMode: {
               isActive: false,
               skippedIds: [],
+            },
+            guided: {
+              isActive: false,
+              phase: GuidedPhase.REFLECT,
             },
             chosenFacilitatorId: undefined,
           })

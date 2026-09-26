@@ -18,6 +18,7 @@ export type Board = {
     isCommentsEnabled: boolean
     isDragAndDropEnabled: boolean
     isFacilitatorModeEnabled: boolean
+    isGuidedModeEnabled: boolean
     isMusicEnabled: boolean
     isPrivate: boolean
     isTimerEnabled: boolean
