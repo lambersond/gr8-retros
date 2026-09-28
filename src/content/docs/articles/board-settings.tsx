@@ -246,6 +246,15 @@ export default function BoardSettings() {
 
         <SettingGroup>
           <SettingRow
+            name='Guided Mode'
+            defaultValue='Off'
+            plan='Supporter'
+            description='Run an opinionated, facilitator-led retro that moves the whole team through Reflect, Group, Vote, and Discuss phases in sync. See the Guided Mode guide for details.'
+          />
+        </SettingGroup>
+
+        <SettingGroup>
+          <SettingRow
             name='AI Summaries'
             defaultValue='Off'
             plan='Believer'

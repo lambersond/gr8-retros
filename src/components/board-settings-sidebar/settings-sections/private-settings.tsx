@@ -54,6 +54,23 @@ export function PrivateSettings() {
             !subsettings.openAccess.enabled,
           )}
         />
+        <div className='pl-6'>
+          <Checkbox
+            checked={subsettings.directGuestAccess.enabled}
+            label={subsettings.directGuestAccess.title}
+            size='sm'
+            info='Skips the sign-in prompt so guests land straight in the board — useful on slow connections.'
+            disabled={
+              !setting.enabled ||
+              !subsettings.openAccess.enabled ||
+              !userPermissions['private.directGuestAccess']
+            }
+            onChange={updateBoardSetting(
+              subsettings.directGuestAccess.key,
+              !subsettings.directGuestAccess.enabled,
+            )}
+          />
+        </div>
         {invite && userPermissions['private.copyLink'] ? (
           <div className='rounded p-2 bg-tertiary/80'>
             <div className='flex items-baseline justify-between'>

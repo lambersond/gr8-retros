@@ -24,8 +24,19 @@ export function RetroBoard({ board }: Readonly<{ board: Board }>) {
   const isGuest = searchParams.get('guest') === 'true'
   const [continueAnyway, setContinueAnyway] = useState(isGuest)
 
+  const guestAccessEnabled =
+    !board.settings.isPrivate || board.settings.privateOpenAccess
+  // "Allow Direct Guest Access" drops unauthenticated visitors straight into a
+  // guest-accessible board, skipping the sign-in gate entirely (handy on slow
+  // connections). The board is already served to guests when guest access is on.
+  const allowDirectGuestAccess =
+    guestAccessEnabled && board.settings.privateDirectGuestAccess
+
   const shouldShowGate =
-    status === 'unauthenticated' && !isAuthenticated && !continueAnyway
+    status === 'unauthenticated' &&
+    !isAuthenticated &&
+    !continueAnyway &&
+    !allowDirectGuestAccess
 
   // Show the retro tips at most once per mount, and never once acknowledged
   // (the cookie is set on close for everyone). The ref guard keeps incidental
@@ -47,9 +58,7 @@ export function RetroBoard({ board }: Readonly<{ board: Board }>) {
     return (
       <SignInGate
         isPrivate={board.settings.isPrivate}
-        guestAccessEnabled={
-          !board.settings.isPrivate || board.settings.privateOpenAccess
-        }
+        guestAccessEnabled={guestAccessEnabled}
         onContinueAsGuest={() => setContinueAnyway(true)}
       />
     )

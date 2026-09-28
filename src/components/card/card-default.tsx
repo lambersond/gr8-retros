@@ -62,9 +62,18 @@ export function CardDefault({
       !!s.boardControls.guided?.isActive &&
       s.boardControls.guided.phase === GuidedPhase.REFLECT,
   )
+  // Grouping happens in the guided Group phase, so drag is forced on there
+  // regardless of the board's drag-and-drop setting (mirrors how voting is
+  // forced on during the guided Vote phase).
+  const isGuidedGroup = useBoardControlsState(
+    s =>
+      !!s.boardControls.guided?.isActive &&
+      s.boardControls.guided.phase === GuidedPhase.GROUP,
+  )
   const canUpvote = userPermissions['upvoting.restricted.canUpvote']
   const canAddActionItem = userPermissions['actionItems.restricted.canAdd']
-  const isDragEnabled = settings.dragAndDrop.enabled && !isFacilitatorMode
+  const isDragEnabled =
+    (settings.dragAndDrop.enabled || isGuidedGroup) && !isFacilitatorMode
 
   const onDragStart = useCallback(
     (e: React.DragEvent) => {

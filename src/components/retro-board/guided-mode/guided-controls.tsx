@@ -13,6 +13,9 @@ import {
 const BUTTON =
   'flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm font-medium text-text-secondary border border-border-light hover:bg-hover transition-colors cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed'
 
+const DANGER_BUTTON =
+  'flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm font-medium text-danger border border-danger/40 hover:bg-danger/10 transition-colors cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed'
+
 // The facilitator's phase controls, rendered in the header's second row where
 // RetroActions normally sits. Non-facilitators see nothing here; their board
 // advances when the facilitator moves the group forward.
@@ -51,6 +54,18 @@ export function GuidedControls() {
     advance()
   }
 
+  const handleEnd = () => {
+    openModal('ConfirmModal', {
+      title: 'End guided session?',
+      message:
+        'This ends the guided session and returns everyone to the standard board layout.',
+      confirmButtonText: 'End session',
+      cancelButtonText: 'Stay in guided mode',
+      color: 'danger',
+      onConfirm: endGuidedRetro,
+    })
+  }
+
   return (
     <div className='flex items-center gap-2'>
       {!isLast && (
@@ -61,13 +76,13 @@ export function GuidedControls() {
       )}
       <button
         type='button'
-        onClick={endGuidedRetro}
+        onClick={handleEnd}
         title='End guided session'
         aria-label='End guided session'
-        className={BUTTON}
+        className={DANGER_BUTTON}
       >
-        <LogOut className='size-4' />
         End
+        <LogOut className='size-4' />
       </button>
     </div>
   )

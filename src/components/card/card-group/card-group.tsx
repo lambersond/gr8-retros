@@ -14,6 +14,7 @@ import { IconButton, Tooltip } from '../../common'
 import { CardGroupActions } from './card-group-actions'
 import { CardGroupExpandedList } from './card-group-expanded-list'
 import { GroupActionItem } from './group-action-item'
+import { GuidedPhase } from '@/enums'
 import { useBoardId } from '@/hooks/use-board-id'
 import { useModals } from '@/hooks/use-modals'
 import { useCommentsSidebarActions } from '@/providers/comments-sidebar'
@@ -40,6 +41,11 @@ export function CardGroup({
   const isFacilitatorMode = useBoardControlsState(
     s => s.boardControls.facilitatorMode.isActive,
   )
+  const isGuidedGroup = useBoardControlsState(
+    s =>
+      !!s.boardControls.guided?.isActive &&
+      s.boardControls.guided.phase === GuidedPhase.GROUP,
+  )
   const [expanded, setExpanded] = useState(isFacilitatorMode)
   const { cards: allCards } = useBoardCards()
   const dispatch = useBoardCardsDispatch()
@@ -50,7 +56,8 @@ export function CardGroup({
   const { publish } = useChannel(boardId)
   const { openGroupSidebar } = useCommentsSidebarActions()
   const canUpvote = userPermissions['upvoting.restricted.canUpvote']
-  const isDragEnabled = settings.dragAndDrop.enabled && !isFacilitatorMode
+  const isDragEnabled =
+    (settings.dragAndDrop.enabled || isGuidedGroup) && !isFacilitatorMode
 
   const onDragStart = useCallback(
     (e: React.DragEvent) => {

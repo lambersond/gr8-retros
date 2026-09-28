@@ -2,6 +2,7 @@
 
 import { useCallback, useRef, useState } from 'react'
 import { useChannel } from 'ably/react'
+import { GuidedPhase } from '@/enums'
 import { useBoardId } from '@/hooks/use-board-id'
 import { useModals } from '@/hooks/use-modals'
 import { useBoardSettings } from '@/providers/retro-board/board-settings'
@@ -11,6 +12,7 @@ import {
   useBoardCardsDispatch,
   type CardGroupState,
 } from '@/providers/retro-board/cards'
+import { useBoardControlsState } from '@/providers/retro-board/controls'
 import { generateGroupLabel } from '@/server/ai/generate-group-label'
 import {
   addCardToGroup,
@@ -126,7 +128,15 @@ export function useColumnDragDrop(columnType: string) {
 
   const { openModal } = useModals()
   const { settings } = useBoardSettings()
-  const groupingEnabled = settings.dragAndDrop.subsettings.grouping.enabled
+  const isGuidedGroup = useBoardControlsState(
+    s =>
+      !!s.boardControls.guided?.isActive &&
+      s.boardControls.guided.phase === GuidedPhase.GROUP,
+  )
+  // The guided Group phase forces grouping on regardless of the board setting,
+  // mirroring how the guided Vote phase forces voting on.
+  const groupingEnabled =
+    settings.dragAndDrop.subsettings.grouping.enabled || isGuidedGroup
   const aiNamingEnabled = settings.dragAndDrop.subsettings.aiNaming.enabled
   const [dropState, setDropState] = useState<DropState>()
   const bodyRef = useRef<HTMLDivElement | null>(null)

@@ -38,6 +38,7 @@ interface Setting {
 interface PrivateSetting extends Setting {
   subsettings: {
     openAccess: ToggleSubsetting
+    directGuestAccess: ToggleSubsetting
     cardRetention: ValueSubsetting
   }
 }

@@ -59,6 +59,10 @@ export function getSettingsWithPermissions(
     'private.openAccess',
     userRole,
   )
+  baseSettings.private.subsettings.directGuestAccess.enabled =
+    settings.privateDirectGuestAccess
+  baseSettings.private.subsettings.directGuestAccess.canEdit =
+    userHasPermission('private.directGuestAccess', userRole)
   baseSettings.private.subsettings.cardRetention.canEdit = userHasPermission(
     'private.retention.cards',
     userRole,
@@ -233,6 +237,10 @@ function getStaticBoardPermissions(userRole: BoardRole) {
   return {
     private: userHasPermission('private', userRole),
     'private.openAccess': userHasPermission('private.openAccess', userRole),
+    'private.directGuestAccess': userHasPermission(
+      'private.directGuestAccess',
+      userRole,
+    ),
     cardAuthoring: userHasPermission('cardAuthoring', userRole),
     'private.createLink': userHasPermission('private.createLink', userRole),
     'private.copyLink': userHasPermission('private.copyLink', userRole),

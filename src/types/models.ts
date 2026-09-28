@@ -34,6 +34,7 @@ export type Board = {
     musicRestricted: boolean
     privateCardRetention: number
     privateOpenAccess: boolean
+    privateDirectGuestAccess: boolean
     timerDefault: number
     timerRestricted: boolean
     upvoteAnytime: boolean

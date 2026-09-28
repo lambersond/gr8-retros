@@ -135,6 +135,7 @@ model BoardSettings {
 
   isPrivate                Boolean    @default(false) // TIER = FREE
   privateOpenAccess        Boolean    @default(false)
+  privateDirectGuestAccess Boolean    @default(false)
   privateCardRetention     Int        @default(7) // days
 
   isCommentsEnabled        Boolean    @default(true) // TIER = FREE

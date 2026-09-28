@@ -190,6 +190,7 @@ export async function resetBoardSettings(settingsId: string, ownerId: string) {
       data: {
         isPrivate: false,
         privateOpenAccess: false,
+        privateDirectGuestAccess: false,
         privateCardRetention: 7,
         isCommentsEnabled: true,
         commentsAnytime: true,

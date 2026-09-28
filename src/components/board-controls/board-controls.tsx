@@ -23,13 +23,11 @@ const getHeaderLabel = (
   timerEnabled: boolean,
   musicEnabled: boolean,
   votingEnabled = false,
-  guidedEnabled = false,
 ) => {
   const parts = [
     timerEnabled && 'Timer',
     musicEnabled && 'Music',
     votingEnabled && 'Voting',
-    guidedEnabled && 'Guided',
   ].filter(Boolean) as string[]
 
   if (parts.length === 0) return ''
@@ -110,7 +108,6 @@ export function BoardControls() {
                     settings.timer.enabled,
                     settings.music.enabled,
                     showVotingControls,
-                    showGuided,
                   )}
                 </p>
               </BoardControlItem>

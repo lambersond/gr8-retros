@@ -4,6 +4,7 @@ export type PermissionKey =
   | 'private'
   | 'private.retention.cards'
   | 'private.openAccess'
+  | 'private.directGuestAccess'
   | 'private.createLink'
   | 'private.copyLink'
   | 'private.revokeLink'
@@ -53,6 +54,7 @@ export type BoardPermissions = Record<PermissionKey, boolean> &
 export const SETTINGS_ROLE_MAP: Record<string, PermissionKey> = {
   isPrivate: 'private',
   privateOpenAccess: 'private.openAccess',
+  privateDirectGuestAccess: 'private.directGuestAccess',
   privateCardRetention: 'private.retention.cards',
   isCardAuthoringEnabled: 'cardAuthoring',
   isCommentsEnabled: 'comments',
@@ -95,6 +97,7 @@ const PERMISSIONS_MAP: Record<PermissionKey, BoardRole> &
   private: BoardRole.OWNER,
   'private.retention.cards': BoardRole.ADMIN,
   'private.openAccess': BoardRole.ADMIN,
+  'private.directGuestAccess': BoardRole.ADMIN,
   cardAuthoring: BoardRole.ADMIN,
   'private.createLink': BoardRole.FACILITATOR,
   'private.copyLink': BoardRole.FACILITATOR,

@@ -1,5 +1,11 @@
 import { lazy } from 'react'
-import { BookOpen, Hammer, Settings, SlidersHorizontal } from 'lucide-react'
+import {
+  BookOpen,
+  Hammer,
+  Settings,
+  SlidersHorizontal,
+  Waypoints,
+} from 'lucide-react'
 import type { DocRegistry, DocSection } from './types'
 
 /**
@@ -23,6 +29,11 @@ export const docsNav: DocSection[] = [
         icon: SlidersHorizontal,
       },
       {
+        title: 'Guided Mode',
+        slug: 'guided-mode',
+        icon: Waypoints,
+      },
+      {
         title: 'Retro Actions',
         slug: 'retro-actions',
         icon: Hammer,
@@ -39,6 +50,7 @@ export const docsRegistry: DocRegistry = {
   'getting-started': lazy(() => import('./articles/getting-started')),
   'board-settings': lazy(() => import('./articles/board-settings')),
   'board-controls': lazy(() => import('./articles/board-controls')),
+  'guided-mode': lazy(() => import('./articles/guided-mode')),
   'retro-actions': lazy(() => import('./articles/retro-actions')),
 }
 

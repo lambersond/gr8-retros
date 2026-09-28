@@ -18,6 +18,13 @@ export const BASE_SETTINGS: BoardSettingsWithPermissionsNoIcons = {
         kind: 'toggle',
         title: 'Enable Guest Access',
       },
+      directGuestAccess: {
+        canEdit: false,
+        enabled: false,
+        key: 'privateDirectGuestAccess',
+        kind: 'toggle',
+        title: 'Allow Direct Guest Access',
+      },
       cardRetention: {
         canEdit: false,
         key: 'privateCardRetention',
