@@ -14,6 +14,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import ColorModeToggle from '../color-mode-toggle'
+import { ThemeAvatarBadge } from './theme-avatar-badge'
 import { BoardRoleBadge, PaymentTierBadge } from '@/components/badges'
 import { IconButton, Popover } from '@/components/common'
 import { useAuth } from '@/hooks/use-auth'
@@ -110,7 +111,7 @@ export function Auth() {
       <button
         type='button'
         aria-label='Account menu'
-        className='flex items-center cursor-pointer rounded-full focus:outline-none focus:ring-2 focus:ring-primary'
+        className='relative flex items-center cursor-pointer rounded-full focus:outline-none focus:ring-2 focus:ring-primary'
       >
         <Image
           src={user.image}
@@ -119,6 +120,7 @@ export function Auth() {
           height={36}
           className='rounded-full border border-border-light'
         />
+        <ThemeAvatarBadge />
       </button>
     </Popover>
   )

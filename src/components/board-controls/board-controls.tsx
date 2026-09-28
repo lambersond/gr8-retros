@@ -55,13 +55,20 @@ export function BoardControls() {
   )
   const canFacilitate = user.hasFacilitator
   const isVotingOpen = votingState === VotingState.OPEN
-  // Timer and music stay available in every phase. During a guided session the
-  // guided flow drives voting (only surfaced here in the Vote phase) and hides
-  // the manual Facilitate / Start Guided buttons.
+  const inGuidedVote = guidedActive && guidedPhase === GuidedPhase.VOTE
+  // Timer and music stay available in every phase. The participant voting UI
+  // (vote indicator + "I'm done") shows in the normal flow when voting is
+  // enabled, and always during the guided Vote phase — that phase forces a
+  // voting session open regardless of the board's voting setting, so the
+  // controls follow it rather than the (possibly disabled) setting.
   const showVoting =
-    settings.voting.enabled &&
     !isFacilitatorMode &&
-    (!guidedActive || guidedPhase === GuidedPhase.VOTE)
+    (inGuidedVote || (!guidedActive && settings.voting.enabled))
+  // The manual open/close/config popover belongs to the non-guided flow only.
+  // In guided mode the phase controls drive voting, so it must never surface the
+  // manual "End Vote" path, which would call closeVoting() and bypass the phase
+  // machine, leaving the guided phase stuck on Vote.
+  const showVotingControls = showVoting && !guidedActive
   const showFacilitate =
     !guidedActive &&
     canFacilitate &&
@@ -102,7 +109,7 @@ export function BoardControls() {
                   {getHeaderLabel(
                     settings.timer.enabled,
                     settings.music.enabled,
-                    showVoting,
+                    showVotingControls,
                     showGuided,
                   )}
                 </p>
@@ -124,7 +131,7 @@ export function BoardControls() {
                     <MusicControls />
                   </BoardControlItem>
                 )}
-              {showVoting && (
+              {showVotingControls && (
                 <BoardControlItem>
                   <Voting />
                 </BoardControlItem>
