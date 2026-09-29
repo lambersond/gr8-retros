@@ -10,6 +10,14 @@ type ColumnItem =
   | { kind: 'card'; data: Card }
   | { kind: 'group'; data: CardGroupState }
 
+function getGroupVotes(group: CardGroupState, cards: Record<string, Card>) {
+  const memberVotes = group.cardIds
+    .map(id => cards[id])
+    .filter(Boolean)
+    .reduce((sum, c) => sum + (c.votes ?? 0), 0)
+  return (group.votes ?? 0) + memberVotes
+}
+
 function getGroupAggregates(
   group: CardGroupState,
   cards: Record<string, Card>,
@@ -20,7 +28,12 @@ function getGroupAggregates(
       (sum, c) => sum + (c.upvotedBy?.length ?? 0),
       0,
     ),
-    votes: memberCards.reduce((sum, c) => sum + (c.votes ?? 0), 0),
+    // Votes cast on a group are stored on the group itself (see CardGroupVoting
+    // → addMyVote(group.id)), not distributed to member cards, so the group's
+    // total is group.votes + member votes — the same figure getGroupVotes uses
+    // for filtering. Summing only member votes made a directly-voted group sort
+    // as 0 votes and fall below single cards.
+    votes: getGroupVotes(group, cards),
     actionItemCount: memberCards.reduce(
       (sum, c) => sum + (c.actionItems?.length ?? 0),
       0,
@@ -99,14 +112,6 @@ function buildComparator(
       }
     }
   }
-}
-
-function getGroupVotes(group: CardGroupState, cards: Record<string, Card>) {
-  const memberVotes = group.cardIds
-    .map(id => cards[id])
-    .filter(Boolean)
-    .reduce((sum, c) => sum + (c.votes ?? 0), 0)
-  return (group.votes ?? 0) + memberVotes
 }
 
 function isGroupDiscussed(group: CardGroupState, cards: Record<string, Card>) {
