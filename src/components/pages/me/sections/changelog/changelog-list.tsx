@@ -19,31 +19,26 @@ function formatDate(date: string) {
 }
 
 export function ChangelogList() {
-  const { entries, unviewedCount, isUnviewed, markViewed } = useChangelog()
+  const { entries, isUnviewed, markViewed, markAllViewed } = useChangelog()
 
   const handleOpenEntry = (id: number) => {
     markViewed(id)
     openChangelog(id)
   }
 
+  const handleViewAll = () => {
+    markAllViewed()
+    openChangelog()
+  }
+
   return (
     <SectionCard
       label={
         <div className='flex items-center justify-between'>
-          <span className='relative inline-flex'>
-            What&apos;s New
-            {unviewedCount > 0 && (
-              <span
-                aria-label={`${unviewedCount} unviewed`}
-                className='absolute -top-2 -right-4 inline-flex h-4 min-w-4 items-center justify-center rounded-full bg-secondary px-1 text-[10px] font-bold leading-none text-white'
-              >
-                {unviewedCount}
-              </span>
-            )}
-          </span>
+          What&apos;s New
           <button
             type='button'
-            onClick={() => openChangelog()}
+            onClick={handleViewAll}
             className='flex items-center gap-1 text-xs font-semibold tracking-wide uppercase text-primary hover:underline cursor-pointer'
           >
             View all
