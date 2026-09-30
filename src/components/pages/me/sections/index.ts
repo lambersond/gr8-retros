@@ -1,4 +1,5 @@
 export { AccessRequestsToReview } from './access-requests'
+export { Changelog } from './changelog'
 export { MyActionItems } from './my-action-items'
 export { MyBoards } from './my-boards'
 export { MyInfo } from './my-info'

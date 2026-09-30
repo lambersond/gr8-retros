@@ -7,6 +7,7 @@ import {
   ChevronDown,
   LogInIcon,
   LogOutIcon,
+  Megaphone,
   MessageCircleQuestion,
   UserCircle,
 } from 'lucide-react'
@@ -20,6 +21,7 @@ import { IconButton, Popover } from '@/components/common'
 import { useAuth } from '@/hooks/use-auth'
 import { useModals } from '@/hooks/use-modals'
 import { useBoardMemberships } from '@/providers/board-memberships'
+import { useChangelog } from '@/providers/changelog'
 
 function openSupport() {
   // Sleekplan is bootstrapped in src/app/layout.tsx — its SDK attaches an
@@ -31,6 +33,7 @@ export function Auth() {
   const { user, isAuthenticated, signOut } = useAuth()
   const pathname = usePathname()
   const { openModal } = useModals()
+  const { unviewedCount, markAllViewed } = useChangelog()
 
   if (!isAuthenticated) {
     const signInRedirectTo = pathname?.startsWith('/retro/') ? pathname : '/me'
@@ -45,6 +48,11 @@ export function Auth() {
         }
       />
     )
+  }
+
+  const handleWhatsNew = () => {
+    markAllViewed()
+    ;(globalThis as any).$sleek?.open?.('changelog')
   }
 
   return (
@@ -70,6 +78,21 @@ export function Auth() {
           <BoardsSection pathname={pathname} />
 
           <div className='flex flex-col py-1'>
+            <button
+              type='button'
+              onClick={handleWhatsNew}
+              className='flex items-center justify-between gap-3 px-4 py-2 text-sm text-text-primary hover:bg-hover cursor-pointer text-left'
+            >
+              <span className='flex items-center gap-3'>
+                <Megaphone size={18} />
+                What&apos;s New
+              </span>
+              {unviewedCount > 0 && (
+                <span className='inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-secondary px-1.5 text-xs font-bold text-white'>
+                  {unviewedCount}
+                </span>
+              )}
+            </button>
             <Link
               href='/me'
               className='flex items-center gap-3 px-4 py-2 text-sm text-text-primary hover:bg-hover'
@@ -121,6 +144,15 @@ export function Auth() {
           className='rounded-full border border-border-light'
         />
         <ThemeAvatarBadge />
+        {unviewedCount > 0 && (
+          <span
+            aria-label={`${unviewedCount} unviewed changelog updates`}
+            className='absolute -top-0.5 -right-0.5 flex size-2.5'
+          >
+            <span className='absolute inline-flex h-full w-full animate-ping rounded-full bg-secondary opacity-75' />
+            <span className='relative inline-flex size-2.5 rounded-full bg-secondary' />
+          </span>
+        )}
       </button>
     </Popover>
   )

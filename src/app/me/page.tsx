@@ -2,6 +2,7 @@ import { Suspense } from 'react'
 import { auth } from '@/auth'
 import {
   AccessRequestsToReview,
+  Changelog,
   MeAccessRequestRefresher,
   MyActionItems,
   MyBoards,
@@ -59,6 +60,7 @@ export default async function Me() {
             <Suspense fallback={<Skeleton />}>
               <MyActionItems myActionItems={userActionItems} />
             </Suspense>
+            <Changelog />
           </div>
         </div>
       </div>
