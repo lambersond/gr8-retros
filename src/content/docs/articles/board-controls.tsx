@@ -1,4 +1,4 @@
-import { CirclePause, CirclePlay, CircleStop } from 'lucide-react'
+import { CirclePause, CirclePlay, CircleStop, Hammer } from 'lucide-react'
 import { BoardRoleBadge } from '@/components/badges'
 import { BoardRole } from '@/enums'
 
@@ -242,6 +242,43 @@ export default function BoardControls() {
       <p className='text-sm text-text-secondary italic'>
         Note: Facilitation cannot be started while a voting session is active.
         End or reset the current vote before beginning a facilitation session.
+      </p>
+
+      <h3>Quick Controls</h3>
+      <p>
+        Once a session facilitator has been picked with{' '}
+        <strong>Choose Facilitator</strong>, that person gets a round remote
+        pinned to the bottom-right of the board, so they can run the clock
+        without opening the board controls:
+      </p>
+      <ul>
+        <li>
+          <strong>Top</strong> &mdash; start or pause the timer.
+        </li>
+        <li>
+          <strong>Right</strong> &mdash; play or pause the music.
+        </li>
+        <li>
+          <strong>Bottom</strong> &mdash; add one minute to the timer.
+        </li>
+        <li>
+          <strong>Left</strong> &mdash; reset the timer to its default duration.
+        </li>
+      </ul>
+      <p>
+        The center of the remote shows the time remaining. Click it to set a new
+        time limit: pick a preset from 1 to 15 minutes, or type an exact time.
+        Changing the time while the timer runs keeps it running from the new
+        value. A section is dimmed when its control is turned off or restricted
+        to <BoardRoleBadge variant='simple' role={BoardRole.FACILITATOR} /> and
+        above; hover it to see why.
+      </p>
+      <p>
+        Other <BoardRoleBadge variant='simple' role={BoardRole.FACILITATOR} />{' '}
+        and above can show or hide the quick controls for themselves from the{' '}
+        <Hammer size={16} className='inline-block align-text-bottom' />{' '}
+        <strong>Facilitator Actions</strong> menu. The choice is remembered in
+        your browser, and no one else&rsquo;s board changes.
       </p>
 
       <h2>Control Bar Indicators</h2>

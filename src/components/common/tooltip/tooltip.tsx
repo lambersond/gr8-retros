@@ -6,6 +6,7 @@ import {
   forwardRef,
   isValidElement,
   useContext,
+  useLayoutEffect,
   useMemo,
   useState,
 } from 'react'
@@ -28,9 +29,10 @@ import type { TooltipProps } from './types'
 
 interface TooltipOptions {
   placement?: Placement
+  anchor?: Element | null
 }
 
-function useTooltip({ placement = 'top' }: TooltipOptions = {}) {
+function useTooltip({ placement = 'top', anchor }: TooltipOptions = {}) {
   const [open, setOpen] = useState(false)
 
   const data = useFloating({
@@ -50,6 +52,11 @@ function useTooltip({ placement = 'top' }: TooltipOptions = {}) {
   })
 
   const context = data.context
+
+  const { setPositionReference } = data.refs
+  useLayoutEffect(() => {
+    if (anchor) setPositionReference(anchor)
+  }, [anchor, setPositionReference])
 
   const hover = useHover(context, {
     move: false,
@@ -164,11 +171,12 @@ export function Tooltip({
   placement,
   contentContainerClasses = 'max-w-[calc(100vw_- _8px)] bg-card text-text-primary px-3 py-1 mb-1 rounded-lg z-10000',
   asChild = false,
+  anchor,
 }: Readonly<TooltipProps>) {
   if (!title) return <>{children}</>
 
   return (
-    <TooltipContainer placement={placement}>
+    <TooltipContainer placement={placement} anchor={anchor}>
       <TooltipTrigger asChild={asChild}>{children}</TooltipTrigger>
       <TooltipContent className={`tooltip ${contentContainerClasses}`}>
         {title}

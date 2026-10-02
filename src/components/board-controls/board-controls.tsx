@@ -1,5 +1,6 @@
 'use client'
 
+import { Vote } from 'lucide-react'
 import { Popover } from '../common'
 import { BoardControlItem } from './board-control-item'
 import { FacilitateSessionButton } from './facilitate'
@@ -7,9 +8,10 @@ import { StartGuidedRetroButton } from './guided'
 import { MusicStatus, TimeRemaining, VotesRemaining } from './indicators'
 import { AudioRefs, MusicControls, VolumeControl } from './music'
 import { TimerInputs } from './timer'
-import { Voting } from './voting'
+import { Voting, VotingConfig } from './voting'
 import { VotingProgressBar } from './voting/voting-progress-bar'
 import { GuidedPhase, VotingState } from '@/enums'
+import { useAuth } from '@/hooks/use-auth'
 import {
   useBoardPermissions,
   useBoardSettings,
@@ -37,14 +39,23 @@ const getHeaderLabel = (
 
 export function BoardControls() {
   const { user, userPermissions } = useBoardPermissions()
+  const {
+    user: { id: userId },
+  } = useAuth()
   const { settings } = useBoardSettings()
-  const { isFacilitatorMode, votingState, guidedActive, guidedPhase } =
-    useBoardControlsState(s => ({
-      isFacilitatorMode: s.boardControls.facilitatorMode.isActive,
-      votingState: s.boardControls.voting.state,
-      guidedActive: !!s.boardControls.guided?.isActive,
-      guidedPhase: s.boardControls.guided?.phase,
-    }))
+  const {
+    isFacilitatorMode,
+    votingState,
+    guidedActive,
+    guidedPhase,
+    chosenFacilitatorId,
+  } = useBoardControlsState(s => ({
+    isFacilitatorMode: s.boardControls.facilitatorMode.isActive,
+    votingState: s.boardControls.voting.state,
+    guidedActive: !!s.boardControls.guided?.isActive,
+    guidedPhase: s.boardControls.guided?.phase,
+    chosenFacilitatorId: s.boardControls.chosenFacilitatorId,
+  }))
   const { toggleFacilitatorMode, startGuidedRetro } = useBoardControlsActions(
     a => ({
       toggleFacilitatorMode: a.toggleFacilitatorMode,
@@ -67,6 +78,17 @@ export function BoardControls() {
   // manual "End Vote" path, which would call closeVoting() and bypass the phase
   // machine, leaving the guided phase stuck on Vote.
   const showVotingControls = showVoting && !guidedActive
+  // Guided mode still lets the session lead tune the vote: votes-per-user and
+  // single/multi mode, without any start/end button (the phase machine owns
+  // that). Available through Reflect, Group, and Vote so it can be set before
+  // the vote opens; once Discuss closes the vote there's nothing to tune. A
+  // chosen facilitator takes over exclusively, otherwise it falls back to the
+  // Facilitator role (same rule as PhaseIndicators' discussion handoff).
+  const leadsSession = chosenFacilitatorId
+    ? chosenFacilitatorId === userId
+    : user.hasFacilitator
+  const showGuidedVoteConfig =
+    guidedActive && guidedPhase !== GuidedPhase.DISCUSS && leadsSession
   const showFacilitate =
     !guidedActive &&
     canFacilitate &&
@@ -83,14 +105,20 @@ export function BoardControls() {
     settings.music.enabled ||
     showVoting ||
     showFacilitate ||
-    showGuided
+    showGuided ||
+    showGuidedVoteConfig
   const showPopover =
     settings.music.enabled ||
     (settings.timer.enabled &&
       userPermissions['timer.restricted.canControl']) ||
     showFacilitate ||
-    showGuided
+    showGuided ||
+    showGuidedVoteConfig
   const canVote = userPermissions['voting.restricted.canVote']
+  const showVotesRemaining = showVoting && canVote
+  // Keep the pill from rendering empty for the session lead before the vote
+  // opens (e.g. timer and music both off): show an idle vote icon to open it.
+  const showIdleVoteIcon = showGuidedVoteConfig && !showVotesRemaining
 
   if (!shouldRender) return
   return (
@@ -107,7 +135,7 @@ export function BoardControls() {
                   {getHeaderLabel(
                     settings.timer.enabled,
                     settings.music.enabled,
-                    showVotingControls,
+                    showVotingControls || showGuidedVoteConfig,
                   )}
                 </p>
               </BoardControlItem>
@@ -133,6 +161,11 @@ export function BoardControls() {
                   <Voting />
                 </BoardControlItem>
               )}
+              {showGuidedVoteConfig && (
+                <BoardControlItem>
+                  <VotingConfig />
+                </BoardControlItem>
+              )}
               {showFacilitate && (
                 <BoardControlItem className='flex items-center gap-2'>
                   <FacilitateSessionButton
@@ -153,7 +186,8 @@ export function BoardControls() {
             id='board-controls-indicators'
             className='text-xl font-mono text-center select-none z-10 flex items-center gap-2'
           >
-            {showVoting && canVote && <VotesRemaining />}
+            {showVotesRemaining && <VotesRemaining />}
+            {showIdleVoteIcon && <Vote className='text-text-secondary' />}
             {settings.timer.enabled && <TimeRemaining />}
             {settings.music.enabled && <MusicStatus />}
           </div>

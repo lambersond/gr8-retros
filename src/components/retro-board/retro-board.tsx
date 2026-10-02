@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from 'react'
 import Cookies from 'js-cookie'
 import { useSearchParams } from 'next/navigation'
+import { FacilitatorRemote } from '../board-controls'
 import { BoardSettingsSidebar } from '../board-settings-sidebar'
 import { CommentsSidebar } from '../comments-sidebar'
 import { SideEffectsHandler } from '../side-effects-handler'
@@ -70,6 +71,7 @@ export function RetroBoard({ board }: Readonly<{ board: Board }>) {
         <BoardShareButton id={board.id} />
         <RetroBoardHeader id={board.id} />
         <RetroBoardColumns />
+        <FacilitatorRemote />
         <CommentsSidebar />
         <SideEffectsHandler />
         <BoardSettingsSidebar />

@@ -33,6 +33,15 @@ export default function RetroActions() {
         determine the session facilitator.
       </p>
 
+      <h3>Show / Hide Quick Controls</h3>
+      <p>
+        Brings up the round quick-controls remote (timer start/pause, music, +1
+        minute, reset, and a time-limit picker) for you when you aren&rsquo;t
+        the chosen facilitator, or hides it again. Only your own board is
+        affected, and your choice is remembered in your browser. The chosen
+        facilitator always has the remote, so they don&rsquo;t see this option.
+      </p>
+
       <h3>Clear All Cards</h3>
       <p>
         Permanently remove every card from the board. This action requires

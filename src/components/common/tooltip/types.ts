@@ -6,4 +6,8 @@ export type TooltipProps = {
   placement?: Placement
   asChild?: boolean
   contentContainerClasses?: string
+  // Position against this element instead of the one that receives hover and
+  // focus, e.g. an upright icon inside a rotated button whose bounding box is
+  // much larger than what's visible.
+  anchor?: Element | null
 }

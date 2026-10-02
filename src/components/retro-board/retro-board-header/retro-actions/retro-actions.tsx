@@ -4,12 +4,15 @@ import {
   BrushCleaning,
   Download,
   Eraser,
+  Eye,
+  EyeOff,
   Funnel,
   Hammer,
   Loader,
   Sparkles,
 } from 'lucide-react'
 import { useRetroActions } from './use-retro-actions'
+import { useFacilitatorRemote } from '@/components/board-controls'
 import {
   Menu,
   Popover,
@@ -59,6 +62,11 @@ export function RetroActions({ id }: Readonly<{ id: string }>) {
   const [isGeneratingSummary, setIsGeneratingSummary] = useState(false)
 
   const { user } = useBoardPermissions()
+  const {
+    canToggle: canToggleRemote,
+    isShown: isRemoteShown,
+    setShown: setRemoteShown,
+  } = useFacilitatorRemote()
 
   const showFacilitatorActions = !isClaimed || user.hasFacilitator
   const showFilterButton = hasVotingResults
@@ -177,9 +185,22 @@ export function RetroActions({ id }: Readonly<{ id: string }>) {
         icon: <Eraser size={16} />,
       })
     }
+
+    // A facilitator who isn't the chosen facilitator can bring up the remote
+    // (quick controls) for themselves. The chosen facilitator always has it.
+    if (canToggleRemote) {
+      options.unshift({
+        label: isRemoteShown ? 'Hide Quick Controls' : 'Show Quick Controls',
+        icon: isRemoteShown ? <EyeOff size={16} /> : <Eye size={16} />,
+        onClick: () => setRemoteShown(!isRemoteShown),
+      })
+    }
     return options
   }, [
     user,
+    canToggleRemote,
+    isRemoteShown,
+    setRemoteShown,
     handleClearBoard,
     handleClearCompleted,
     handleExportReport,
