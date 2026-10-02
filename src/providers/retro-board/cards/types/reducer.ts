@@ -90,11 +90,12 @@ export type BoardCardsReducerAction =
       cardId: string
       groupId: string
       position: number
+      column?: string
     }
   | {
       type: BoardCardsMessageType.DELETE_CARD_GROUP
       groupId: string
-      restoredCards: { cardId: string; position: number }[]
+      restoredCards: { cardId: string; position: number; column?: string }[]
     }
   | {
       type: BoardCardsMessageType.UPDATE_CARD_POSITION

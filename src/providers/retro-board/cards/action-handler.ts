@@ -225,7 +225,7 @@ export const boardCardActionHandlers: {
     return { ...state, cards: newCards, groups: newGroups }
   },
   [BoardCardsMessageType.REMOVE_CARD_FROM_GROUP]: (state, action) => {
-    const { cardId, groupId, position } = action
+    const { cardId, groupId, position, column } = action
     const group = state.groups[groupId]
     if (!group || !state.cards[cardId]) return state
 
@@ -236,6 +236,7 @@ export const boardCardActionHandlers: {
         ...state.cards[cardId],
         cardGroupId: null,
         position,
+        ...(column && { column }),
       },
     }
 
@@ -270,12 +271,13 @@ export const boardCardActionHandlers: {
     delete newGroups[groupId]
 
     const newCards = { ...state.cards }
-    for (const { cardId, position } of restoredCards) {
+    for (const { cardId, position, column } of restoredCards) {
       if (newCards[cardId]) {
         newCards[cardId] = {
           ...newCards[cardId],
           cardGroupId: null,
           position,
+          ...(column && { column }),
         }
       }
     }
@@ -303,18 +305,10 @@ export const boardCardActionHandlers: {
     const group = state.groups[groupId]
     if (!group) return state
 
-    const newCards = { ...state.cards }
-    if (column !== group.column) {
-      for (const cardId of group.cardIds) {
-        if (newCards[cardId]) {
-          newCards[cardId] = { ...newCards[cardId], column }
-        }
-      }
-    }
-
+    // Member cards keep their own `column` (the column each came from), so a
+    // move only relocates the group itself.
     return {
       ...state,
-      cards: newCards,
       groups: { ...state.groups, [groupId]: { ...group, position, column } },
     }
   },

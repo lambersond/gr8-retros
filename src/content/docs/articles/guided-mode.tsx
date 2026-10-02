@@ -90,7 +90,8 @@ export default function GuidedMode() {
       <p>
         All reflections are now visible. Drag similar cards together to group
         related ideas so the team can vote on themes rather than duplicates.
-        Card grouping and drag-and-drop are enabled automatically for this
+        Cards grouped across columns stay labeled with the column they came
+        from. Card grouping and drag-and-drop are enabled automatically for this
         phase, even if those board settings are otherwise off.
       </p>
 

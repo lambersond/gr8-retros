@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
-import { ColumnBadge } from './column-badge'
 import { ItemContent } from './item-content'
-import type { ColumnInfo, FacilitatorItem } from './types'
+import { ColumnBadge, type ColumnInfo } from '@/components/column-badge'
+import type { FacilitatorItem } from './types'
 
 export function ExitingOverlay({
   item,
@@ -28,7 +28,11 @@ export function ExitingOverlay({
           : 'translateY(0) scale(1)',
       }}
     >
-      <ColumnBadge column={item.data.column} columnMap={columnMap} />
+      <ColumnBadge
+        column={item.data.column}
+        columnMap={columnMap}
+        className='mb-2'
+      />
       <ItemContent item={item} currentUserId={currentUserId} />
     </div>
   )

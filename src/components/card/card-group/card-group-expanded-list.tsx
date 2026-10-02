@@ -1,11 +1,14 @@
 import clsx from 'clsx'
 import { X } from 'lucide-react'
 import { CardCollapsed } from '../card-collapsed'
+import { ColumnBadge } from '@/components/column-badge'
 import type { CardGroupExpandedListProps } from './types'
 
 export function CardGroupExpandedList({
   memberCards,
   groupId,
+  groupColumn,
+  columnMap,
   isDragEnabled,
   currentUserId,
   onRemoveCard,
@@ -52,6 +55,14 @@ export function CardGroupExpandedList({
           )}
         >
           <div className='flex-1 min-w-0'>
+            {/* Labels cards that came from a column other than the group's. */}
+            {card.column !== groupColumn && (
+              <ColumnBadge
+                column={card.column}
+                columnMap={columnMap}
+                className='ml-2 mt-2'
+              />
+            )}
             <CardCollapsed
               id={card.id}
               content={card.content}

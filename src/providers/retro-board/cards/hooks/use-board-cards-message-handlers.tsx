@@ -130,12 +130,13 @@ export function useBoardCardsMessageHandlers() {
         },
 
         [BoardCardsMessageType.REMOVE_CARD_FROM_GROUP]: data => {
-          const { cardId, groupId, position } = data.payload
+          const { cardId, groupId, position, column } = data.payload
           dispatch({
             type: BoardCardsMessageType.REMOVE_CARD_FROM_GROUP,
             cardId,
             groupId,
             position,
+            column,
           })
         },
 

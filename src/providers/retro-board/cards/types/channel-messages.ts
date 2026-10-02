@@ -55,13 +55,18 @@ export type CardMessageData =
       BoardCardsMessageType.ADD_CARD_TO_GROUP,
       { cardId: string; groupId: string }
     >
+  // `column` is where the card went on leaving the group: the column it came
+  // from. Optional so messages from clients without it still apply.
   | MessageStruct<
       BoardCardsMessageType.REMOVE_CARD_FROM_GROUP,
-      { cardId: string; groupId: string; position: number }
+      { cardId: string; groupId: string; position: number; column?: string }
     >
   | MessageStruct<
       BoardCardsMessageType.DELETE_CARD_GROUP,
-      { groupId: string; restoredCards: { cardId: string; position: number }[] }
+      {
+        groupId: string
+        restoredCards: { cardId: string; position: number; column?: string }[]
+      }
     >
   | MessageStruct<
       BoardCardsMessageType.UPDATE_CARD_GROUP,

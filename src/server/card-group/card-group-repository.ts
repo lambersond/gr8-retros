@@ -1,9 +1,14 @@
 /* eslint-disable unicorn/no-null */
 'use server'
 
+import { restoreGroupCards } from './restore-utils'
 import prisma from '@/clients/prisma'
 import { decodeBoardId } from '@/lib/board-id'
-import type { CreateCardGroupParams, EditCardGroupParams } from '@/types'
+import type {
+  CreateCardGroupParams,
+  EditCardGroupParams,
+  RestoredCard,
+} from '@/types'
 
 const cardInclude = { actionItems: true } as const
 const groupInclude = { cards: { include: cardInclude } } as const
@@ -58,131 +63,44 @@ export async function createCardGroup(params: CreateCardGroupParams) {
   })
 }
 
+// Moving a group leaves its cards' own `column` alone: that's the column each
+// card came from, which the group displays and ungrouping restores.
 export async function editCardGroup(params: EditCardGroupParams) {
-  return prisma.$transaction(async tx => {
-    if (params.column !== undefined) {
-      await tx.card.updateMany({
-        where: { cardGroupId: params.cardGroupId },
-        data: { column: params.column },
-      })
-    }
-
-    return tx.cardGroup.update({
-      where: { id: params.cardGroupId },
-      data: {
-        ...(params.label !== undefined && { label: params.label }),
-        ...(params.position !== undefined && { position: params.position }),
-        ...(params.column !== undefined && { column: params.column }),
-      },
-      include: groupInclude,
-    })
+  return prisma.cardGroup.update({
+    where: { id: params.cardGroupId },
+    data: {
+      ...(params.label !== undefined && { label: params.label }),
+      ...(params.position !== undefined && { position: params.position }),
+      ...(params.column !== undefined && { column: params.column }),
+    },
+    include: groupInclude,
   })
 }
 
-export async function deleteCardGroup(cardGroupId: string) {
+// Dissolves the group, sending each card back to the column it came from.
+// Returns where every card landed so clients can mirror it exactly.
+export async function deleteCardGroup(
+  cardGroupId: string,
+): Promise<RestoredCard[]> {
   return prisma.$transaction(async tx => {
     const group = await tx.cardGroup.findUnique({
       where: { id: cardGroupId },
       include: { cards: true },
     })
 
-    if (!group) return
+    if (!group) return []
 
-    const [cardMaxResult, groupMaxResult] = await Promise.all([
-      tx.card.aggregate({
-        where: {
-          retroSessionId: group.retroSessionId,
-          column: group.column,
-          cardGroupId: null,
-        },
-        _max: { position: true },
-      }),
-      tx.cardGroup.aggregate({
-        where: {
-          retroSessionId: group.retroSessionId,
-          column: group.column,
-          id: { not: cardGroupId },
-        },
-        _max: { position: true },
-      }),
-    ])
-
-    let nextPosition =
-      Math.ceil(
-        Math.max(
-          cardMaxResult._max.position ?? 0,
-          groupMaxResult._max.position ?? 0,
-        ),
-      ) + 1
-
-    for (const card of group.cards) {
-      await tx.card.update({
-        where: { id: card.id },
-        data: {
-          cardGroupId: null,
-          column: group.column,
-          position: nextPosition,
-        },
-      })
-      nextPosition += 1
-    }
-
-    return tx.cardGroup.delete({ where: { id: cardGroupId } })
-  })
-}
-
-export async function deleteEmptyCardGroup(cardGroupId: string) {
-  return prisma.$transaction(async tx => {
-    const group = await tx.cardGroup.findUnique({
-      where: { id: cardGroupId },
-      include: { cards: true },
-    })
-
-    if (!group) return
-
-    const [remainingCard] = group.cards
-
-    const [cardMaxResult, groupMaxResult] = await Promise.all([
-      tx.card.aggregate({
-        where: {
-          retroSessionId: group.retroSessionId,
-          column: group.column,
-          cardGroupId: null,
-        },
-        _max: { position: true },
-      }),
-      tx.cardGroup.aggregate({
-        where: {
-          retroSessionId: group.retroSessionId,
-          column: group.column,
-          id: { not: cardGroupId },
-        },
-        _max: { position: true },
-      }),
-    ])
-
-    const tailPosition =
-      Math.ceil(
-        Math.max(
-          cardMaxResult._max.position ?? 0,
-          groupMaxResult._max.position ?? 0,
-        ),
-      ) + 1
-
-    const updatedCard = await tx.card.update({
-      where: { id: remainingCard.id },
-      data: {
-        cardGroupId: null,
-        column: group.column,
-        position: tailPosition,
-      },
-      include: cardInclude,
-    })
-
+    const restored = await restoreGroupCards(tx, group, group.cards)
     await tx.cardGroup.delete({ where: { id: cardGroupId } })
-
-    return updatedCard
+    return restored
   })
+}
+
+// A group down to its last card dissolves the same way.
+export async function deleteEmptyCardGroup(
+  cardGroupId: string,
+): Promise<RestoredCard[]> {
+  return deleteCardGroup(cardGroupId)
 }
 
 export async function getCardGroupById(cardGroupId: string) {

@@ -1,3 +1,4 @@
+import type { ColumnInfo } from '@/components/column-badge'
 import type { BoardSettingsWithPermissions } from '@/providers/retro-board/board-settings/types'
 import type { CardGroupState } from '@/providers/retro-board/cards'
 import type { ActionItem, Card } from '@/types'
@@ -33,6 +34,8 @@ export interface CardGroupActionsProps {
 export interface CardGroupExpandedListProps {
   memberCards: Card[]
   groupId: string
+  groupColumn: string
+  columnMap: Record<string, ColumnInfo>
   isDragEnabled: boolean
   currentUserId?: string
   onRemoveCard?: (cardId: string) => (e: React.MouseEvent) => void

@@ -9,11 +9,11 @@ import {
   MessageSquareWarning,
   SkipForward,
 } from 'lucide-react'
-import { useTheme } from 'next-themes'
 import { ExitingOverlay } from './exiting-overlay'
 import { StackPeekLayers } from './stack-peek-layers'
 import { TopCard } from './top-card'
 import { getItemId, isItemDiscussed, sortItems } from './utils'
+import { useColumnMap } from '@/components/column-badge'
 import { VotingState } from '@/enums'
 import { useAuth } from '@/hooks/use-auth'
 import { useBoardId } from '@/hooks/use-board-id'
@@ -25,21 +25,18 @@ import {
   BoardCardsMessageType,
 } from '@/providers/retro-board/cards'
 import { filterCardsBy } from '@/providers/retro-board/cards/utils'
-import { useBoardColumns } from '@/providers/retro-board/columns'
 import {
   useBoardControlsActions,
   useBoardControlsState,
 } from '@/providers/retro-board/controls'
-import type { ColumnInfo, FacilitatorItem } from './types'
+import type { FacilitatorItem } from './types'
 
 export function FacilitatorView() {
   const { user } = useAuth()
   const boardCards = useBoardCards()
-  const { columns } = useBoardColumns()
+  const columnMap = useColumnMap()
   const id = useBoardId()
   const { publish } = useChannel(id)
-  const { resolvedTheme } = useTheme()
-  const isDark = resolvedTheme === 'dark'
   const { openModal } = useModals()
   const { openSidebar, openGroupSidebar } = useCommentsSidebarActions()
   const boardMembers = useBoardMembers()
@@ -75,19 +72,6 @@ export function FacilitatorView() {
     })
   }, [clearMyVotes, updateBoardControls, votingObject])
   const prevTopIdRef = useRef<string | undefined>(undefined)
-
-  const columnMap = useMemo(() => {
-    const map: Record<string, ColumnInfo> = {}
-    for (const col of columns) {
-      map[col.columnType] = {
-        label: col.label,
-        emoji: col.emoji ?? undefined,
-        titleBg: isDark ? col.darkTitleBg : col.lightTitleBg,
-        titleText: isDark ? col.darkTitleText : col.lightTitleText,
-      }
-    }
-    return map
-  }, [columns, isDark])
 
   const allItems = useMemo<FacilitatorItem[]>(() => {
     const standaloneCards = Object.values(boardCards.cards).filter(

@@ -24,6 +24,7 @@ import {
   deleteCardGroup,
   editCardGroup,
 } from '@/server/card-group/card-group-service'
+import type { RestoredCard } from '@/types'
 
 type DropZone =
   | { type: 'insert'; index: number }
@@ -175,6 +176,39 @@ export function useColumnDragDrop(columnType: string) {
     })
   }
 
+  // The server decides where cards leaving a group land (back in the column
+  // each came from), so these mirror its result rather than guessing locally.
+  const broadcastGroupDissolve = (
+    groupId: string,
+    restoredCards: RestoredCard[],
+  ) => {
+    dispatch({
+      type: BoardCardsMessageType.DELETE_CARD_GROUP,
+      groupId,
+      restoredCards,
+    })
+    publish({
+      data: {
+        type: BoardCardsMessageType.DELETE_CARD_GROUP,
+        payload: { groupId, restoredCards },
+      },
+    })
+  }
+
+  const broadcastRemoveFromGroup = async (cardId: string, groupId: string) => {
+    const card = await removeCardFromGroup({ cardId })
+    const payload = {
+      cardId,
+      groupId,
+      position: card.position ?? 0,
+      column: card.column,
+    }
+    dispatch({ type: BoardCardsMessageType.REMOVE_CARD_FROM_GROUP, ...payload })
+    publish({
+      data: { type: BoardCardsMessageType.REMOVE_CARD_FROM_GROUP, payload },
+    })
+  }
+
   const broadcastGroupPatch = (
     groupId: string,
     patch: Record<string, unknown>,
@@ -264,43 +298,12 @@ export function useColumnDragDrop(columnType: string) {
     if (!group) return
 
     if (group.cardIds.length <= 2) {
-      await deleteCardGroup(groupId)
-      const remaining = group.cardIds.filter(id => id !== cardId)
-      // Include the dragged card so its cardGroupId is cleared too; otherwise it
-      // stays orphaned (group gone, cardGroupId still set) and is hidden from the
-      // column until a refresh. handleReorder then sets its column/position.
-      const restoredCards = [
-        ...remaining.map((id, i) => ({
-          cardId: id,
-          position: group.position + i,
-        })),
-        { cardId, position: group.position + remaining.length },
-      ]
-      dispatch({
-        type: BoardCardsMessageType.DELETE_CARD_GROUP,
-        groupId,
-        restoredCards,
-      })
-      publish({
-        data: {
-          type: BoardCardsMessageType.DELETE_CARD_GROUP,
-          payload: { groupId, restoredCards },
-        },
-      })
+      // Dissolves the group. The restored cards include this one, so its
+      // cardGroupId clears too (otherwise it stays hidden until a refresh);
+      // a drag then re-places it via handleReorder or handleMerge.
+      broadcastGroupDissolve(groupId, await deleteCardGroup(groupId))
     } else {
-      await removeCardFromGroup({ cardId })
-      dispatch({
-        type: BoardCardsMessageType.REMOVE_CARD_FROM_GROUP,
-        cardId,
-        groupId,
-        position: 0,
-      })
-      publish({
-        data: {
-          type: BoardCardsMessageType.REMOVE_CARD_FROM_GROUP,
-          payload: { cardId, groupId, position: 0 },
-        },
-      })
+      await broadcastRemoveFromGroup(cardId, groupId)
     }
   }
 
@@ -445,18 +448,8 @@ export function useColumnDragDrop(columnType: string) {
           broadcastAddToGroup(cardId, targetGroup.id),
         ),
       )
-      await deleteCardGroup(srcGroup.id)
-      dispatch({
-        type: BoardCardsMessageType.DELETE_CARD_GROUP,
-        groupId: srcGroup.id,
-        restoredCards: [],
-      })
-      publish({
-        data: {
-          type: BoardCardsMessageType.DELETE_CARD_GROUP,
-          payload: { groupId: srcGroup.id, restoredCards: [] },
-        },
-      })
+      // Every card has moved to the target group, so nothing is restored.
+      broadcastGroupDissolve(srcGroup.id, await deleteCardGroup(srcGroup.id))
       await editCardGroup({ cardGroupId: targetGroup.id, label })
       broadcastGroupPatch(targetGroup.id, { label })
     }
@@ -645,60 +638,11 @@ export function useColumnDragDrop(columnType: string) {
     }
   }
 
+  // The × on a grouped card: the same as dragging it out, minus the drop, so
+  // the card goes back to the column it came from.
   const handleRemoveFromGroup = useCallback(
-    async (groupId: string, cardId: string) => {
-      const group = boardCards.groups[groupId]
-      if (!group) return
-
-      if (group.cardIds.length <= 2) {
-        // Dissolving group — delete the group, which restores all cards
-        await deleteCardGroup(groupId)
-        const remaining = group.cardIds.filter(id => id !== cardId)
-        const restoredCards = [
-          ...remaining.map((id, i) => ({
-            cardId: id,
-            position: group.position + i,
-          })),
-          { cardId, position: group.position + remaining.length },
-        ]
-        dispatch({
-          type: BoardCardsMessageType.DELETE_CARD_GROUP,
-          groupId,
-          restoredCards,
-        })
-        publish({
-          data: {
-            type: BoardCardsMessageType.DELETE_CARD_GROUP,
-            payload: { groupId, restoredCards },
-          },
-        })
-      } else {
-        await removeCardFromGroup({ cardId })
-        const maxPos = Math.max(
-          ...Object.values(boardCards.cards)
-            .filter(c => c.column === columnType && !c.cardGroupId)
-            .map(c => c.position ?? 0),
-          ...Object.values(boardCards.groups)
-            .filter(g => g.column === columnType)
-            .map(g => g.position),
-        )
-        const newPos = maxPos + 1
-
-        dispatch({
-          type: BoardCardsMessageType.REMOVE_CARD_FROM_GROUP,
-          cardId,
-          groupId,
-          position: newPos,
-        })
-        publish({
-          data: {
-            type: BoardCardsMessageType.REMOVE_CARD_FROM_GROUP,
-            payload: { cardId, groupId, position: newPos },
-          },
-        })
-      }
-    },
-    [boardCards, columnType, dispatch, publish],
+    (groupId: string, cardId: string) => detachFromGroup(cardId, groupId),
+    [boardCards, dispatch, publish],
   )
 
   return {

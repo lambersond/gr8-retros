@@ -14,6 +14,7 @@ import { IconButton, Tooltip } from '../../common'
 import { CardGroupActions } from './card-group-actions'
 import { CardGroupExpandedList } from './card-group-expanded-list'
 import { GroupActionItem } from './group-action-item'
+import { useColumnMap } from '@/components/column-badge'
 import { GuidedPhase } from '@/enums'
 import { useBoardId } from '@/hooks/use-board-id'
 import { useModals } from '@/hooks/use-modals'
@@ -48,6 +49,7 @@ export function CardGroup({
   )
   const [expanded, setExpanded] = useState(isFacilitatorMode)
   const { cards: allCards } = useBoardCards()
+  const columnMap = useColumnMap()
   const dispatch = useBoardCardsDispatch()
   const { settings } = useBoardSettings()
   const { userPermissions } = useBoardPermissions()
@@ -310,6 +312,8 @@ export function CardGroup({
         <CardGroupExpandedList
           memberCards={memberCards}
           groupId={group.id}
+          groupColumn={group.column}
+          columnMap={columnMap}
           isDragEnabled={isDragEnabled}
           currentUserId={currentUserId}
           onRemoveCard={onRemoveCard ? handleRemoveCard : undefined}

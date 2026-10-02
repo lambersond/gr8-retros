@@ -59,6 +59,14 @@ export interface RemoveCardFromGroupParams {
   column?: string
 }
 
+// Where a card landed after leaving a group: back in the column it came from,
+// or the group's column if that one no longer exists.
+export interface RestoredCard {
+  cardId: string
+  column: string
+  position: number
+}
+
 export interface CreateCardGroupParams {
   boardId: string
   column: string

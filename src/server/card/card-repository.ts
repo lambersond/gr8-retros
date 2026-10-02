@@ -3,6 +3,11 @@
 
 import prisma from '@/clients/prisma'
 import { decodeBoardId } from '@/lib/board-id'
+import {
+  getBoardColumnTypes,
+  getTailPosition,
+  resolveRestoreColumn,
+} from '@/server/card-group/restore-utils'
 import type {
   AddCardToGroupParams,
   CreateCardParams,
@@ -214,37 +219,28 @@ export async function addCardToGroup(params: AddCardToGroupParams) {
 
 export async function removeCardFromGroup(params: RemoveCardFromGroupParams) {
   return prisma.$transaction(async tx => {
-    let position = params.position
+    let { column, position } = params
 
-    if (position === undefined) {
+    if (column === undefined || position === undefined) {
       const card = await tx.card.findUnique({
         where: { id: params.cardId },
-        select: { retroSessionId: true, column: true },
+        select: {
+          retroSessionId: true,
+          column: true,
+          cardGroup: { select: { column: true } },
+        },
       })
       if (card) {
-        const targetColumn = params.column ?? card.column
-        const [cardMaxResult, groupMaxResult] = await Promise.all([
-          tx.card.aggregate({
-            where: {
-              retroSessionId: card.retroSessionId,
-              column: targetColumn,
-              cardGroupId: null,
-            },
-            _max: { position: true },
-          }),
-          tx.cardGroup.aggregate({
-            where: {
-              retroSessionId: card.retroSessionId,
-              column: targetColumn,
-            },
-            _max: { position: true },
-          }),
-        ])
-        const maxPosition = Math.max(
-          cardMaxResult._max.position ?? 0,
-          groupMaxResult._max.position ?? 0,
+        // Unless told otherwise, a card leaving its group goes back to the
+        // column it came from (or the group's, if that column is gone).
+        column ??= resolveRestoreColumn(
+          card.column,
+          card.cardGroup?.column ?? card.column,
+          await getBoardColumnTypes(tx, card.retroSessionId),
         )
-        position = Math.ceil(maxPosition) + 1
+        if (position === undefined) {
+          position = await getTailPosition(tx, card.retroSessionId, column)
+        }
       }
     }
 
@@ -253,7 +249,7 @@ export async function removeCardFromGroup(params: RemoveCardFromGroupParams) {
       data: {
         cardGroupId: null,
         position,
-        ...(params.column && { column: params.column }),
+        ...(column && { column }),
       },
       include: { actionItems: true },
     })

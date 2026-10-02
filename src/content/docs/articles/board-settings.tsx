@@ -222,7 +222,7 @@ export default function BoardSettings() {
             name='Card Grouping'
             defaultValue='Off'
             plan='Supporter'
-            description='Enable grouping of related cards via drag and drop. Grouped cards are displayed together under a shared heading.'
+            description='Enable grouping of related cards via drag and drop. Grouped cards are displayed together under a shared heading. Cards grouped from other columns keep their original column: the expanded group labels each of those cards with it, and ungrouping returns cards there.'
           />
         </SettingGroup>
 
