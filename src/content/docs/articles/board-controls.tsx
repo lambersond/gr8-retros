@@ -201,6 +201,10 @@ export default function BoardControls() {
           Cards are shown in order, sorted by votes and filtered by any active
           filters.
         </li>
+        <li>
+          Since the columns are hidden, every card in a group is labeled with
+          the column it came from.
+        </li>
         <li>A counter shows how many items remain to discuss.</li>
         <li>
           When the team is done discussing a card, it is marked as discussed and

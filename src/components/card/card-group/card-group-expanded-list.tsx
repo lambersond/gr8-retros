@@ -9,6 +9,7 @@ export function CardGroupExpandedList({
   groupId,
   groupColumn,
   columnMap,
+  labelEveryCard = false,
   isDragEnabled,
   currentUserId,
   onRemoveCard,
@@ -55,8 +56,9 @@ export function CardGroupExpandedList({
           )}
         >
           <div className='flex-1 min-w-0'>
-            {/* Labels cards that came from a column other than the group's. */}
-            {card.column !== groupColumn && (
+            {/* Labels cards that came from a column other than the group's, or
+                every card when asked (e.g. facilitation mode hides columns). */}
+            {(labelEveryCard || card.column !== groupColumn) && (
               <ColumnBadge
                 column={card.column}
                 columnMap={columnMap}

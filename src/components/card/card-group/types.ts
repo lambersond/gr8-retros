@@ -36,6 +36,7 @@ export interface CardGroupExpandedListProps {
   groupId: string
   groupColumn: string
   columnMap: Record<string, ColumnInfo>
+  labelEveryCard?: boolean
   isDragEnabled: boolean
   currentUserId?: string
   onRemoveCard?: (cardId: string) => (e: React.MouseEvent) => void

@@ -314,6 +314,7 @@ export function CardGroup({
           groupId={group.id}
           groupColumn={group.column}
           columnMap={columnMap}
+          labelEveryCard={isFacilitatorMode}
           isDragEnabled={isDragEnabled}
           currentUserId={currentUserId}
           onRemoveCard={onRemoveCard ? handleRemoveCard : undefined}
