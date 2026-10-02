@@ -9,7 +9,7 @@ import {
 
 // Guided mode replaces the header's PhaseIndicators (which carries the
 // "Reset My Votes" control in the regular board) with the phase flow, so this
-// restores a way to undo a submission. It mirrors the "I'm done" button's
+// restores a way to undo a submission. It mirrors the "Cast My Votes" button's
 // top-center slot and only appears once the current user has submitted.
 export function GuidedResetVotesButton() {
   const { votingOpen, hasVoted } = useBoardControlsState(s => ({

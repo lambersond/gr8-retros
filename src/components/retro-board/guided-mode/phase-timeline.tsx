@@ -28,7 +28,7 @@ const PHASE_META: Record<
   [GuidedPhase.VOTE]: {
     label: 'Vote',
     Icon: Vote,
-    hint: 'Vote for the topics worth discussing, then hit the “I’m done” button.',
+    hint: 'Vote for the topics worth discussing, then hit the “Cast My Votes” button.',
   },
   [GuidedPhase.DISCUSS]: {
     label: 'Discuss',

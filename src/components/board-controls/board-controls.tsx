@@ -5,7 +5,12 @@ import { Popover } from '../common'
 import { BoardControlItem } from './board-control-item'
 import { FacilitateSessionButton } from './facilitate'
 import { StartGuidedRetroButton } from './guided'
-import { MusicStatus, TimeRemaining, VotesRemaining } from './indicators'
+import {
+  MusicStatus,
+  TimeRemaining,
+  VotesRemaining,
+  VotesSubmitted,
+} from './indicators'
 import { AudioRefs, MusicControls, VolumeControl } from './music'
 import { TimerInputs } from './timer'
 import { Voting, VotingConfig } from './voting'
@@ -66,7 +71,7 @@ export function BoardControls() {
   const isVotingOpen = votingState === VotingState.OPEN
   const inGuidedVote = guidedActive && guidedPhase === GuidedPhase.VOTE
   // Timer and music stay available in every phase. The participant voting UI
-  // (vote indicator + "I'm done") shows in the normal flow when voting is
+  // (vote indicator + "Cast My Votes") shows in the normal flow when voting is
   // enabled, and always during the guided Vote phase — that phase forces a
   // voting session open regardless of the board's voting setting, so the
   // controls follow it rather than the (possibly disabled) setting.
@@ -89,6 +94,14 @@ export function BoardControls() {
     : user.hasFacilitator
   const showGuidedVoteConfig =
     guidedActive && guidedPhase !== GuidedPhase.DISCUSS && leadsSession
+  // The normal flow shows voted/voting counts in the popover's ActiveVote,
+  // which guided mode hides. So whoever can move the group on from the Vote
+  // phase (same rule as the guided Next button) gets the exact count beside
+  // the vote icon instead.
+  const canAdvanceGuided =
+    user.hasFacilitator ||
+    (!!chosenFacilitatorId && chosenFacilitatorId === userId)
+  const showGuidedVoteCount = inGuidedVote && isVotingOpen && canAdvanceGuided
   const showFacilitate =
     !guidedActive &&
     canFacilitate &&
@@ -188,6 +201,7 @@ export function BoardControls() {
           >
             {showVotesRemaining && <VotesRemaining />}
             {showIdleVoteIcon && <Vote className='text-text-secondary' />}
+            {showGuidedVoteCount && <VotesSubmitted />}
             {settings.timer.enabled && <TimeRemaining />}
             {settings.music.enabled && <MusicStatus />}
           </div>

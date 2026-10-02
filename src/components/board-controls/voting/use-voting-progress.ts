@@ -4,9 +4,9 @@ import { useBoardControlsState } from '@/providers/retro-board/controls'
 import { useViewingMembers } from '@/providers/viewing-members'
 
 // A participant counts as "voted" only once their submission lands in
-// collectedVotes (keyed by userId) — i.e. after they click "I'm done", not on
-// each live vote click. The denominator is everyone currently viewing, narrowed
-// to MEMBER+ when the board restricts voting to members.
+// collectedVotes (keyed by userId) — i.e. after they click "Cast My Votes",
+// not on each live vote click. The denominator is everyone currently viewing,
+// narrowed to MEMBER+ when the board restricts voting to members.
 export function useVotingProgress() {
   const { membersVoted } = useBoardControlsState(s => ({
     membersVoted: s.boardControls.voting.collectedVotes,

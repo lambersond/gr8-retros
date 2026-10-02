@@ -38,7 +38,7 @@ export function IAmDoneButton({
       }}
     >
       <Check className='size-5' />
-      I&apos;m done
+      Cast My Votes
     </button>
   )
 }

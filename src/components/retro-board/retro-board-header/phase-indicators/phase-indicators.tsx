@@ -86,7 +86,7 @@ export function PhaseIndicators() {
       {isVotingActive && (
         <PhaseChip
           label='Voting is Active'
-          tooltip="Make sure to submit your vote when you are finished by pressing the I'm Done button"
+          tooltip='Make sure to submit your vote when you are finished by pressing the Cast My Votes button'
           className='bg-primary/10 text-primary border-primary/30'
         />
       )}

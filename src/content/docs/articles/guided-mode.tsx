@@ -99,9 +99,11 @@ export default function GuidedMode() {
       </h3>
       <p>
         A fresh voting session opens so the team can prioritize what to discuss.
-        Cast your votes on cards, then click <strong>I&rsquo;m done</strong> to
+        Cast your votes on cards, then click <strong>Cast My Votes</strong> to
         submit your ballot. A progress indicator shows how many participants
-        have submitted. Changed your mind? Use{' '}
+        have submitted, and whoever can move the session on also sees the exact
+        count (for example <strong>3/8</strong>) beside the vote icon in the
+        board controls. Changed your mind? Use{' '}
         <Eraser size={16} className='inline-block align-text-bottom' />{' '}
         <strong>Reset my votes</strong> to clear your submission and vote again.
         If the facilitator tries to advance before everyone has voted, they are
