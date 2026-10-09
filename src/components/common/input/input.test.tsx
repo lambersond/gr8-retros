@@ -11,9 +11,16 @@ describe('components/common/input', () => {
   })
 
   it('should render with error', () => {
-    render(<Input error='ERROR' />)
+    render(<Input name='item' label='label' error='ERROR' />)
 
-    expect(screen.getByText('ERROR')).toHaveClass('text-primary')
+    expect(screen.getByText('ERROR')).toHaveClass('text-danger')
+    expect(screen.getByLabelText('label')).toHaveClass('border-error')
+  })
+
+  it('should not apply error styling without an error', () => {
+    render(<Input name='item' label='label' />)
+
+    expect(screen.getByLabelText('label')).not.toHaveClass('border-error')
   })
 
   it('should handle register function', () => {

@@ -1,5 +1,6 @@
 import { renderHook, waitFor } from '@test-utils'
 import { useAuth } from './use-auth'
+import { PaymentTier } from '@/enums'
 
 const mockUseSession = jest.fn().mockReturnValue({})
 const mockUseFeatureFlags = jest.fn()
@@ -17,13 +18,14 @@ jest.mock('next-auth/react', () => ({
 describe('hooks/use-auth', () => {
   it('should return all info when auth is enabled', async () => {
     const mockUser = {
+      id: 'user-1',
       name: 'Test User',
       email: 'test@rms.org',
       image: 'https://example.com/image.jpg',
     }
 
     mockUseFeatureFlags.mockReturnValue({
-      isAuthEnabled: true,
+      flags: { isAuthEnabled: true },
     })
     mockUseSession.mockReturnValue({
       data: {
@@ -37,13 +39,17 @@ describe('hooks/use-auth', () => {
     await waitFor(() => {
       expect(result.current).toEqual({
         isAuthenticated: true,
+        isLoading: false,
         session: expect.objectContaining({
           user: mockUser,
         }),
         signIn: expect.any(Function),
         signOut: expect.any(Function),
         status: 'authenticated',
-        user: mockUser,
+        user: {
+          ...mockUser,
+          paymentTier: PaymentTier.FREE,
+        },
         isEnabled: true,
       })
     })

@@ -1,11 +1,11 @@
 'use client'
 
-import { useEffect, useMemo, useRef } from 'react'
+import { useMemo } from 'react'
 import { Eraser, Play } from 'lucide-react'
+import { useChosenFacilitatorPrompts } from './use-chosen-facilitator-prompts'
 import { Tooltip } from '@/components/common'
 import { VotingState } from '@/enums'
 import { useAuth } from '@/hooks/use-auth'
-import { useModals } from '@/hooks/use-modals'
 import {
   useBoardPermissions,
   useBoardSettings,
@@ -32,7 +32,9 @@ export function PhaseIndicators() {
   const { settings } = useBoardSettings()
   const { user: roleUser } = useBoardPermissions()
   const { user } = useAuth()
-  const { openModal } = useModals()
+  // Rendered for everyone in a normal session, so it carries the chosen
+  // facilitator's "All votes are in" / "Start Discussions" prompts.
+  useChosenFacilitatorPrompts()
 
   const isVotingActive = votingState === VotingState.OPEN
   const isVotingClosed = votingState === VotingState.CLOSED
@@ -54,30 +56,6 @@ export function PhaseIndicators() {
     isChosenFacilitator,
     roleUser.hasFacilitator,
   ])
-
-  const shouldPromptChosenFacilitator =
-    isVotingClosed &&
-    isFacilitatorModeEnabled &&
-    !isFacilitatorMode &&
-    isChosenFacilitator
-
-  const hasPromptedRef = useRef(false)
-  useEffect(() => {
-    if (!shouldPromptChosenFacilitator) {
-      hasPromptedRef.current = false
-      return
-    }
-    if (hasPromptedRef.current) return
-    hasPromptedRef.current = true
-    openModal('ConfirmModal', {
-      title: 'Start Discussions',
-      message:
-        'Voting is closed. As the chosen facilitator, would you like to start discussions and begin reviewing the cards?',
-      confirmButtonText: 'Start Discussions',
-      cancelButtonText: 'Later',
-      onConfirm: toggleFacilitatorMode,
-    })
-  }, [shouldPromptChosenFacilitator, openModal, toggleFacilitatorMode])
 
   if (!isVotingActive && !isVotingClosed && !isFacilitatorMode) return
 

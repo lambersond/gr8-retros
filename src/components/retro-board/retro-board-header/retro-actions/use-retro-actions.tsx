@@ -54,7 +54,7 @@ export function useRetroActions(channelName: string) {
     (opts: {
       title: string
       message: string
-      submitText: string
+      confirmButtonText: string
       onConfirm: () => void
     }) => {
       openModal('ConfirmModal', {
@@ -62,7 +62,7 @@ export function useRetroActions(channelName: string) {
         color: 'danger',
         message: opts.message,
         onConfirm: opts.onConfirm,
-        submitText: opts.submitText,
+        confirmButtonText: opts.confirmButtonText,
       })
     },
     [openModal],
@@ -72,7 +72,7 @@ export function useRetroActions(channelName: string) {
     confirmAndRun({
       title: 'Erase Board Items',
       message: 'Are you sure you want to remove all cards from this board?',
-      submitText: 'Yes, clear board',
+      confirmButtonText: 'Yes, clear board',
       onConfirm: () => {
         deleteThenBroadcast(
           `/api/board/${channelName}/cards`,
@@ -87,7 +87,7 @@ export function useRetroActions(channelName: string) {
       title: 'Clear Completed Items',
       message:
         'This will remove all cards marked discussed and cards with completed action items. Are you sure?',
-      submitText: 'Yes, clear completed',
+      confirmButtonText: 'Yes, clear completed',
       onConfirm: () => {
         deleteThenBroadcast(
           `/api/board/${channelName}/cards/completed`,

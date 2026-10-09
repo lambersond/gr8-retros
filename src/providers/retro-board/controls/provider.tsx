@@ -12,7 +12,7 @@ import {
   RetroBoardControlsStateStoreContext,
 } from './context'
 import { createStore } from './store'
-import { elapsedSeconds } from './utils'
+import { elapsedSeconds, tallyVotes } from './utils'
 import { GuidedPhase, VotingMode, VotingState } from '@/enums'
 import { useAuth } from '@/hooks/use-auth'
 import { useBoardControlsLiveMap } from '@/hooks/use-channel-state'
@@ -47,6 +47,7 @@ export function RetroBoardControlsProvider({
   // ---------------------------------------------------------------------------
   const {
     settings: {
+      facilitatorMode: { enabled: isFacilitatorModeEnabled },
       timer: {
         subsettings: {
           defaultDuration: { value: defaultDuration },
@@ -95,6 +96,15 @@ export function RetroBoardControlsProvider({
       setHasLoaded(true)
     },
   })
+
+  // The board as of the latest render, for actions that end up as a confirm
+  // modal's onConfirm. A modal keeps the callback it was opened with, so one
+  // closing over its render's boardControls would tally the votes as they were
+  // when the modal opened and drop any submitted while it sat on screen.
+  const latestRef = useRef({ boardControls, isFacilitatorModeEnabled })
+  useLayoutEffect(() => {
+    latestRef.current = { boardControls, isFacilitatorModeEnabled }
+  }, [boardControls, isFacilitatorModeEnabled])
 
   const handleVoteSubmit = useCallback(
     async (localVotes: string[]) => {
@@ -445,21 +455,20 @@ export function RetroBoardControlsProvider({
     patchVoting({ state: VotingState.OPEN })
   }, [patchVoting])
 
+  // Reads the board at call time (see latestRef): "Close Voting Early?" calls
+  // this from its onConfirm, and a vote cast while that sat open must count.
+  // Does nothing once someone else has already closed or reset the vote.
   const closeVoting = useCallback(() => {
-    const results = {} as Record<string, string[]>
-
-    for (const [userId, userVotes] of Object.entries(
-      boardControls.voting.collectedVotes,
-    )) {
-      for (const vote of userVotes) {
-        if (!results[vote]) {
-          results[vote] = []
-        }
-        results[vote].push(userId)
-      }
-    }
-    patchVoting({ state: VotingState.CLOSED, results })
-  }, [patchVoting])
+    const { voting } = latestRef.current.boardControls
+    if (voting.state !== VotingState.OPEN) return
+    updateBoardControls({
+      voting: {
+        ...voting,
+        state: VotingState.CLOSED,
+        results: tallyVotes(voting.collectedVotes),
+      },
+    })
+  }, [updateBoardControls])
 
   const resetVoting = useCallback(() => {
     clearMyVotes()
@@ -468,8 +477,11 @@ export function RetroBoardControlsProvider({
 
   const undoVoteSubmission = useCallback(() => {
     if (boardControls.voting.state !== VotingState.OPEN) return
-    const { [userId]: _omit, ...remaining } =
-      boardControls.voting.collectedVotes
+    const remaining = Object.fromEntries(
+      Object.entries(boardControls.voting.collectedVotes).filter(
+        ([voterId]) => voterId !== userId,
+      ),
+    )
     patchVoting({ collectedVotes: remaining })
     clearMyVotes()
   }, [
@@ -515,6 +527,32 @@ export function RetroBoardControlsProvider({
     })
   }, [boardControls.facilitatorMode.isActive, updateBoardControls])
 
+  // The chosen facilitator's "All votes are in" answer in a normal session:
+  // close the vote and, when the board has Facilitator Mode, start discussing
+  // in the same write. Chaining closeVoting() + toggleFacilitatorMode() races
+  // on compact() and trips the Ably rate limit (see handleEndFacilitation in
+  // facilitator-view.tsx); one write also means the closed vote never lands
+  // without facilitation, which would offer Start Discussions on top. Reads
+  // the board at call time and does nothing once the vote has been closed or
+  // a guided session (which owns voting) has started.
+  const closeVotingAndDiscuss = useCallback(() => {
+    const { boardControls: latest, isFacilitatorModeEnabled: canDiscuss } =
+      latestRef.current
+    if (latest.voting.state !== VotingState.OPEN || latest.guided?.isActive) {
+      return
+    }
+    updateBoardControls({
+      voting: {
+        ...latest.voting,
+        state: VotingState.CLOSED,
+        results: tallyVotes(latest.voting.collectedVotes),
+      },
+      ...(canDiscuss
+        ? { facilitatorMode: { isActive: true, skippedIds: [] } }
+        : {}),
+    })
+  }, [updateBoardControls])
+
   // ---------------------------------------------------------------------------
   // Guided (Parabol-style) mode actions
   //
@@ -545,20 +583,13 @@ export function RetroBoardControlsProvider({
       } else if (phase === GuidedPhase.DISCUSS) {
         // Tally submitted votes into results, then hand off to the facilitator
         // stack view (mirrors closeVoting + starting facilitator mode).
-        const results = {} as Record<string, string[]>
-        for (const [voterId, userVotes] of Object.entries(
-          base.voting.collectedVotes,
-        )) {
-          for (const vote of userVotes) {
-            if (!results[vote]) {
-              results[vote] = []
-            }
-            results[vote].push(voterId)
-          }
-        }
         updateBoardControls({
           guided: { isActive, phase },
-          voting: { ...base.voting, state: VotingState.CLOSED, results },
+          voting: {
+            ...base.voting,
+            state: VotingState.CLOSED,
+            results: tallyVotes(base.voting.collectedVotes),
+          },
           facilitatorMode: { isActive: true, skippedIds: [] },
         })
       } else {
@@ -648,6 +679,7 @@ export function RetroBoardControlsProvider({
       setVotingMode,
       setVotingLimit,
       toggleFacilitatorMode,
+      closeVotingAndDiscuss,
       startGuidedRetro,
       setGuidedPhase,
       endGuidedRetro,
@@ -704,6 +736,7 @@ export function RetroBoardControlsProvider({
       setVotingMode,
       setVotingLimit,
       toggleFacilitatorMode,
+      closeVotingAndDiscuss,
       startGuidedRetro,
       setGuidedPhase,
       endGuidedRetro,
@@ -727,6 +760,7 @@ export function RetroBoardControlsProvider({
     setVotingMode,
     setVotingLimit,
     toggleFacilitatorMode,
+    closeVotingAndDiscuss,
     startGuidedRetro,
     setGuidedPhase,
     endGuidedRetro,

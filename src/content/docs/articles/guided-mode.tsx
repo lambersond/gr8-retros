@@ -1,6 +1,8 @@
 import {
+  ArrowRight,
   Combine,
   Eraser,
+  Hammer,
   LogOut,
   MessagesSquare,
   NotebookPen,
@@ -55,17 +57,42 @@ export default function GuidedMode() {
         <strong>Start Guided Retro</strong>. Everyone on the board immediately
         switches into the guided layout, beginning on the Reflect phase. A phase
         timeline appears in the board header showing where the group is; the
-        active phase carries an info icon with a short hint about what to do.
+        active phase carries an info icon with a short hint about what to do. On
+        narrower screens the phases show as icons only.
       </p>
 
       <h2>Who Drives the Flow</h2>
       <p>
         A <BoardRoleBadge variant='simple' role={BoardRole.FACILITATOR} /> and
         above steers the session with <strong>Next</strong> and{' '}
-        <strong>End</strong> buttons in the header. Advancing moves everyone
-        forward at the same time &mdash; participants do not navigate phases
-        themselves; their boards follow the facilitator. The timer and music
-        stay available throughout for the facilitator to use as needed.
+        <strong>End</strong> buttons in the header (on narrower screens they
+        shrink to just their{' '}
+        <ArrowRight size={16} className='inline-block align-text-bottom' /> and{' '}
+        <LogOut size={16} className='inline-block align-text-bottom' /> icons).
+        Advancing moves everyone forward at the same time &mdash; participants
+        do not navigate phases themselves; their boards follow the facilitator.
+        If a session facilitator has been picked with{' '}
+        <strong>Choose Facilitator</strong>, they can press{' '}
+        <strong>Next</strong> too, even without the Facilitator role. The timer
+        and music stay available throughout for the facilitator to use as
+        needed.
+      </p>
+      <p>
+        The <Hammer size={16} className='inline-block align-text-bottom' />{' '}
+        <strong>Facilitator Actions</strong> menu stays in the header during a
+        guided session, just to the left of <strong>Next</strong> and{' '}
+        <strong>End</strong>. It still offers{' '}
+        <strong>Clear Only Completed Items</strong>,{' '}
+        <strong>Export Options</strong> (Report Details and AI Summary Report),
+        and <strong>Show / Hide Quick Controls</strong>, plus{' '}
+        <strong>Clear All Cards</strong> for{' '}
+        <BoardRoleBadge variant='simple' role={BoardRole.ADMIN} /> and above. It
+        is available to the same people as outside a guided session:{' '}
+        <BoardRoleBadge variant='simple' role={BoardRole.FACILITATOR} /> and
+        above on claimed boards, or everyone on unclaimed boards. The{' '}
+        <strong>Sorts</strong> and <strong>Filters</strong> buttons are hidden
+        for the session, since the phases decide which cards show and in what
+        order, and a sort would re-sort everyone&rsquo;s board.
       </p>
 
       <h2>The Phases</h2>
@@ -111,6 +138,34 @@ export default function GuidedMode() {
         warned first. Voting is enabled automatically for this phase, even if
         the board&rsquo;s voting setting is otherwise off.
       </p>
+      <p>
+        Once a session facilitator has been picked with{' '}
+        <strong>Choose Facilitator</strong>, that person &mdash; and only that
+        person &mdash; gets an <strong>All votes are in</strong> popup as soon
+        as every participant has submitted. &ldquo;Every participant&rdquo; is
+        the same count the progress indicator shows, so when voting is
+        restricted to members, only members count. The popup offers two choices:
+      </p>
+      <ul>
+        <li>
+          <strong>Discuss Cards</strong> &mdash; moves the whole group on to
+          Discuss, just like pressing <strong>Next</strong>. Every vote cast up
+          to that click is counted.
+        </li>
+        <li>
+          <strong>Stay in Voting</strong> &mdash; closes the popup and leaves
+          voting open. You can still press <strong>Next</strong> later.
+        </li>
+      </ul>
+      <p>
+        The popup appears once each time everyone is in. If someone resets their
+        votes or a new participant joins, it closes by itself and comes back the
+        next time everyone is in. It also closes if someone else moves the
+        session on or ends it first, and if another confirmation is already open
+        it waits until that one is closed. With no session facilitator picked,
+        nobody gets the popup, and other facilitators keep using{' '}
+        <strong>Next</strong>.
+      </p>
 
       <h3>
         <MessagesSquare size={18} className='inline-block align-text-bottom' />{' '}
@@ -120,7 +175,9 @@ export default function GuidedMode() {
         The board switches to the focused facilitator view. Top-voted topics are
         presented one at a time, with a stacked preview of what&rsquo;s next.
         Work through each item, mark it discussed to advance to the next, and
-        capture action items as you go. This is the same discussion experience
+        capture action items as you go. If a large group runs taller than the
+        screen, scroll the discussion area to reach every card; the action
+        buttons stay pinned at the top. This is the same discussion experience
         described under <strong>Board Controls &rarr; Facilitation</strong>.
       </p>
 

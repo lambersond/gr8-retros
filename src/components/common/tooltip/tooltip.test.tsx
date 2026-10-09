@@ -8,23 +8,30 @@ describe('components/common/tooltip', () => {
     ).toMatchSnapshot()
   })
 
-  it('should match the snapshot with placement - asChild component', async () => {
-    const { user, getByText } = useUser(
+  it('should show the title on hover - asChild component', async () => {
+    const { user, getByText, findByRole, queryByRole } = useUser(
       <Tooltip title='title' asChild>
         <p>Hover</p>
       </Tooltip>,
     )
 
+    // asChild uses the child as the trigger instead of wrapping it in a button
+    expect(queryByRole('button')).toBeNull()
+
     await user.hover(getByText('Hover'))
 
-    expect(getByText('title')).toBeInTheDocument()
+    // The tooltip opens after a hover delay, so wait for it
+    expect(await findByRole('tooltip')).toHaveTextContent('title')
   })
 
-  it('should match the snapshot with placement - text chilc', async () => {
-    const { user, getByText } = useUser(<Tooltip title='title'>Hover</Tooltip>)
+  it('should show the title on hover - text child', async () => {
+    const { user, getByRole, findByRole } = useUser(
+      <Tooltip title='title'>Hover</Tooltip>,
+    )
 
-    await user.hover(getByText('Hover'))
+    await user.hover(getByRole('button', { name: 'Hover' }))
 
-    expect(getByText('title')).toBeInTheDocument()
+    // The tooltip opens after a hover delay, so wait for it
+    expect(await findByRole('tooltip')).toHaveTextContent('title')
   })
 })

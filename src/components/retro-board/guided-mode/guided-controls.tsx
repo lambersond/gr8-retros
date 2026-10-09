@@ -1,6 +1,8 @@
 'use client'
 
 import { ArrowRight, LogOut } from 'lucide-react'
+import { useGuidedAllVotesInPrompt } from './use-guided-all-votes-in-prompt'
+import { useGuidedPhaseTransition } from './use-guided-phase-transition'
 import { useVotingProgress } from '@/components/board-controls/voting/use-voting-progress'
 import { GUIDED_PHASE_ORDER, GuidedPhase } from '@/enums'
 import { useAuth } from '@/hooks/use-auth'
@@ -11,14 +13,17 @@ import {
   useBoardControlsState,
 } from '@/providers/retro-board/controls'
 
+// Below lg the labels collapse to their icons (the buttons keep an accessible
+// name and tooltip), so the header's second row still fits the phase flow
+// beside Facilitator Actions and these on narrower screens.
 const BUTTON =
-  'flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm font-medium text-text-secondary border border-border-light hover:bg-hover transition-colors cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed'
+  'flex items-center gap-1.5 rounded-lg px-2 lg:px-3 py-1.5 text-sm font-medium text-text-secondary border border-border-light hover:bg-hover transition-colors cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed'
 
 const DANGER_BUTTON =
-  'flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm font-medium text-danger border border-danger/40 hover:bg-danger/10 transition-colors cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed'
+  'flex items-center gap-1.5 rounded-lg px-2 lg:px-3 py-1.5 text-sm font-medium text-danger border border-danger/40 hover:bg-danger/10 transition-colors cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed'
 
-// The session lead's phase controls, rendered in the header's second row where
-// RetroActions normally sits. Everyone else sees nothing here; their board
+// The session lead's phase controls, rendered in the header's second row to the
+// right of Facilitator Actions. Everyone else sees nothing from it; their board
 // advances when the lead moves the group forward.
 export function GuidedControls() {
   const { user } = useBoardPermissions()
@@ -29,12 +34,11 @@ export function GuidedControls() {
     phase: s.boardControls.guided?.phase ?? GuidedPhase.REFLECT,
     chosenFacilitatorId: s.boardControls.chosenFacilitatorId,
   }))
-  const { setGuidedPhase, endGuidedRetro } = useBoardControlsActions(a => ({
-    setGuidedPhase: a.setGuidedPhase,
-    endGuidedRetro: a.endGuidedRetro,
-  }))
+  const endGuidedRetro = useBoardControlsActions(a => a.endGuidedRetro)
+  const transition = useGuidedPhaseTransition()
   const { voted, votingMembers } = useVotingProgress()
   const { openModal } = useModals()
+  useGuidedAllVotesInPrompt()
 
   const index = GUIDED_PHASE_ORDER.indexOf(phase)
   const isLast = index >= GUIDED_PHASE_ORDER.length - 1
@@ -48,7 +52,10 @@ export function GuidedControls() {
 
   if (!showNext && !showEnd) return
 
-  const advance = () => setGuidedPhase(GUIDED_PHASE_ORDER[index + 1])
+  // Via transition so the "Not everyone has voted" confirm below tallies the
+  // votes in when it's clicked, not when it opened, and does nothing if the
+  // session has already moved on by then.
+  const advance = () => transition(phase, GUIDED_PHASE_ORDER[index + 1])
 
   const handleNext = () => {
     // Warn before leaving the Vote phase while submissions are still missing.
@@ -81,8 +88,14 @@ export function GuidedControls() {
   return (
     <div className='flex items-center gap-2'>
       {showNext && (
-        <button type='button' onClick={handleNext} className={BUTTON}>
-          Next
+        <button
+          type='button'
+          onClick={handleNext}
+          title='Next phase'
+          aria-label='Next phase'
+          className={BUTTON}
+        >
+          <span className='hidden lg:inline'>Next</span>
           <ArrowRight className='size-4' />
         </button>
       )}
@@ -94,7 +107,7 @@ export function GuidedControls() {
           aria-label='End guided session'
           className={DANGER_BUTTON}
         >
-          End
+          <span className='hidden lg:inline'>End</span>
           <LogOut className='size-4' />
         </button>
       )}

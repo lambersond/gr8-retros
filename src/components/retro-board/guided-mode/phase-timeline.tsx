@@ -62,7 +62,7 @@ export function PhaseTimeline({ current }: Readonly<{ current: GuidedPhase }>) {
               ) : (
                 <Icon className='size-4' />
               )}
-              <span className='hidden sm:inline'>{label}</span>
+              <span className='hidden md:inline'>{label}</span>
               {isCurrent && <Info info={hint} className='text-white' />}
             </div>
             {i < GUIDED_PHASE_ORDER.length - 1 && (

@@ -1,12 +1,23 @@
-import { renderHook, screen, waitFor } from '@test-utils'
+import { act, renderHook, screen, waitFor } from '@test-utils'
 import { useModals } from './use-modals'
 import { ModalProvider } from '@/components/modals/modal-provider'
-import { MODALS } from '@/modals'
+import type { Modal } from '@/types/modals'
 
 jest.mock('next/navigation', () => ({
   useParams: () => ({
     name: 'test-application',
   }),
+}))
+
+jest.mock('next-auth/react', () => ({
+  signIn: jest.fn(),
+}))
+
+// Opening any modal lazy-loads the whole modal barrel, which includes the PDF
+// previewer. @react-pdf/renderer (via yoga-layout's top-level await) can't load
+// under Jest, and these tests don't exercise it.
+jest.mock('@/components/modals/pdf-previewer-modal', () => ({
+  PDFPreviewerModal: () => {},
 }))
 
 describe('hooks/use-modals', () => {
@@ -17,39 +28,32 @@ describe('hooks/use-modals', () => {
   })
 
   it.each([
-    ['AddCharacterModal', {}],
-    ['ConfirmModal', {}],
-  ] as [keyof typeof MODALS, object][])(
-    'should open modal - %s',
-    async (modal, props) => {
-      const { result } = renderHook(() => useModals(), {
-        wrapper: ModalProvider,
-      })
+    ['ConfirmModal', 'Confirmation'],
+    ['GoodRetroModal', 'What Makes a Good Retro?'],
+  ] as [Modal, string][])('should open modal - %s', async (modal, title) => {
+    const { result } = renderHook(() => useModals(), {
+      wrapper: ModalProvider,
+    })
 
-      await waitFor(() => {
-        result.current.openModal(modal, props as any)
-      })
+    act(() => {
+      result.current.openModal(modal, {} as any)
+    })
 
-      await waitFor(() => {
-        expect(screen.getByTestId('modal')).toBeInTheDocument()
-      })
-    },
-  )
+    expect(await screen.findByTestId('modal')).toHaveTextContent(title)
+  })
 
   it('should close modal', async () => {
     const { result } = renderHook(() => useModals(), {
       wrapper: ModalProvider,
     })
 
-    await waitFor(() => {
+    act(() => {
       result.current.openModal('ConfirmModal', {} as any)
     })
 
-    await waitFor(() => {
-      expect(screen.getByTestId('modal')).toBeInTheDocument()
-    })
+    expect(await screen.findByTestId('modal')).toBeInTheDocument()
 
-    await waitFor(() => {
+    act(() => {
       result.current.closeModal('ConfirmModal')
     })
 

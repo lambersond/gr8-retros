@@ -6,9 +6,14 @@ import { mockDeep } from 'jest-mock-extended'
 export const prismaMock = mockDeep<PrismaClient>()
 export const diceRollMock = jest.fn()
 
-// jest will replace any import of { PrismaClient } with this mock
+// jest will replace any import of { PrismaClient } with this mock. Everything
+// else (the generated enums like BoardRole / PaymentTier that src/enums.ts
+// re-exports, and the Prisma namespace) stays the real generated value.
+// Loading the generated client module does not open a connection; that only
+// happens on a query through a real PrismaClient instance, which is mocked.
 jest.mock('@prisma/client', () => {
   return {
+    ...jest.requireActual('@prisma/client'),
     __esModule: true,
     PrismaClient: jest.fn(() => prismaMock),
   }
@@ -28,6 +33,22 @@ globalThis.ResizeObserver = jest.fn().mockImplementation(() => ({
   unobserve: jest.fn(),
   disconnect: jest.fn(),
 }))
+
+// jsdom doesn't implement matchMedia (next-themes' system theme reads it).
+// Reports no media query as matching; override per test for other cases.
+Object.defineProperty(globalThis, 'matchMedia', {
+  writable: true,
+  value: jest.fn().mockImplementation((query: string) => ({
+    matches: false,
+    media: query,
+    onchange: undefined,
+    addListener: jest.fn(),
+    removeListener: jest.fn(),
+    addEventListener: jest.fn(),
+    removeEventListener: jest.fn(),
+    dispatchEvent: jest.fn(),
+  })),
+})
 
 globalThis.fetch = jest.fn()
 /**

@@ -6,6 +6,17 @@ jest.mock('next-auth/react', () => ({
   SessionProvider: ({ children }: { children: ReactNode }) => <>{children}</>,
 }))
 
+// The membership and changelog providers only fetch once signed in.
+jest.mock('@/hooks/use-auth', () => ({
+  useAuth: () => ({ isAuthenticated: false }),
+}))
+
+// The real provider opens an Ably realtime connection.
+jest.mock('@/providers/ably', () => ({
+  ...jest.requireActual('@/providers/ably'),
+  AblyProvider: ({ children }: { children: ReactNode }) => <>{children}</>,
+}))
+
 jest.mock('../app-bar', () => ({
   AppBar: () => <div>App Bar</div>,
 }))

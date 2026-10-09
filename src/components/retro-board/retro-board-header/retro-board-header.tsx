@@ -7,7 +7,7 @@ import {
   PhaseTimeline,
 } from '../guided-mode'
 import { PhaseIndicators } from './phase-indicators'
-import { RetroActions } from './retro-actions'
+import { FacilitatorActions, RetroActions } from './retro-actions'
 import { ViewingMembers } from './viewing-members'
 import { BoardControls } from '@/components/board-controls'
 import { GuidedPhase } from '@/enums'
@@ -23,8 +23,10 @@ import { useBoardControlsState } from '@/providers/retro-board/controls'
 export function RetroBoardHeader({ id }: Readonly<{ id: string }>) {
   const { boardName } = useBoardSettings()
   // During a guided session the second row's center becomes the phase flow and
-  // its right becomes the guided controls; the top row (name / controls /
-  // settings) is unchanged.
+  // its right becomes the guided controls, with Facilitator Actions kept to
+  // their left. Sorts/Filters drop out: sorting re-sorts everyone's board and
+  // the guided phases own the flow. The top row (name / controls / settings)
+  // is unchanged.
   const isGuided = useBoardControlsState(
     s => !!s.boardControls.guided?.isActive,
   )
@@ -59,8 +61,15 @@ export function RetroBoardHeader({ id }: Readonly<{ id: string }>) {
             <PhaseIndicators />
           )}
         </div>
-        <div className='flex-1 flex justify-end'>
-          {isGuided ? <GuidedControls /> : <RetroActions id={id} />}
+        <div className='flex-1 flex justify-end items-center gap-2'>
+          {isGuided ? (
+            <>
+              <FacilitatorActions id={id} />
+              <GuidedControls />
+            </>
+          ) : (
+            <RetroActions id={id} />
+          )}
         </div>
       </div>
       {isGuided && <GuidedResetVotesButton />}

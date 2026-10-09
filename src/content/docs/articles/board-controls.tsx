@@ -1,4 +1,4 @@
-import { CirclePause, CirclePlay, CircleStop, Hammer } from 'lucide-react'
+import { CirclePause, CirclePlay, CircleStop, Hammer, Move } from 'lucide-react'
 import { BoardRoleBadge } from '@/components/badges'
 import { BoardRole } from '@/enums'
 
@@ -174,6 +174,52 @@ export default function BoardControls() {
         return to the start state.
       </p>
 
+      <h4>Moving On to Discussion</h4>
+      <p>
+        Once a session facilitator has been picked with{' '}
+        <strong>Choose Facilitator</strong>, that person &mdash; and only that
+        person &mdash; gets an <strong>All votes are in</strong> popup as soon
+        as every participant has submitted. &ldquo;Every participant&rdquo; is
+        the same count the progress bar shows, so when voting is restricted to
+        members, only members count. The popup asks{' '}
+        <em>Discuss voted on topics?</em> and offers two choices:
+      </p>
+      <ul>
+        <li>
+          <strong>Yes, Start Discussing</strong> &mdash; closes the vote,
+          counting every vote cast up to that click. When Facilitator Mode is
+          enabled in board settings, facilitation starts at the same time.
+        </li>
+        <li>
+          <strong>No, Leave me Alone</strong> &mdash; closes the popup and
+          leaves voting open. Closing it with the X or by clicking outside it
+          does the same.
+        </li>
+      </ul>
+      <p>
+        If the vote is closed another way instead, such as with{' '}
+        <strong>End Vote</strong>, and Facilitator Mode is enabled, the chosen
+        facilitator is offered <strong>Start Discussions</strong> once voting
+        closes. A <strong>Start Discussions</strong> button also sits beside the{' '}
+        <strong>Voting is Closed</strong> indicator in the header, for the
+        chosen facilitator (or, when nobody has been chosen,{' '}
+        <BoardRoleBadge variant='simple' role={BoardRole.FACILITATOR} /> and
+        above).
+      </p>
+      <p>
+        The chosen facilitator only ever sees one of these popups at a time. If
+        someone else ends the vote while <strong>All votes are in</strong> is
+        still waiting for an answer, it is replaced by{' '}
+        <strong>Start Discussions</strong>. Answering{' '}
+        <strong>No, Leave me Alone</strong> keeps both popups away until the
+        vote is reset or reopened, even if votes are reset and resubmitted in
+        the meantime; the <strong>Start Discussions</strong> button is still
+        there when you&rsquo;re ready. That answer is remembered in the browser
+        tab where you gave it, so reloading the page or another open tab can
+        still show a popup. Guided sessions have their own{' '}
+        <strong>All votes are in</strong> popup, described in Guided Mode.
+      </p>
+
       <h3>Upvoting &amp; Voting Together</h3>
       <p>
         When both upvoting and structured voting are enabled, they work in
@@ -211,6 +257,16 @@ export default function BoardControls() {
           the next card moves to the front.
         </li>
         <li>
+          When a card or group is taller than the screen, the discussion area
+          scrolls so every card can be reached. The{' '}
+          <strong>Mark Discussed</strong>, <strong>Add Action Item</strong>,{' '}
+          <strong>View Comments</strong>, and <strong>Skip</strong> buttons stay
+          pinned at the top while you scroll, and moving on to the next item
+          jumps back to the top so it starts at its beginning. There is extra
+          room at the end so the last card can scroll clear of the
+          quick-controls remote.
+        </li>
+        <li>
           Drag and drop and card editing are disabled during facilitated
           sessions to keep the focus on discussion.
         </li>
@@ -246,14 +302,16 @@ export default function BoardControls() {
       <p className='text-sm text-text-secondary italic'>
         Note: Facilitation cannot be started while a voting session is active.
         End or reset the current vote before beginning a facilitation session.
+        The chosen facilitator&rsquo;s <strong>Yes, Start Discussing</strong>{' '}
+        does both in one step.
       </p>
 
       <h3>Quick Controls</h3>
       <p>
         Once a session facilitator has been picked with{' '}
-        <strong>Choose Facilitator</strong>, that person gets a round remote
-        pinned to the bottom-right of the board, so they can run the clock
-        without opening the board controls:
+        <strong>Choose Facilitator</strong>, that person gets a round remote,
+        starting in the bottom-right corner of the screen, so they can run the
+        clock without opening the board controls:
       </p>
       <ul>
         <li>
@@ -276,6 +334,32 @@ export default function BoardControls() {
         value. A section is dimmed when its control is turned off or restricted
         to <BoardRoleBadge variant='simple' role={BoardRole.FACILITATOR} /> and
         above; hover it to see why.
+      </p>
+      <p>
+        The remote can be moved anywhere on screen with the small{' '}
+        <Move size={16} className='inline-block align-text-bottom' /> move
+        handle on its upper-left rim:
+      </p>
+      <ul>
+        <li>Drag the handle with a mouse, finger, or pen.</li>
+        <li>
+          Or focus the handle (it comes after the timer controls and the
+          countdown when you Tab through the remote) and use the arrow keys;
+          hold <strong>Shift</strong> for bigger steps. Its tooltip lists these
+          shortcuts.
+        </li>
+        <li>
+          Double-click the handle, or press <strong>Home</strong> while
+          it&rsquo;s focused, to send the remote back to the bottom-right
+          corner. On some phones and tablets a double-tap won&rsquo;t reset it;
+          drag it back to the corner instead.
+        </li>
+      </ul>
+      <p>
+        The remote always stays fully on screen and keeps its relative spot when
+        the window is resized. Its position is remembered in your browser, so it
+        carries across boards and moves along in your other open tabs, and no
+        one else&rsquo;s board changes.
       </p>
       <p>
         Other <BoardRoleBadge variant='simple' role={BoardRole.FACILITATOR} />{' '}

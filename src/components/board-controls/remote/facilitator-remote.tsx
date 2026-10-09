@@ -2,10 +2,11 @@
 
 import { useCallback, useState } from 'react'
 import clsx from 'clsx'
-import { Pause, Play, TimerReset } from 'lucide-react'
+import { Move, Pause, Play, TimerReset } from 'lucide-react'
 import { MusicStatus } from '../indicators'
 import { QuickTimeSetter } from './quick-time-setter'
 import { useFacilitatorRemote } from './use-facilitator-remote'
+import { useRemotePosition } from './use-remote-position'
 import { Popover, Tooltip } from '@/components/common'
 import { useBoardSettings } from '@/providers/retro-board/board-settings'
 import {
@@ -18,13 +19,15 @@ type Side = 'top' | 'right' | 'bottom' | 'left'
 const HUB_CLASSES =
   'pointer-events-auto absolute inset-0 m-auto flex size-12 items-center justify-center rounded-full border border-border-light bg-paper font-mono text-xs text-text-primary lg:size-16 lg:text-sm'
 
-// A "remote control" for running the session: a dial pinned to the
-// bottom-right (120px, 160px on large screens) with timer start/pause (north),
-// music play/pause (east), +1 minute (south), and timer reset (west). The
-// countdown in the center opens a quick time-limit picker. Together they skip
-// the board-controls popover. The chosen facilitator always gets it; other
-// facilitators can show it from Facilitator Actions (see useFacilitatorRemote).
-// Each section still honors the board's timer/music settings and restrictions.
+// A "remote control" for running the session: a dial (120px, 160px on large
+// screens) with timer start/pause (north), music play/pause (east), +1 minute
+// (south), and timer reset (west). The countdown in the center opens a quick
+// time-limit picker. Together they skip the board-controls popover. It starts
+// in the bottom-right corner, and the handle on its rim moves it anywhere on
+// screen, remembered per browser (see useRemotePosition). The chosen
+// facilitator always gets it; other facilitators can show it from Facilitator
+// Actions (see useFacilitatorRemote). Each section still honors the board's
+// timer/music settings and restrictions.
 export function FacilitatorRemote() {
   const { isVisible, timerBlocked, musicBlocked, timerEnabled } =
     useFacilitatorRemote()
@@ -78,16 +81,13 @@ function RemoteDial({
   const canReset = isRunning || secondsLeft !== defaultDuration
 
   return (
-    // A native fieldset groups the controls for assistive tech. The outer box
-    // lets clicks through its transparent corners; the dial and hub opt back
-    // in. Both are absolutely positioned, so the layout doesn't depend on the
-    // fieldset's anonymous content box.
-    <fieldset className='pointer-events-none fixed bottom-4 right-4 z-40 size-30 rounded-full border border-border-light bg-paper shadow-lg lg:size-40'>
-      <legend className='sr-only'>Facilitator remote</legend>
+    <RemoteFrame>
       {/* A 2x2 grid turned 45° inside the circle, so its cells become the
           north / east / south / west sections and the two divider lines
-          become an X. Each section counter-rotates its content. Tooltips open
-          toward the free space above and to the left of the corner. */}
+          become an X. Each section counter-rotates its content. Tooltips
+          prefer the space above and to the left, which is open from the
+          default bottom-right corner; once the remote is moved near another
+          edge, the shared Tooltip / Popover flip and shift them on screen. */}
       <div className='pointer-events-auto absolute inset-0 grid rotate-45 grid-cols-2 grid-rows-2 overflow-hidden rounded-full'>
         <RemoteButton
           className='col-start-1 row-start-1'
@@ -166,6 +166,50 @@ function RemoteDial({
           </button>
         </Popover>
       )}
+    </RemoteFrame>
+  )
+}
+
+// The fieldset the dial sits in, wherever the facilitator last left it, plus
+// the handle that moves it. Split from the dial so a drag re-renders only this
+// frame: the dial comes in as children, which a drag doesn't change.
+function RemoteFrame({ children }: Readonly<{ children: React.ReactNode }>) {
+  const { remoteRef, style, isDragging, handleProps } = useRemotePosition()
+
+  return (
+    // A native fieldset groups the controls for assistive tech. The outer box
+    // lets clicks through its transparent corners; the dial, hub and handle
+    // opt back in. All are absolutely positioned, so the layout doesn't depend
+    // on the fieldset's anonymous content box.
+    <fieldset
+      ref={remoteRef}
+      style={style}
+      className='pointer-events-none fixed z-40 size-30 rounded-full border border-border-light bg-paper shadow-lg lg:size-40'
+    >
+      <legend className='sr-only'>Facilitator remote</legend>
+      {children}
+      {/* The handle sits on the rim at the upper left, toward the open screen
+          from the default corner: (1 - 1/√2) / 2 ≈ 14.6% in from each edge is
+          where the rim crosses that diagonal. That keeps it inside the dial's
+          bounding box, so keeping the dial on screen keeps the handle on
+          screen too. The tooltip is hidden mid-drag (the shared Tooltip can't
+          be closed from outside) so it doesn't trail the pointer; undefined
+          keeps its default styling. */}
+      <Tooltip
+        title='Drag or use arrow keys to move · double-click or Home to reset'
+        placement='top'
+        asChild
+        contentContainerClasses={isDragging ? 'hidden' : undefined}
+      >
+        <button
+          type='button'
+          aria-label='Move remote'
+          {...handleProps}
+          className='pointer-events-auto absolute left-[14.645%] top-[14.645%] flex size-7 -translate-x-1/2 -translate-y-1/2 cursor-grab touch-none select-none items-center justify-center rounded-full border border-border-light bg-paper text-text-secondary shadow-md outline-none transition-colors hover:text-text-primary focus-visible:ring-2 focus-visible:ring-primary/60 active:cursor-grabbing lg:size-8'
+        >
+          <Move className='size-3.5 lg:size-4' />
+        </button>
+      </Tooltip>
     </fieldset>
   )
 }

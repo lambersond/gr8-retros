@@ -1,7 +1,15 @@
 'use client'
 
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import {
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react'
 import { useChannel } from 'ably/react'
+import clsx from 'clsx'
 import {
   CircleCheckBig,
   LogOut,
@@ -98,9 +106,12 @@ export function FacilitatorView() {
     return base.filter(item => !skippedSet.has(getItemId(item)))
   }, [allItems, boardCards.cards, boardCards.sort, skippedIdsArray])
 
+  const topItem = sorted[0]
+  const topId = topItem ? getItemId(topItem) : undefined
+  const remainingCount = Math.max(0, sorted.length - 1)
+
   // Detect when the top card is discussed for exit animation
   useEffect(() => {
-    const topId = sorted.length > 0 ? getItemId(sorted[0]) : undefined
     const prevId = prevTopIdRef.current
 
     if (prevId && prevId !== topId) {
@@ -117,10 +128,16 @@ export function FacilitatorView() {
     }
 
     prevTopIdRef.current = topId
-  }, [sorted, allItems, boardCards.cards])
+  }, [topId, allItems, boardCards.cards])
 
-  const topItem = sorted[0]
-  const remainingCount = Math.max(0, sorted.length - 1)
+  // Each new top item (discussed, skipped, or re-sorted to the front) starts
+  // at its beginning instead of inheriting how far down the facilitator had
+  // scrolled through the previous one. A layout effect so that stale offset is
+  // never painted.
+  const scrollRef = useRef<HTMLDivElement>(null)
+  useLayoutEffect(() => {
+    scrollRef.current?.scrollTo({ top: 0 })
+  }, [topId])
 
   const handleMarkDiscussed = useCallback(async () => {
     if (!topItem) return
@@ -236,8 +253,61 @@ export function FacilitatorView() {
   }, [topItem, skippedIdsArray, updateBoardControls])
 
   return (
-    <div className='flex-1 min-h-0 overflow-hidden flex flex-col items-center justify-start py-6 px-3'>
-      <div className='w-full max-w-lg relative'>
+    // Scrolls on its own (the page is locked to the viewport) so a large group
+    // can be read to its last card. The stable gutter keeps the stack centered
+    // and still when the scrollbar comes and goes (e.g. a tall exiting item
+    // briefly overhanging a shorter next one). The top scroll padding (the
+    // action bar's height, even when its buttons wrap to two rows) scrolls
+    // keyboard focus out from under the sticky bar instead of hiding it there.
+    // The bottom padding lets the last card scroll clear of the facilitator
+    // remote, which floats over the bottom-right corner by default.
+    <div
+      ref={scrollRef}
+      className='flex-1 min-h-0 overflow-x-hidden overflow-y-auto scrollbar-thin scrollbar-thumb-rounded scrollbar-thumb-gray-700/10 scrollbar-track-transparent scrollbar-gutter-both scroll-pt-28 flex flex-col items-center justify-start px-3 pb-32 lg:pb-44'
+    >
+      {topItem && (
+        // Sticky so the actions stay reachable mid-way through a tall group.
+        // The opaque page background (what's behind the view) lets cards
+        // scroll under it cleanly; -mx-3 stretches it edge to edge so card
+        // shadows can't peek past its sides. z-2 sits above the exiting
+        // overlay but below the sidebars' click-away backdrops (z-10).
+        <div className='sticky top-0 z-2 self-stretch -mx-3 px-3 pt-6 pb-3 bg-page'>
+          <div className='max-w-lg mx-auto flex items-center justify-center gap-2 flex-wrap'>
+            <button
+              onClick={handleMarkDiscussed}
+              className='flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-medium text-text-secondary border border-border-light hover:bg-hover transition-colors cursor-pointer'
+            >
+              <CircleCheckBig className='size-3.5' />
+              Mark Discussed
+            </button>
+            <button
+              onClick={handleAddActionItem}
+              className='flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-medium text-text-secondary border border-border-light hover:bg-hover transition-colors cursor-pointer'
+            >
+              <MessageSquareWarning className='size-3.5' />
+              Add Action Item
+            </button>
+            <button
+              onClick={handleViewComments}
+              className='flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-medium text-text-secondary border border-border-light hover:bg-hover transition-colors cursor-pointer'
+            >
+              <MessageSquare className='size-3.5' />
+              View Comments
+            </button>
+            <button
+              onClick={handleSkip}
+              className='flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-medium text-text-secondary border border-border-light hover:bg-hover transition-colors cursor-pointer'
+            >
+              <SkipForward className='size-3.5' />
+              Skip
+            </button>
+          </div>
+        </div>
+      )}
+      {/* The exiting overlay is pinned to this box's top, i.e. right where the
+          outgoing item sat under the action bar. With no action bar (the last
+          item leaving, or all done) the margin stands in for its top spacing. */}
+      <div className={clsx('w-full max-w-lg relative', !topItem && 'mt-6')}>
         {exitingItem && (
           <ExitingOverlay
             key={getItemId(exitingItem)}
@@ -248,36 +318,6 @@ export function FacilitatorView() {
         )}
         {topItem && (
           <>
-            <div className='mb-3 mx-auto flex items-center justify-center gap-2 flex-wrap'>
-              <button
-                onClick={handleMarkDiscussed}
-                className='flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-medium text-text-secondary border border-border-light hover:bg-hover transition-colors cursor-pointer'
-              >
-                <CircleCheckBig className='size-3.5' />
-                Mark Discussed
-              </button>
-              <button
-                onClick={handleAddActionItem}
-                className='flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-medium text-text-secondary border border-border-light hover:bg-hover transition-colors cursor-pointer'
-              >
-                <MessageSquareWarning className='size-3.5' />
-                Add Action Item
-              </button>
-              <button
-                onClick={handleViewComments}
-                className='flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-medium text-text-secondary border border-border-light hover:bg-hover transition-colors cursor-pointer'
-              >
-                <MessageSquare className='size-3.5' />
-                View Comments
-              </button>
-              <button
-                onClick={handleSkip}
-                className='flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-medium text-text-secondary border border-border-light hover:bg-hover transition-colors cursor-pointer'
-              >
-                <SkipForward className='size-3.5' />
-                Skip
-              </button>
-            </div>
             <TopCard
               key={getItemId(topItem)}
               item={topItem}

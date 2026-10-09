@@ -4,6 +4,7 @@ import type { ConfirmModalProps } from './types'
 
 export function ConfirmModal({
   onConfirm,
+  onCancel,
   open = true,
   message = 'Are you sure you want to proceed?',
   title = 'Confirmation',
@@ -18,19 +19,24 @@ export function ConfirmModal({
     closeModal('ConfirmModal')
   }
 
+  const handleCancel = () => {
+    onCancel?.()
+    onClose()
+  }
+
   const handleConfirm = () => {
     onConfirm()
     onClose()
   }
 
   return (
-    <Modal title={title} isOpen={open} onClose={onClose}>
+    <Modal title={title} isOpen={open} onClose={handleCancel}>
       <span className='my-8 font-bold italic text-text-primary text-xl'>
         {message}
       </span>
       <div className='flex justify-end mt-4 gap-2'>
         {!hideCancelButton && (
-          <button onClick={onClose} className={colorMap.cancel[color]}>
+          <button onClick={handleCancel} className={colorMap.cancel[color]}>
             {cancelButtonText}
           </button>
         )}

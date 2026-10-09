@@ -1,4 +1,4 @@
-import { render, screen, useClick } from '@test-utils'
+import { render, screen, useClick, within } from '@test-utils'
 import { Modal } from './modal'
 
 describe('components/common/modal', () => {
@@ -25,19 +25,24 @@ describe('components/common/modal', () => {
     expect(queryByText('Modal Title')).not.toBeInTheDocument()
   })
 
-  it.each(['modal__backdrop', 'CloseIcon'])(
-    'calls onClose when the %s is clicked',
-    async testId => {
-      const onCloseMock = jest.fn()
-      const click = useClick(
-        <Modal {...defaultProps} onClose={onCloseMock}>
-          Modal Content
-        </Modal>,
-      )
+  it.each([
+    ['backdrop', () => screen.getByTestId('modal__backdrop')],
+    // The close button is icon-only with no accessible name, so it is located
+    // as the only button inside the modal.
+    [
+      'close button',
+      () => within(screen.getByTestId('modal')).getByRole('button'),
+    ],
+  ])('calls onClose when the %s is clicked', async (_, getTarget) => {
+    const onCloseMock = jest.fn()
+    const click = useClick(
+      <Modal {...defaultProps} onClose={onCloseMock}>
+        Modal Content
+      </Modal>,
+    )
 
-      await click(screen.getByTestId(testId))
+    await click(getTarget())
 
-      expect(onCloseMock).toHaveBeenCalledTimes(1)
-    },
-  )
+    expect(onCloseMock).toHaveBeenCalledTimes(1)
+  })
 })

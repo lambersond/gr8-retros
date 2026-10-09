@@ -73,6 +73,7 @@ export type RetroBoardControlsActions = {
 
   // Facilitator mode
   toggleFacilitatorMode: () => void
+  closeVotingAndDiscuss: () => void
 
   // Guided (Parabol-style) mode
   startGuidedRetro: () => void

@@ -19,8 +19,10 @@ export function ExitingOverlay({
   }, [])
 
   return (
+    // z-1 lifts it over the incoming top card, but it lifts off under the
+    // sticky action bar (z-2) like any other content scrolling past it.
     <div
-      className='absolute inset-x-0 top-0 z-10 pointer-events-none transition-all duration-500 ease-in-out'
+      className='absolute inset-x-0 top-0 z-1 pointer-events-none transition-all duration-500 ease-in-out'
       style={{
         opacity: started ? 0 : 1,
         transform: started
