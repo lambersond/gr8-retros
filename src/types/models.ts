@@ -148,5 +148,4 @@ export type Column = BoardSettings['columns'][number]
 export type CardGroup = Board['cardGroups'][number]
 
 export type ColumnItem =
-  | { kind: 'card'; data: Card }
-  | { kind: 'group'; data: CardGroup }
+  { kind: 'card'; data: Card } | { kind: 'group'; data: CardGroup }

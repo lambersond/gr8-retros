@@ -5,8 +5,7 @@ import type { CardGroupState } from '../types'
 import type { Card } from '@/types'
 
 type OrphanedItem =
-  | { kind: 'card'; data: Card }
-  | { kind: 'group'; data: CardGroupState }
+  { kind: 'card'; data: Card } | { kind: 'group'; data: CardGroupState }
 
 export function useOrphanedItems(): OrphanedItem[] {
   const boardCards = useBoardCards()

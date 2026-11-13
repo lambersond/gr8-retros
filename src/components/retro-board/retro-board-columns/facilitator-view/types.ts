@@ -2,5 +2,4 @@ import type { CardGroupState } from '@/providers/retro-board/cards'
 import type { Card } from '@/types'
 
 export type FacilitatorItem =
-  | { kind: 'card'; data: Card }
-  | { kind: 'group'; data: CardGroupState }
+  { kind: 'card'; data: Card } | { kind: 'group'; data: CardGroupState }

@@ -149,9 +149,7 @@ export const boardCardActionHandlers = {
   // everyone off it.
   [BoardSettingsMessageType.BOARD_DELETED]: state => state,
 } satisfies {
-  [K in
-    | BoardSettingsMessageType
-    | BoardSettingsInternalActionType]: ActionHandler<
-    Extract<BoardSettingsReducerAction, { type: K }>
-  >
+  [
+    K in BoardSettingsMessageType | BoardSettingsInternalActionType
+  ]: ActionHandler<Extract<BoardSettingsReducerAction, { type: K }>>
 }

@@ -27,8 +27,7 @@ import {
 import type { RestoredCard } from '@/types'
 
 type DropZone =
-  | { type: 'insert'; index: number }
-  | { type: 'merge'; targetId: string }
+  { type: 'insert'; index: number } | { type: 'merge'; targetId: string }
 
 export type DropState =
   | { type: 'insert'; colId: string; index: number }

@@ -6,11 +6,7 @@ export interface PlanFeature {
 }
 
 export type PlanId =
-  | 'anonymous'
-  | 'account'
-  | 'supporter'
-  | 'believer'
-  | 'champion'
+  'anonymous' | 'account' | 'supporter' | 'believer' | 'champion'
 
 export type CtaType = 'home' | 'google-signin' | 'checkout'
 

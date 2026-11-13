@@ -1,5 +1,5 @@
-import type { BoardSettingsMessageData } from './channel-messages'
 import type { BoardSettingsInternalActionType } from '../enums'
+import type { BoardSettingsMessageData } from './channel-messages'
 import type { BoardSettingsState } from './provider'
 import type { BoardRole } from '@/enums'
 import type { MessageStructRequiredPayload } from '@/types'

@@ -112,8 +112,7 @@ export function useBoardControlsLiveMap({
 
         // Check if the controls already exist
         const existing = rootObj.get(BOARD_CONTROLS_KEY).compact() as
-          | BoardControls
-          | undefined
+          BoardControls | undefined
 
         // If it doesn't exist yet, initialize it
         if (!existing) {
@@ -157,8 +156,7 @@ export function useBoardControlsLiveMap({
 
         const initialBoardControls =
           (rootObj.get(BOARD_CONTROLS_KEY).compact() as
-            | BoardControls
-            | undefined) ?? DEFAULT_BOARD_CONTROLS
+            BoardControls | undefined) ?? DEFAULT_BOARD_CONTROLS
         setBoardControls(initialBoardControls)
         onLoad?.(initialBoardControls)
 
