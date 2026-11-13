@@ -19,7 +19,11 @@ export function CreateBoardForm({ onSubmit }: Readonly<CreateBoardFormProps>) {
     resolver: createBoardResolver,
   })
 
-  const { ref: rhfRef, onChange: rhfOnChange, ...rhfRest } = register('boardName')
+  const {
+    ref: rhfRef,
+    onChange: rhfOnChange,
+    ...rhfRest
+  } = register('boardName')
 
   const boardName = watch('boardName')
 

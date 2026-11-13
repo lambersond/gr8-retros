@@ -19,8 +19,7 @@ import { deleteCardGroupsByIds } from '@/server/card-group/card-group-service'
 import type { Card as CardType } from '@/types'
 
 type OrphanedItem =
-  | { kind: 'card'; data: CardType }
-  | { kind: 'group'; data: CardGroupState }
+  { kind: 'card'; data: CardType } | { kind: 'group'; data: CardGroupState }
 
 const ORPHANED_COLORS = {
   light: {

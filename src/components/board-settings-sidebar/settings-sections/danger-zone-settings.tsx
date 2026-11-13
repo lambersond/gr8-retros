@@ -45,7 +45,9 @@ export function DangerZoneSettings() {
       settingsId: id,
       onTransfer: (result: { deactivateFacilitatorMode: boolean }) => {
         if (result.deactivateFacilitatorMode && isFacilitatorModeActive) {
-          updateBoardControls({ facilitatorMode: { isActive: false, skippedIds: [] } })
+          updateBoardControls({
+            facilitatorMode: { isActive: false, skippedIds: [] },
+          })
         }
       },
     })
@@ -76,7 +78,9 @@ export function DangerZoneSettings() {
             if (data.error) return
 
             if (isFacilitatorModeActive) {
-              updateBoardControls({ facilitatorMode: { isActive: false, skippedIds: [] } })
+              updateBoardControls({
+                facilitatorMode: { isActive: false, skippedIds: [] },
+              })
             }
 
             publish({

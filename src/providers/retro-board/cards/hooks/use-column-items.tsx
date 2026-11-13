@@ -7,8 +7,7 @@ import type { CardGroupState } from '../types'
 import type { Card } from '@/types'
 
 type ColumnItem =
-  | { kind: 'card'; data: Card }
-  | { kind: 'group'; data: CardGroupState }
+  { kind: 'card'; data: Card } | { kind: 'group'; data: CardGroupState }
 
 function getGroupVotes(group: CardGroupState, cards: Record<string, Card>) {
   const memberVotes = group.cardIds

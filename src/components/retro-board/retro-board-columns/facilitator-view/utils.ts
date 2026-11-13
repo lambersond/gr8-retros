@@ -1,6 +1,6 @@
 import { BoardCardsSortOptions } from '@/providers/retro-board/cards'
-import type { Card } from '@/types'
 import type { FacilitatorItem } from './types'
+import type { Card } from '@/types'
 
 export function getItemId(item: FacilitatorItem) {
   return `${item.kind}-${item.data.id}`
@@ -29,12 +29,17 @@ function getItemSortValues(item: FacilitatorItem, cards: Record<string, Card>) {
   const memberCards = item.data.cardIds.map(id => cards[id]).filter(Boolean)
   return {
     upvotes: memberCards.reduce((sum, c) => sum + c.upvotedBy.length, 0),
-    votes: (item.data.votes ?? 0) + memberCards.reduce((sum, c) => sum + (c.votes ?? 0), 0),
+    votes:
+      (item.data.votes ?? 0) +
+      memberCards.reduce((sum, c) => sum + (c.votes ?? 0), 0),
     actionItemCount: memberCards.reduce(
       (sum, c) => sum + (c.actionItems?.length ?? 0),
       0,
     ),
-    commentCount: memberCards.reduce((sum, c) => sum + (c.comments?.length ?? 0), 0),
+    commentCount: memberCards.reduce(
+      (sum, c) => sum + (c.comments?.length ?? 0),
+      0,
+    ),
     newestAt:
       memberCards.length > 0
         ? Math.max(...memberCards.map(c => new Date(c.createdAt).getTime()))
