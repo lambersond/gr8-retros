@@ -14,7 +14,10 @@ export const PUT = withUser(
   ) => {
     const [body, param] = await Promise.all([req.json(), params])
 
-    if (typeof body?.name !== 'string' || typeof body?.settingsId !== 'string') {
+    if (
+      typeof body?.name !== 'string' ||
+      typeof body?.settingsId !== 'string'
+    ) {
       return NextResponse.json(
         { error: 'INVALID_REQUEST', message: 'Missing name or settingsId' },
         { status: 400 },

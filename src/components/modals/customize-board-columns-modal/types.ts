@@ -6,7 +6,10 @@ export type CustomizeBoardColumnsModalProps = {
   title?: string
   initialColumns: Column[]
   boardTier: PaymentTier
-  onSave?: (updatedColumns: Column[], originalColumns: Column[]) => Promise<void> | void
+  onSave?: (
+    updatedColumns: Column[],
+    originalColumns: Column[],
+  ) => Promise<void> | void
 }
 
 // TEMP

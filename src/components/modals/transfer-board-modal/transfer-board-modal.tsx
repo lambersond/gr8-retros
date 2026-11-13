@@ -11,10 +11,12 @@ export function TransferBoardModal({
   onTransfer,
 }: Readonly<TransferBoardModalProps>) {
   const { closeModal } = useModals()
+  // eslint-disable-next-line unicorn/no-null -- null explicitly means "no admin selected yet"
   const [selectedAdminId, setSelectedAdminId] = useState<string | null>(null)
   const [isTransferring, setIsTransferring] = useState(false)
 
   const onClose = () => {
+    // eslint-disable-next-line unicorn/no-null -- reset to the "no admin selected" state
     setSelectedAdminId(null)
     closeModal('TransferBoardModal')
   }
@@ -24,14 +26,11 @@ export function TransferBoardModal({
     setIsTransferring(true)
 
     try {
-      const resp = await fetch(
-        `/api/board-settings/${settingsId}/transfer`,
-        {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ newOwnerId: selectedAdminId }),
-        },
-      )
+      const resp = await fetch(`/api/board-settings/${settingsId}/transfer`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ newOwnerId: selectedAdminId }),
+      })
 
       if (!resp.ok) return
 
