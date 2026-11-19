@@ -7,11 +7,11 @@ import {
 import { useAbly, useChannel } from 'ably/react'
 import { FacilitatorDiceMessageType } from '../enums'
 import { useFacilitatorDiceDispatch } from '../provider'
-import { BoardRole } from '@/enums'
+import { getFacilitatorCandidates } from '../utils'
 import { useDice } from '@/hooks/dice'
 import { useAuth } from '@/hooks/use-auth'
 import { useBoardId } from '@/hooks/use-board-id'
-import { hasMinimumRole } from '@/lib/roles'
+import { useBoardMembers } from '@/providers/retro-board/board-settings'
 import { useViewingMembers } from '@/providers/viewing-members'
 import type { DiceParticipant, DiceSession } from '../types'
 
@@ -30,21 +30,17 @@ export function useFacilitatorDiceActions() {
   const { publish } = useChannel(boardId)
   const dispatch = useFacilitatorDiceDispatch()
   const { viewingMembers } = useViewingMembers()
+  const boardMembers = useBoardMembers()
   const { user } = useAuth()
   const { roll } = useDice()
 
   const startSession = useCallback(() => {
-    const participants: Record<string, DiceParticipant> = {}
-
-    for (const [clientId, member] of Object.entries(viewingMembers)) {
-      if (hasMinimumRole(BoardRole.FACILITATOR, member.role)) {
-        participants[clientId] = {
-          clientId,
-          name: member.name,
-          image: member.image,
-        }
-      }
-    }
+    const participants: Record<string, DiceParticipant> = Object.fromEntries(
+      getFacilitatorCandidates(viewingMembers, boardMembers).map(candidate => [
+        candidate.clientId,
+        candidate,
+      ]),
+    )
 
     const session: DiceSession = {
       sessionId: crypto.randomUUID(),
@@ -64,7 +60,14 @@ export function useFacilitatorDiceActions() {
     })
 
     return session.sessionId
-  }, [viewingMembers, user.id, dispatch, publish, ably.connection.id])
+  }, [
+    viewingMembers,
+    boardMembers,
+    user.id,
+    dispatch,
+    publish,
+    ably.connection.id,
+  ])
 
   const submitRoll = useCallback(
     async (color: string) => {
