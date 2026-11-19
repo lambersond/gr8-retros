@@ -6,6 +6,7 @@ import type { RetroBoardControls, RetroBoardControlsActions } from './types'
 
 let mockControls: RetroBoardControls
 let mockFacilitatorModeEnabled: boolean
+let mockFacilitateSessionEnabled: boolean
 const mockUpdateBoardControls = jest.fn()
 
 jest.mock('@/hooks/use-channel-state', () => ({
@@ -16,9 +17,17 @@ jest.mock('@/hooks/use-channel-state', () => ({
 }))
 
 jest.mock('@/providers/retro-board/board-settings', () => ({
+  isFacilitateSessionAvailable: jest.requireActual(
+    '@/providers/retro-board/board-settings/utils',
+  ).isFacilitateSessionAvailable,
   useBoardSettings: () => ({
     settings: {
-      facilitatorMode: { enabled: mockFacilitatorModeEnabled },
+      facilitatorMode: {
+        enabled: mockFacilitatorModeEnabled,
+        subsettings: {
+          facilitateSession: { enabled: mockFacilitateSessionEnabled },
+        },
+      },
       timer: { subsettings: { defaultDuration: { value: 300 } } },
       voting: {
         subsettings: {
@@ -113,6 +122,7 @@ describe('providers/retro-board/controls/provider', () => {
   beforeEach(() => {
     mockUpdateBoardControls.mockReset()
     mockFacilitatorModeEnabled = true
+    mockFacilitateSessionEnabled = true
     mockControls = {
       timer: {
         startedAt: undefined,
@@ -152,8 +162,11 @@ describe('providers/retro-board/controls/provider', () => {
       })
     })
 
-    it('only closes voting when the board has Facilitator Mode turned off', () => {
-      mockFacilitatorModeEnabled = false
+    it.each([
+      ['Facilitator Mode', () => (mockFacilitatorModeEnabled = false)],
+      ['Facilitate Session', () => (mockFacilitateSessionEnabled = false)],
+    ])('only closes voting when %s is turned off', (_, arrange) => {
+      arrange()
       setup()
 
       actions.closeVotingAndDiscuss()

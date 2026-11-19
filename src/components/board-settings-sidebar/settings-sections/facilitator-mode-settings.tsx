@@ -30,13 +30,12 @@ export function FacilitatorModeSettings() {
     a => a.updateBoardControls,
   )
 
-  const toggleFacilitateSession = async () => {
-    const enable = !facilitateSession.enabled
-    await updateBoardSetting(facilitateSession.key, enable)()
+  // Turning either setting off hides the Facilitate Session button, which is
+  // also how a session is ended, so end a running one rather than strand it.
+  // Guided mode drives its own Discuss phase and is left alone.
+  const toggle = (key: typeof setting.key, enable: boolean) => async () => {
+    await updateBoardSetting(key, enable)()
 
-    // Disabling hides the Facilitate Session button, which is also how a
-    // session is ended, so end a running one rather than strand it. Guided
-    // mode drives its own Discuss phase and is left alone.
     if (!enable && isSessionActive && !isGuidedActive) {
       updateBoardControls({
         facilitatorMode: { isActive: false, skippedIds: [] },
@@ -51,7 +50,7 @@ export function FacilitatorModeSettings() {
       canEdit={setting.canEdit}
       isEnabled={setting.enabled}
       isUnlocked={setting.isUnlocked}
-      onToggle={updateBoardSetting(setting.key, !setting.enabled)}
+      onToggle={toggle(setting.key, !setting.enabled)}
     >
       <SubsettingsContainer show={setting.enabled}>
         <Checkbox
@@ -59,7 +58,7 @@ export function FacilitatorModeSettings() {
           label={facilitateSession.title}
           size='sm'
           disabled={!setting.enabled || !facilitateSession.canEdit}
-          onChange={toggleFacilitateSession}
+          onChange={toggle(facilitateSession.key, !facilitateSession.enabled)}
         />
       </SubsettingsContainer>
     </SettingsToggle>

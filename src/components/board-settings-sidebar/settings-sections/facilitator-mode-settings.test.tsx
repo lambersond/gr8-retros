@@ -48,22 +48,25 @@ describe('FacilitatorModeSettings', () => {
     mockFacilitateSessionEnabled = true
   })
 
-  it('ends a running facilitated session when Facilitate Session is disabled', async () => {
-    mockControls = { isSessionActive: true, isGuidedActive: false }
-    render(<FacilitatorModeSettings />)
+  it.each([
+    ['Enable Facilitate Session', 'isFacilitateSessionEnabled'],
+    ['Facilitator Mode', 'isFacilitatorModeEnabled'],
+  ])(
+    'ends a running facilitated session when %s is turned off',
+    async (label, key) => {
+      mockControls = { isSessionActive: true, isGuidedActive: false }
+      render(<FacilitatorModeSettings />)
 
-    await toggleFacilitateSession()
+      await userEvent.click(screen.getByLabelText(label))
 
-    expect(mockUpdateBoardSetting).toHaveBeenCalledWith(
-      'isFacilitateSessionEnabled',
-      false,
-    )
-    await waitFor(() =>
-      expect(mockUpdateBoardControls).toHaveBeenCalledWith({
-        facilitatorMode: { isActive: false, skippedIds: [] },
-      }),
-    )
-  })
+      expect(mockUpdateBoardSetting).toHaveBeenCalledWith(key, false)
+      await waitFor(() =>
+        expect(mockUpdateBoardControls).toHaveBeenCalledWith({
+          facilitatorMode: { isActive: false, skippedIds: [] },
+        }),
+      )
+    },
+  )
 
   it.each([
     {

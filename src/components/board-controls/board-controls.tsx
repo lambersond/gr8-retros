@@ -18,6 +18,7 @@ import { VotingProgressBar } from './voting/voting-progress-bar'
 import { GuidedPhase, VotingState } from '@/enums'
 import { useAuth } from '@/hooks/use-auth'
 import {
+  isFacilitateSessionAvailable,
   useBoardPermissions,
   useBoardSettings,
 } from '@/providers/retro-board/board-settings'
@@ -106,8 +107,7 @@ export function BoardControls() {
     !guidedActive &&
     canFacilitate &&
     !isVotingOpen &&
-    settings.facilitatorMode.enabled &&
-    settings.facilitatorMode.subsettings.facilitateSession.enabled
+    isFacilitateSessionAvailable(settings)
   const showGuided =
     !guidedActive &&
     canFacilitate &&

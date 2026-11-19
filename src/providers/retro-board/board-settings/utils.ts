@@ -376,3 +376,18 @@ export function createInitialState({
     },
   }
 }
+
+/**
+ * Whether facilitated sessions can run outside guided mode: Facilitator Mode
+ * is on and so is its Facilitate Session sub-setting. Gates every way into a
+ * session (the Facilitate Session button, Start Discussions, and starting one
+ * when a vote closes).
+ */
+export function isFacilitateSessionAvailable(
+  settings: Pick<BoardSettingsWithPermissions, 'facilitatorMode'>,
+): boolean {
+  return (
+    settings.facilitatorMode.enabled &&
+    settings.facilitatorMode.subsettings.facilitateSession.enabled
+  )
+}

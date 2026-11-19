@@ -6,7 +6,10 @@ import {
   useRef,
   useState,
 } from 'react'
-import { useBoardSettings } from '../board-settings'
+import {
+  isFacilitateSessionAvailable,
+  useBoardSettings,
+} from '../board-settings'
 import {
   RetroBoardControlsActionsStoreContext,
   RetroBoardControlsStateStoreContext,
@@ -45,9 +48,10 @@ export function RetroBoardControlsProvider({
   // ---------------------------------------------------------------------------
   // Board settings (defaults)
   // ---------------------------------------------------------------------------
+  const { settings } = useBoardSettings()
+  const canDiscuss = isFacilitateSessionAvailable(settings)
   const {
     settings: {
-      facilitatorMode: { enabled: isFacilitatorModeEnabled },
       timer: {
         subsettings: {
           defaultDuration: { value: defaultDuration },
@@ -101,10 +105,10 @@ export function RetroBoardControlsProvider({
   // modal's onConfirm. A modal keeps the callback it was opened with, so one
   // closing over its render's boardControls would tally the votes as they were
   // when the modal opened and drop any submitted while it sat on screen.
-  const latestRef = useRef({ boardControls, isFacilitatorModeEnabled })
+  const latestRef = useRef({ boardControls, canDiscuss })
   useLayoutEffect(() => {
-    latestRef.current = { boardControls, isFacilitatorModeEnabled }
-  }, [boardControls, isFacilitatorModeEnabled])
+    latestRef.current = { boardControls, canDiscuss }
+  }, [boardControls, canDiscuss])
 
   const handleVoteSubmit = useCallback(
     async (localVotes: string[]) => {
@@ -536,8 +540,7 @@ export function RetroBoardControlsProvider({
   // the board at call time and does nothing once the vote has been closed or
   // a guided session (which owns voting) has started.
   const closeVotingAndDiscuss = useCallback(() => {
-    const { boardControls: latest, isFacilitatorModeEnabled: canDiscuss } =
-      latestRef.current
+    const { boardControls: latest, canDiscuss } = latestRef.current
     if (latest.voting.state !== VotingState.OPEN || latest.guided?.isActive) {
       return
     }

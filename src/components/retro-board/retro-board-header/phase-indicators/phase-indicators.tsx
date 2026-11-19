@@ -7,6 +7,7 @@ import { Tooltip } from '@/components/common'
 import { VotingState } from '@/enums'
 import { useAuth } from '@/hooks/use-auth'
 import {
+  isFacilitateSessionAvailable,
   useBoardPermissions,
   useBoardSettings,
 } from '@/providers/retro-board/board-settings'
@@ -38,19 +39,19 @@ export function PhaseIndicators() {
 
   const isVotingActive = votingState === VotingState.OPEN
   const isVotingClosed = votingState === VotingState.CLOSED
-  const isFacilitatorModeEnabled = settings.facilitatorMode.enabled
+  const canDiscuss = isFacilitateSessionAvailable(settings)
   const isChosenFacilitator =
     !!chosenFacilitatorId && chosenFacilitatorId === user.id
 
   const canStartDiscussions = useMemo(() => {
-    if (!isVotingClosed || !isFacilitatorModeEnabled || isFacilitatorMode) {
+    if (!isVotingClosed || !canDiscuss || isFacilitatorMode) {
       return false
     }
     if (chosenFacilitatorId) return isChosenFacilitator
     return roleUser.hasFacilitator
   }, [
     isVotingClosed,
-    isFacilitatorModeEnabled,
+    canDiscuss,
     isFacilitatorMode,
     chosenFacilitatorId,
     isChosenFacilitator,
