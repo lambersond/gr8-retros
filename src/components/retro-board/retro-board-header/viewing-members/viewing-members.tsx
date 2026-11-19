@@ -1,13 +1,9 @@
 'use client'
 
-import { useCallback } from 'react'
 import { Crown } from 'lucide-react'
 import Image from 'next/image'
+import { useChooseFacilitatorModal } from './use-choose-facilitator-modal'
 import { Popover, Tooltip } from '@/components/common'
-import { BoardRole } from '@/enums'
-import { useAuth } from '@/hooks/use-auth'
-import { useModals } from '@/hooks/use-modals'
-import { hasMinimumRole } from '@/lib/roles'
 import {
   useBoardPermissions,
   useBoardSettings,
@@ -16,12 +12,6 @@ import {
   useBoardControlsActions,
   useBoardControlsState,
 } from '@/providers/retro-board/controls'
-import {
-  allParticipantsRolled,
-  useFacilitatorDiceActions,
-  useFacilitatorDiceState,
-  useRerollSelf,
-} from '@/providers/retro-board/facilitator-dice'
 import { useViewingMembers } from '@/providers/viewing-members'
 
 export function ViewingMembers() {
@@ -34,27 +24,10 @@ export function ViewingMembers() {
   )
   const { settings, isClaimed } = useBoardSettings()
   const { user } = useBoardPermissions()
-  const { user: authUser } = useAuth()
-  const { openModal } = useModals()
-  const { startSession, submitRoll, submitDnr } = useFacilitatorDiceActions()
-  const { activeSession } = useFacilitatorDiceState()
-  const rerollSelf = useRerollSelf()
+  const handleChooseFacilitator = useChooseFacilitatorModal()
 
   const isFacilitatorModeEnabled = settings.facilitatorMode.enabled
   const canManageFacilitator = !isClaimed || user.hasFacilitator
-
-  // A roll is "underway" until *everyone* has rolled a value. Anyone still
-  // pending or DNR keeps it underway (a DNR no longer finalizes the roll). While
-  // underway, the Roll action rerolls only the current user (joins the existing
-  // roll) instead of restarting for everyone — use `allParticipantsRolled` here,
-  // not `isSessionComplete`, so a DNR can't make a live roll look "done".
-  const rollInProgress =
-    !!activeSession && !allParticipantsRolled(activeSession)
-  const myParticipant = activeSession?.participants[authUser.id]
-  const canRoll = rollInProgress
-    ? !!myParticipant && myParticipant.result === undefined
-    : true
-  const rollLabel = rollInProgress ? 'Reroll my die' : 'Roll for Facilitator'
 
   const facilitatorEntry =
     chosenFacilitatorId && viewingMembers[chosenFacilitatorId]
@@ -66,45 +39,6 @@ export function ViewingMembers() {
   // becomes that person's avatar + Crown. Only managers can click the
   // placeholder to open Choose Facilitator.
   const showPlaceholder = isFacilitatorModeEnabled && !facilitatorEntry
-
-  const handleChooseFacilitator = useCallback(() => {
-    const candidates = Object.entries(viewingMembers)
-      .filter(([, member]) =>
-        hasMinimumRole(BoardRole.FACILITATOR, member.role),
-      )
-      .map(([clientId, member]) => ({
-        id: clientId,
-        name: member.name,
-        image: member.image,
-      }))
-    openModal('ChooseFacilitatorModal', {
-      candidates,
-      rollDisabled: !canRoll,
-      rollLabel,
-      onSelect: clientId => {
-        updateBoardControls({ chosenFacilitatorId: clientId })
-      },
-      onRoll: () => {
-        if (rollInProgress) {
-          rerollSelf()
-          return
-        }
-        startSession()
-        openModal('DiceColorPickerModal', { submitRoll, onDnr: submitDnr })
-      },
-    })
-  }, [
-    viewingMembers,
-    openModal,
-    updateBoardControls,
-    startSession,
-    submitRoll,
-    submitDnr,
-    rollInProgress,
-    rerollSelf,
-    canRoll,
-    rollLabel,
-  ])
 
   const otherEntries = Object.entries(viewingMembers).filter(
     ([clientId]) => clientId !== chosenFacilitatorId,

@@ -19,6 +19,7 @@ export type {
 } from './types'
 export {
   allParticipantsRolled,
+  getFacilitatorCandidates,
   hasParticipantRolled,
   isParticipantResolved,
   isSessionComplete,
