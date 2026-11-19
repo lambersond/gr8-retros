@@ -181,6 +181,10 @@ export function getSettingsWithPermissions(
     'facilitatorMode',
     userRole,
   )
+  baseSettings.facilitatorMode.subsettings.facilitateSession.enabled =
+    settings.isFacilitateSessionEnabled
+  baseSettings.facilitatorMode.subsettings.facilitateSession.canEdit =
+    userHasPermission('facilitatorMode.facilitateSession', userRole)
 
   // Guided Mode Settings
   baseSettings.guidedMode.enabled = settings.isGuidedModeEnabled
@@ -284,6 +288,10 @@ function getStaticBoardPermissions(userRole: BoardRole) {
       userRole,
     ),
     facilitatorMode: userHasPermission('facilitatorMode', userRole),
+    'facilitatorMode.facilitateSession': userHasPermission(
+      'facilitatorMode.facilitateSession',
+      userRole,
+    ),
     guidedMode: userHasPermission('guidedMode', userRole),
     aiSummary: userHasPermission('aiSummary', userRole),
   } satisfies Record<PermissionKey, boolean>
@@ -367,4 +375,19 @@ export function createInitialState({
       hasViewer: false,
     },
   }
+}
+
+/**
+ * Whether facilitated sessions can run outside guided mode: Facilitator Mode
+ * is on and so is its Facilitate Session sub-setting. Gates every way into a
+ * session (the Facilitate Session button, Start Discussions, and starting one
+ * when a vote closes).
+ */
+export function isFacilitateSessionAvailable(
+  settings: Pick<BoardSettingsWithPermissions, 'facilitatorMode'>,
+): boolean {
+  return (
+    settings.facilitatorMode.enabled &&
+    settings.facilitatorMode.subsettings.facilitateSession.enabled
+  )
 }

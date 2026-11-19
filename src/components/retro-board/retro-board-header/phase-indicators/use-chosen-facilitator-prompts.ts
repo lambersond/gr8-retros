@@ -13,7 +13,10 @@ import { ModalStateCtx } from '@/components/modals/modal-provider'
 import { VotingState } from '@/enums'
 import { useAuth } from '@/hooks/use-auth'
 import { useModals } from '@/hooks/use-modals'
-import { useBoardSettings } from '@/providers/retro-board/board-settings'
+import {
+  isFacilitateSessionAvailable,
+  useBoardSettings,
+} from '@/providers/retro-board/board-settings'
 import {
   useBoardControlsActions,
   useBoardControlsState,
@@ -63,14 +66,19 @@ export function useChosenFacilitatorPrompts() {
     if (votingState !== VotingState.CLOSED) setHasDeclined(false)
   }
   const decline = useCallback(() => setHasDeclined(true), [])
+  const canDiscuss = isFacilitateSessionAvailable(settings)
 
   useAllVotesInPrompt({
     guided: false,
     enabled: !hasDeclined,
     buildPrompt: () => ({
       title: 'All votes are in',
-      message: 'Discuss voted on topics?',
-      confirmButtonText: 'Yes, Start Discussing',
+      // Confirming only starts discussing when the board can run a facilitated
+      // session; otherwise it just closes the vote, so say that instead.
+      message: canDiscuss ? 'Discuss voted on topics?' : 'Close the vote?',
+      confirmButtonText: canDiscuss
+        ? 'Yes, Start Discussing'
+        : 'Yes, Close Voting',
       cancelButtonText: 'No, Leave me Alone',
       color: 'primary',
       onConfirm: closeVotingAndDiscuss,
@@ -80,7 +88,7 @@ export function useChosenFacilitatorPrompts() {
 
   const shouldOfferDiscussions =
     votingState === VotingState.CLOSED &&
-    settings.facilitatorMode.enabled &&
+    canDiscuss &&
     !isFacilitatorMode &&
     !!chosenFacilitatorId &&
     chosenFacilitatorId === user.id &&

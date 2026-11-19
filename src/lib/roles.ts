@@ -35,6 +35,7 @@ export type PermissionKey =
   | 'dragAndDrop.grouping.aiNaming'
   | 'cardAuthoring'
   | 'facilitatorMode'
+  | 'facilitatorMode.facilitateSession'
   | 'guidedMode'
   | 'aiSummary'
 
@@ -80,6 +81,7 @@ export const SETTINGS_ROLE_MAP: Record<string, PermissionKey> = {
   cardGroupingEnabled: 'dragAndDrop.grouping',
   aiCardGroupNamingEnabled: 'dragAndDrop.grouping.aiNaming',
   isFacilitatorModeEnabled: 'facilitatorMode',
+  isFacilitateSessionEnabled: 'facilitatorMode.facilitateSession',
   isGuidedModeEnabled: 'guidedMode',
   isAiSummaryEnabled: 'aiSummary',
 }
@@ -135,6 +137,7 @@ const PERMISSIONS_MAP: Record<PermissionKey, BoardRole> &
   'dragAndDrop.grouping': BoardRole.ADMIN,
   'dragAndDrop.grouping.aiNaming': BoardRole.ADMIN,
   facilitatorMode: BoardRole.ADMIN,
+  'facilitatorMode.facilitateSession': BoardRole.ADMIN,
   guidedMode: BoardRole.ADMIN,
   aiSummary: BoardRole.ADMIN,
 } as const

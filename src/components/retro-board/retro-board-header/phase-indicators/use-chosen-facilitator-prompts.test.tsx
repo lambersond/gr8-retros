@@ -17,6 +17,7 @@ let mockControls: {
 }
 let mockProgress: { voted: number; votingMembers: number }
 let mockFacilitatorModeEnabled: boolean
+let mockFacilitateSessionEnabled = true
 
 jest.mock('@/providers/retro-board/controls', () => ({
   useBoardControlsState: (selector: (s: unknown) => unknown) =>
@@ -29,8 +30,18 @@ jest.mock('@/providers/retro-board/controls', () => ({
 }))
 
 jest.mock('@/providers/retro-board/board-settings', () => ({
+  isFacilitateSessionAvailable: jest.requireActual(
+    '@/providers/retro-board/board-settings/utils',
+  ).isFacilitateSessionAvailable,
   useBoardSettings: () => ({
-    settings: { facilitatorMode: { enabled: mockFacilitatorModeEnabled } },
+    settings: {
+      facilitatorMode: {
+        enabled: mockFacilitatorModeEnabled,
+        subsettings: {
+          facilitateSession: { enabled: mockFacilitateSessionEnabled },
+        },
+      },
+    },
   }),
 }))
 
@@ -68,6 +79,8 @@ function WithOtherConfirm({ title = 'Delete card?' }: { title?: string }) {
 }
 
 const ALL_IN = 'Discuss voted on topics?'
+// The same prompt when the board can't start a facilitated discussion.
+const ALL_IN_CLOSE_ONLY = 'Close the vote?'
 const START_DISCUSSIONS =
   'Voting is closed. As the chosen facilitator, would you like to start discussions and begin reviewing the cards?'
 
@@ -83,6 +96,7 @@ const settle = () =>
 
 const expectNoPrompts = () => {
   expect(screen.queryByText(ALL_IN)).not.toBeInTheDocument()
+  expect(screen.queryByText(ALL_IN_CLOSE_ONLY)).not.toBeInTheDocument()
   expect(screen.queryByText(START_DISCUSSIONS)).not.toBeInTheDocument()
 }
 
@@ -113,6 +127,7 @@ describe('components/retro-board/retro-board-header/phase-indicators/use-chosen-
     }
     mockProgress = { voted: 3, votingMembers: 3 }
     mockFacilitatorModeEnabled = true
+    mockFacilitateSessionEnabled = true
   })
 
   it('prompts the chosen facilitator once all votes are in and closes voting to discuss on confirm', async () => {
@@ -155,15 +170,21 @@ describe('components/retro-board/retro-board-header/phase-indicators/use-chosen-
   })
 
   it.each([
-    [true, true],
-    [false, false],
+    ['Facilitator Mode and Facilitate Session on', true, true, true],
+    ['Facilitator Mode off', false, true, false],
+    ['Facilitate Session off', true, false, false],
   ])(
-    'never follows Yes with Start Discussions (Facilitator Mode enabled: %s)',
-    async (enabled, startsFacilitation) => {
-      mockFacilitatorModeEnabled = enabled
+    'never follows Yes with Start Discussions (%s)',
+    async (_, modeEnabled, sessionEnabled, startsFacilitation) => {
+      mockFacilitatorModeEnabled = modeEnabled
+      mockFacilitateSessionEnabled = sessionEnabled
       const { rerender } = setup()
-      await find(ALL_IN)
-      await userEvent.click(screen.getByText('Yes, Start Discussing'))
+      await find(startsFacilitation ? ALL_IN : ALL_IN_CLOSE_ONLY)
+      await userEvent.click(
+        screen.getByText(
+          startsFacilitation ? 'Yes, Start Discussing' : 'Yes, Close Voting',
+        ),
+      )
 
       // Voting still reads open until the write comes back over Ably.
       rerender()
@@ -387,15 +408,21 @@ describe('components/retro-board/retro-board-header/phase-indicators/use-chosen-
     expect(screen.queryByText(ALL_IN)).not.toBeInTheDocument()
   })
 
-  it('does not offer Start Discussions when the board has Facilitator Mode turned off', async () => {
-    mockFacilitatorModeEnabled = false
-    mockProgress = { voted: 2, votingMembers: 3 }
-    const { rerender } = setup()
+  it.each([
+    ['Facilitator Mode', () => (mockFacilitatorModeEnabled = false)],
+    ['Facilitate Session', () => (mockFacilitateSessionEnabled = false)],
+  ])(
+    'does not offer Start Discussions when %s is turned off',
+    async (_, arrange) => {
+      arrange()
+      mockProgress = { voted: 2, votingMembers: 3 }
+      const { rerender } = setup()
 
-    setVoting(VotingState.CLOSED)
-    rerender()
-    await settle()
+      setVoting(VotingState.CLOSED)
+      rerender()
+      await settle()
 
-    expectNoPrompts()
-  })
+      expectNoPrompts()
+    },
+  )
 })

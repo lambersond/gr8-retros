@@ -2,6 +2,7 @@
 
 import { userService } from '../user'
 import * as repository from './board-settings-repository'
+import { withImpliedSettings } from './utils'
 import { MAX_BOARDS_PER_SUBSCRIPTION } from '@/constants'
 import { BoardRole, PaymentTier } from '@/enums'
 import { publishMessageToChannel } from '@/lib/ably'
@@ -27,8 +28,9 @@ export async function updateSettingById(
   patch: Record<keyof typeof SETTINGS_ROLE_MAP, any>,
 ) {
   const userBoardRole = await userService.getUserBoardRole(userId, id)
+  const fullPatch = withImpliedSettings(patch)
 
-  for (const key of Object.keys(patch)) {
+  for (const key of Object.keys(fullPatch)) {
     const permissionKey = SETTINGS_ROLE_MAP[key]
     if (!userHasPermission(permissionKey, userBoardRole)) {
       return {
@@ -39,7 +41,11 @@ export async function updateSettingById(
   }
 
   try {
-    const newSettings = await repository.updateSettingById(id, userId, patch)
+    const newSettings = await repository.updateSettingById(
+      id,
+      userId,
+      fullPatch,
+    )
     return newSettings
   } catch {
     return {
