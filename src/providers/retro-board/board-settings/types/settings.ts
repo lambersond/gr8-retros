@@ -87,6 +87,12 @@ interface VotingSetting extends Setting {
   }
 }
 
+interface FacilitatorModeSetting extends Setting {
+  subsettings: {
+    facilitateSession: ToggleSubsetting
+  }
+}
+
 interface DragAndDropSetting extends Setting {
   subsettings: {
     grouping: ToggleSubsetting
@@ -104,7 +110,7 @@ export type BoardSettingsWithPermissions = {
   upvoting: UpvotingSetting
   voting: VotingSetting
   dragAndDrop: DragAndDropSetting
-  facilitatorMode: Setting
+  facilitatorMode: FacilitatorModeSetting
   guidedMode: Setting
   aiSummary: Setting
 }
@@ -133,7 +139,7 @@ export type BoardSettingsWithPermissionsNoIcons = Omit<
   upvoting: Omit<UpvotingSetting, 'icon'>
   voting: Omit<VotingSetting, 'icon'>
   dragAndDrop: Omit<DragAndDropSetting, 'icon'>
-  facilitatorMode: Omit<Setting, 'icon'>
+  facilitatorMode: Omit<FacilitatorModeSetting, 'icon'>
   guidedMode: Omit<Setting, 'icon'>
   aiSummary: Omit<Setting, 'icon'>
 }

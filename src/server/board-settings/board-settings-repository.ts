@@ -217,6 +217,7 @@ export async function resetBoardSettings(settingsId: string, ownerId: string) {
         cardGroupingEnabled: false,
         aiCardGroupNamingEnabled: false,
         isFacilitatorModeEnabled: false,
+        isFacilitateSessionEnabled: true,
         isGuidedModeEnabled: false,
         isAiSummaryEnabled: false,
       },

@@ -181,6 +181,10 @@ export function getSettingsWithPermissions(
     'facilitatorMode',
     userRole,
   )
+  baseSettings.facilitatorMode.subsettings.facilitateSession.enabled =
+    settings.isFacilitateSessionEnabled
+  baseSettings.facilitatorMode.subsettings.facilitateSession.canEdit =
+    userHasPermission('facilitatorMode.facilitateSession', userRole)
 
   // Guided Mode Settings
   baseSettings.guidedMode.enabled = settings.isGuidedModeEnabled
@@ -284,6 +288,10 @@ function getStaticBoardPermissions(userRole: BoardRole) {
       userRole,
     ),
     facilitatorMode: userHasPermission('facilitatorMode', userRole),
+    'facilitatorMode.facilitateSession': userHasPermission(
+      'facilitatorMode.facilitateSession',
+      userRole,
+    ),
     guidedMode: userHasPermission('guidedMode', userRole),
     aiSummary: userHasPermission('aiSummary', userRole),
   } satisfies Record<PermissionKey, boolean>

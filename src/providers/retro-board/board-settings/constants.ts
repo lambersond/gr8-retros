@@ -235,6 +235,15 @@ export const BASE_SETTINGS: BoardSettingsWithPermissionsNoIcons = {
     isUnlocked: true,
     key: 'isFacilitatorModeEnabled',
     title: 'Facilitator Mode',
+    subsettings: {
+      facilitateSession: {
+        canEdit: false,
+        enabled: true,
+        key: 'isFacilitateSessionEnabled',
+        kind: 'toggle',
+        title: 'Enable Facilitate Session',
+      },
+    },
   },
   guidedMode: {
     render: true,

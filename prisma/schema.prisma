@@ -172,6 +172,7 @@ model BoardSettings {
   aiCardGroupNamingEnabled Boolean    @default(false) // TIER = SUPPORTER
 
   isFacilitatorModeEnabled Boolean    @default(false) // TIER = BELIEVER
+  isFacilitateSessionEnabled Boolean @default(true)
 
   isGuidedModeEnabled      Boolean    @default(false) // TIER = SUPPORTER
 

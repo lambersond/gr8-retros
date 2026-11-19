@@ -106,7 +106,8 @@ export function BoardControls() {
     !guidedActive &&
     canFacilitate &&
     !isVotingOpen &&
-    settings.facilitatorMode.enabled
+    settings.facilitatorMode.enabled &&
+    settings.facilitatorMode.subsettings.facilitateSession.enabled
   const showGuided =
     !guidedActive &&
     canFacilitate &&
