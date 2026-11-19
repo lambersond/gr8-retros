@@ -5,17 +5,12 @@ import * as Ably from 'ably'
 import { LiveObjects } from 'ably/liveobjects'
 import { AblyProvider as AProvider } from 'ably/react'
 import PropTypes from 'prop-types'
+import { saveRecoveryKey, takeRecoveryKey } from './recovery'
 
-const RECOVERY_KEY = 'ably-recovery-key'
 export const ABLY_RECONNECTED_EVENT = 'ably:reconnected'
 
 function createClient() {
-  const recoveryKey =
-    globalThis.window === undefined
-      ? undefined
-      : sessionStorage.getItem(RECOVERY_KEY)
-
-  if (recoveryKey) sessionStorage.removeItem(RECOVERY_KEY)
+  const recoveryKey = takeRecoveryKey()
 
   return new Ably.Realtime({
     authUrl: `${process.env.NEXT_PUBLIC_SITE_URL}/api/ably/token`,
@@ -43,8 +38,7 @@ export function AblyProvider({ children }) {
     }
 
     const handleBeforeUnload = () => {
-      const key = client.connection.createRecoveryKey()
-      if (key) sessionStorage.setItem(RECOVERY_KEY, key)
+      saveRecoveryKey(client.connection.createRecoveryKey())
     }
 
     const handleConnected = stateChange => {

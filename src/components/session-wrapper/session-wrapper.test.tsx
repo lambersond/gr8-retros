@@ -15,6 +15,7 @@ jest.mock('@/hooks/use-auth', () => ({
 jest.mock('@/providers/ably', () => ({
   ...jest.requireActual('@/providers/ably'),
   AblyProvider: ({ children }: { children: ReactNode }) => <>{children}</>,
+  AblyIdentityGuard: () => <></>,
 }))
 
 jest.mock('../app-bar', () => ({

@@ -4,7 +4,7 @@ import { SessionProvider } from 'next-auth/react'
 import { ThemeProvider as NextThemesProvider } from 'next-themes'
 import { AppBar } from '../app-bar'
 import { ModalProvider } from '../modals/modal-provider'
-import { AblyProvider } from '@/providers/ably'
+import { AblyIdentityGuard, AblyProvider } from '@/providers/ably'
 import { BoardMembershipProvider } from '@/providers/board-memberships'
 import { ChangelogProvider } from '@/providers/changelog'
 
@@ -43,6 +43,7 @@ function Providers({ children }: Readonly<{ children: React.ReactNode }>) {
     <AblyProvider>
       <ModalProvider>
         <SessionProvider>
+          <AblyIdentityGuard />
           <BoardMembershipProvider>
             <ChangelogProvider>{children}</ChangelogProvider>
           </BoardMembershipProvider>
