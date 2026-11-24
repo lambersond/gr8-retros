@@ -4,8 +4,10 @@ generator client {
 
 datasource db {
   provider  = "postgresql"
-  url       = env("DB_URL")
-  directUrl = env("DIRECT_DATABASE_URL")
+  // Pooled connection for the app; the direct connection is used by the
+  // Prisma CLI (migrate deploy, db push), which can't run through the pooler.
+  url       = env("DB_DATABASE_URL_POOLED")
+  directUrl = env("DB_POSTGRES_URL")
 }
 
 // -----------------------
