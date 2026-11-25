@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "build": "next build",
-    "db:setup": "prisma generate --no-engine && prisma migrate deploy && prisma db push",
+    "db:setup": "prisma generate && prisma migrate deploy && prisma db push",
     "db:seed": "ts-node prisma/seed.ts",
     "dev": "TZ=UTC next dev --turbopack",
     "lint:fix": "eslint --fix",
@@ -15,8 +15,8 @@
     "test:watch": "jest --watch",
     "test": "jest",
     "vercel-build": "npm run vercel-build:blank",
-    "vercel-build:seed": "prisma generate --no-engine && prisma migrate deploy && prisma db push && npm run db:seed && next build",
-    "vercel-build:blank": "prisma generate --no-engine && prisma migrate deploy && prisma db push && next build"
+    "vercel-build:seed": "prisma generate && prisma migrate deploy && prisma db push && npm run db:seed && next build",
+    "vercel-build:blank": "prisma generate && prisma migrate deploy && prisma db push && next build"
   },
   "dependencies": {
     "@ai-sdk/openai": "^3.0.142",
@@ -26,7 +26,6 @@
     "@lambersond/3d-dice-core": "^0.4.0",
     "@lambersond/3d-dice-react": "^0.4.0",
     "@prisma/client": "6.19.3",
-    "@prisma/extension-accelerate": "^3.0.1",
     "@react-pdf/renderer": "^4.9.0",
     "@vercel/analytics": "^2.0.1",
     "@vercel/speed-insights": "^2.1.0",
